@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Available Deliveries - Bella Fashion</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/rider-dashboard.css">
+  <link rel="stylesheet" href="/static/css/rider-compact.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* Self-Contained Rider Dashboard Styles */
+    .admin-container { display: flex; height: 100vh; overflow: hidden; }
+    .admin-sidebar {
+      width: 260px;
+      background: var(--secondary-color);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+    }
+    .admin-sidebar.collapsed { width: 75px; }
+    .sidebar-header { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-sidebar:not(.collapsed) .sidebar-header { display: none; }
+    .admin-sidebar.collapsed .sidebar-header { display: flex; justify-content: center; padding: 12px 0; position: sticky; top: 0; z-index: 10; }
+    .sidebar-brand { display: none !important; }
+    .admin-sidebar:not(.collapsed) .sidebar-header .sidebar-toggle { display: none; }
+    .sidebar-toggle { display: flex; align-items: center; justify-content: center; background: rgba(255, 107, 206, 0.12); border: 1px solid rgba(255, 107, 206, 0.2); color: #eee4f4; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15); }
+    .sidebar-toggle:hover { background: rgba(255, 107, 206, 0.25); border-color: rgba(255, 107, 206, 0.4); transform: scale(1.08) translateY(-1px); box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3); }
+    .sidebar-toggle:active { transform: scale(0.98); }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+    .nav-section.first-section { position: relative; }
+    .admin-sidebar .nav-section.first-section .nav-section-title { display: flex !important; align-items: center !important; gap: 12px !important; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span { display: none; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title { justify-content: center !important; padding: 12px 0 !important; margin: 0 0 6px 0 !important; }
+    .sidebar-toggle-inline { display: none; }
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline { display: flex; width: 38px; height: 38px; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-toggle-inline { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 0; min-height: 0; }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 107, 206, 0.3); border-radius: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 206, 0.5); }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-footer { padding: 16px 0; width: 100%; }
+    .admin-sidebar.collapsed .sidebar-footer .nav-item { display: flex; justify-content: center; align-items: center; width: 100%; gap: 0; }
+    .admin-sidebar .nav-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+    .admin-sidebar .nav-item i { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-width: 24px; width: 24px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .admin-sidebar .nav-item .nav-text { transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; overflow: hidden; }
+    .admin-sidebar.collapsed .nav-text, .admin-sidebar.collapsed .nav-badge { opacity: 0; width: 0; margin: 0; padding: 0; pointer-events: none; display: none; }
+    .admin-sidebar.collapsed .nav-section-title { opacity: 0; width: 0; height: 0; overflow: hidden; padding: 0; margin: 0; display: none; }
+    .admin-sidebar.collapsed .nav-item { display: flex; justify-content: center; align-items: center; padding: 14px 0; margin: 4px 0; width: 100%; gap: 0; }
+    .admin-sidebar.collapsed .nav-item i { margin: 0; padding: 0; min-width: 24px; width: 24px; }
+    .admin-sidebar.collapsed .nav-section { padding: 0; width: 100%; }
+    .admin-sidebar.collapsed .nav-divider { margin: 0.75rem 16px; }
+    .admin-sidebar.collapsed .nav-item:hover { transform: scale(1.08); background: rgba(255, 107, 206, 0.15); }
+    .admin-sidebar.collapsed .nav-item.active { transform: none; }
+    .admin-sidebar.collapsed .nav-item.active:hover { transform: scale(1.05); }
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-topbar { background: var(--container-bg); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+    .admin-content { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--background-light); }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-family: "Poppins", sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.4rem; }
+    .page-subtitle { color: var(--gray-600); font-size: 0.9rem; }
+    @media (max-width: 1024px) { .mobile-toggle { display: block; } }
+
+    /* Sidebar Navigation Styling */
+    .nav-section { padding: 0 12px; margin-bottom: 1rem; }
+    .nav-section-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #eee4f4; text-decoration: none; border-radius: 10px; margin: 4px 0; font-size: 0.95rem; }
+    .nav-item:hover { background: rgba(255, 107, 206, 0.1); color: white; }
+    .nav-item.active { background: linear-gradient(135deg, #ff6bce, #b829d6); color: white; box-shadow: 0 4px 12px rgba(255, 107, 206, 0.3); }
+    .nav-badge { margin-left: auto; background: #ff6bce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .nav-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 1rem 12px; }
+    .logout-btn { color: #ff6b6b !important; }
+    .logout-btn:hover { background: rgba(255, 107, 107, 0.1) !important; color: #ff5252 !important; }
+
+    /* Topbar & User Profile */
+    .search-box { display: flex; align-items: center; gap: 10px; background: var(--background-light); padding: 10px 16px; border-radius: 25px; min-width: 300px; }
+    .search-box i { color: var(--gray-500); }
+    .search-box input { border: none; background: none; outline: none; flex: 1; font-size: 0.95rem; color: var(--text-color); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; position: relative; }
+    .topbar-action { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .topbar-action:hover { background: var(--background-light); color: var(--primary-color); }
+    .notification-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #ff6bce; border-radius: 50%; border: 2px solid white; }
+    
+    /* Notification Dropdown Styling */
+    .notification-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .notification-container:hover .notification-dropdown {
+      display: block;
+    }
+    
+    .notification-dropdown {
+      position: absolute;
+      top: calc(100% + 15px);
+      right: 0;
+      width: 360px;
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      padding: 0;
+      display: none;
+      z-index: 1000;
+      border: 1px solid #e9ecef;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .notification-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 20px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 1px solid #e9ecef;
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+    }
+    
+    .notification-header {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe0e6 100%);
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0;
+    }
+    
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #ff6bce;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .mark-all-read:hover {
+      background-color: rgba(255, 107, 206, 0.1);
+    }
+    
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .notification-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-item.unread {
+      background-color: #fff8f8;
+      border-left: 3px solid #ff6bce;
+      position: relative;
+    }
+    
+    .notification-item.unread::after {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ff6bce;
+      border-radius: 50%;
+    }
+    
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff6bce, #b829d6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .notification-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-right: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-message {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #2d3748;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .notification-item.unread .notification-message {
+      font-weight: 600;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    
+    .notification-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .notification-empty i {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+    
+    .notification-empty p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    
+    .notification-see-all {
+      padding: 15px 20px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+    }
+    
+    .notification-see-all a {
+      color: #ff6bce;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    
+    .notification-see-all a:hover {
+      color: #b829d6;
+    }
+    
+    /* Message Dropdown Styling */
+    .message-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Chat Center Button - Match notification button style */
+    .topbar-action#chatCenterBtn {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transition: all 0.25s ease !important;
+      cursor: pointer !important;
+      font-family: inherit !important;
+      height: auto !important;
+      min-width: unset !important;
+      width: auto !important;
+      appearance: none !important;
+      transform: none !important;
+      line-height: normal !important;
+      margin: 0 !important;
+    }
+    
+    .topbar-action#chatCenterBtn:hover {
+      color: var(--primary-color) !important;
+      border-color: rgba(255,107,206,0.4) !important;
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important;
+      background: var(--container-bg) !important;
+    }
+    
+    .topbar-action#chatCenterBtn i {
+      font-size: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    .topbar-action#chatCenterBtn span:not(.notification-dot) {
+      font-size: 0.9rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    /* Notification dot for chat button */
+    #chatNotificationDot {
+      position: absolute !important;
+      top: 6px !important;
+      right: 6px !important;
+      width: 8px !important;
+      height: 8px !important;
+      background: #dc3545 !important;
+      border-radius: 50% !important;
+      border: 2px solid var(--container-bg) !important;
+    }
+    
+    /* Ensure proper alignment with notification button */
+    .topbar-right {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    
+    .topbar-action#chatCenterBtn,
+    .topbar-action#notificationBtn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle !important;
+    }
+    
+    /* Chat Center Modal Overrides - Ensure proper display */
+    #chatCenterModal {
+      z-index: 3000 !important;
+    }
+    
+    #chatCenterModal .modal-dialog {
+      max-width: 1200px !important;
+      margin: 1.75rem auto !important;
+    }
+    
+    #chatCenterModal .modal-content {
+      border-radius: 16px !important;
+      border: none !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    #chatCenterModal .chat-container {
+      display: flex !important;
+      height: 600px !important;
+      min-height: 600px !important;
+    }
+    
+    #chatCenterModal .chat-sidebar {
+      width: 420px !important;
+      min-width: 420px !important;
+    }
+    
+    #chatCenterModal .chat-window {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-profile { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; background: var(--background-light); border-radius: 25px; cursor: pointer; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6bce, #b829d6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-color); }
+    .user-role { font-size: 0.75rem; color: var(--gray-600); }
+
+    /* Content Cards */
+    .data-card { background: var(--container-bg); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 1.5rem; }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+    .card-title { font-family: "Poppins", sans-serif; font-size: 1.25rem; font-weight: 600; color: var(--text-color); margin: 0; display: flex; align-items: center; }
+  </style>
+</head>
+<body>
+  <!-- Rider Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <i class="fas fa-bicycle"></i>
+          <span class="brand-text">Rider Panel</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="rider-dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="available-deliveries.html" class="nav-item active">
+            <i class="fas fa-search"></i>
+            <span class="nav-text">Available Orders</span>
+            <span class="nav-badge" id="availableBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="my-deliveries.html" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span class="nav-text">My Deliveries</span>
+            <span class="nav-badge" id="activeBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="delivery-history.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span class="nav-text">Delivery History</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Performance</div>
+        <div>
+          <a href="earnings.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span class="nav-text">Earnings</span>
+          </a>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
+      </div>
+
+
+      </div>
+      <div class="sidebar-footer">
+        <a href="../Authenticator/login.html" class="nav-item logout-btn" onclick="AuthManager.logout(); return false;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search orders, customers...">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="position-relative notification-container">
+          <button class="topbar-action" id="notificationBtn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty">
+                  <i class="fas fa-bell"></i>
+                  <p>No notifications</p>
+                </div>
+              </div>
+              <div class="notification-see-all">
+                <a href="/templates/UserProfile/notifications.html">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <h1 class="page-title mb-1">Available Deliveries</h1>
+            <p class="page-subtitle mb-0">Browse and accept delivery orders in your area.</p>
+          </div>
+          <button class="btn btn-outline-primary" id="refreshBtn">
+            <i class="fas fa-sync-alt me-2"></i>Refresh
+          </button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label mb-1">Available</p>
+                <h3 class="stat-value mb-0" id="statAvailableCount">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label mb-1">Nearby (5km)</p>
+                <h3 class="stat-value mb-0" id="statNearbyCount">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #6610f2);">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label mb-1">Top Fee</p>
+                <h3 class="stat-value mb-0" id="statTopFee">₱0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #e83e8c, #fd7e14);">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label mb-1">Urgent</p>
+                <h3 class="stat-value mb-0" id="statUrgentCount">0</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+      <!-- Available Deliveries Content -->
+      <div class="content-section active">
+        <!-- Filter Controls -->
+        <div class="data-card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="card-title mb-0">
+              <i class="fas fa-filter me-2"></i>Filter & Sort
+            </h2>
+            <div class="btn-group" role="group" id="viewToggle">
+              <button type="button" class="btn btn-sm btn-outline-secondary active" data-view="grid">
+                <i class="fas fa-th"></i> Grid
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-view="table">
+                <i class="fas fa-table"></i> Table
+              </button>
+            </div>
+          </div>
+          <div class="row g-3 p-3">
+            <div class="col-md-3">
+              <label class="form-label fw-semibold mb-2">Distance</label>
+              <select class="form-select form-select-lg" id="distanceFilter" style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                <option value="">Any Distance</option>
+                <option value="5">Within 5km</option>
+                <option value="10">Within 10km</option>
+                <option value="20">Within 20km</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold mb-2">Delivery Fee</label>
+              <select class="form-select form-select-lg" id="feeFilter" style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                <option value="">Any Amount</option>
+                <option value="50">₱50+</option>
+                <option value="100">₱100+</option>
+                <option value="150">₱150+</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold mb-2">Sort By</label>
+              <select class="form-select form-select-lg" id="sortBy" style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                <option value="distance">Nearest First</option>
+                <option value="fee_desc">Highest Fee</option>
+                <option value="fee_asc">Lowest Fee</option>
+                <option value="time">Most Recent</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-primary w-100" id="applyFilters" style="padding: 0.65rem 1rem; font-size: 0.95rem;">
+                <i class="fas fa-filter me-2"></i>Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Cards Grid -->
+        <div class="row g-4" id="deliveryGrid">
+          <!-- Delivery cards will be loaded here -->
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center mt-4">
+          <button class="btn btn-outline-primary" id="loadMoreBtn">
+            <i class="fas fa-plus me-2"></i>Load More Deliveries
+          </button>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delivery Details Modal -->
+  <div class="modal fade" id="deliveryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delivery Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="deliveryModalBody">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-footer" id="deliveryModalFooter">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" id="acceptDeliveryBtn">
+            <i class="fas fa-check me-2"></i>Accept Delivery
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script - runs immediately -->
+  <script>
+    (function() {
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initToggle);
+      } else {
+        initToggle();
+      }
+      
+      function initToggle() {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+        const mobileToggle = document.getElementById('mobileToggle');
+        
+        if (!sidebar) {
+          console.warn('Sidebar element not found');
+          return;
+        }
+        
+        // Check localStorage for saved state, default to collapsed
+        const savedState = localStorage.getItem('riderSidebarCollapsed');
+        const isCollapsed = savedState === null ? true : savedState === 'true';
+        
+        // Apply initial state
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+        }
+        
+        // Toggle function
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('riderSidebarCollapsed', sidebar.classList.contains('collapsed'));
+          console.log('Sidebar toggled:', sidebar.classList.contains('collapsed') ? 'collapsed' : 'expanded');
+        }
+        
+        // Desktop toggle (top button when collapsed)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggle listener attached');
+        }
+        
+        // Inline toggle (beside Main when expanded)
+        if (sidebarToggleInline) {
+          sidebarToggleInline.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggleInline listener attached');
+        }
+        
+        // Mobile toggle
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+          });
+          console.log('✅ mobileToggle listener attached');
+        }
+        
+        console.log('✅ Sidebar toggle initialized');
+      }
+    })();
+  </script>
+  
+  <script src="/static/js/auth-manager.js"></script>
+  <script src="/static/js/rider-message-manager.js"></script>
+  <script>
+    // Authentication check - wait for AuthManager to be available
+    (function checkAuth() {
+      if (typeof AuthManager === 'undefined') {
+        console.error('❌ AuthManager not loaded');
+        return;
+      }
+      
+      const user = AuthManager.getAuthUser();
+      const token = AuthManager.getAuthToken();
+      
+      if (!user || !token) {
+        console.warn('❌ Not authenticated - redirecting to login');
+        window.location.href = '../Authenticator/login.html';
+        return;
+      }
+      
+      if (user.role !== 'rider') {
+        console.warn('❌ Access denied - not a rider');
+        window.location.href = '../Public/index.html';
+        return;
+      }
+      
+      // Update user profile
+      const userName = user.name || user.email.split('@')[0];
+      const userNameEl = document.querySelector('.user-name');
+      const userInitialsEl = document.getElementById('userInitials');
+      
+      if (userNameEl) userNameEl.textContent = userName;
+      if (userInitialsEl) {
+        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        userInitialsEl.textContent = initials;
+      }
+      
+      console.log('✅ Authentication successful:', userName);
+    })();
+    
+    // Available Deliveries Page JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAvailableDeliveries();
+      
+      // Filter and sort handlers
+      document.getElementById('applyFilters').addEventListener('click', loadAvailableDeliveries);
+      document.getElementById('loadMoreBtn').addEventListener('click', loadMoreDeliveries);
+      
+      // Refresh button handler
+      document.getElementById('refreshBtn').addEventListener('click', function() {
+        const btn = this;
+        const icon = btn.querySelector('i');
+        icon.classList.add('fa-spin');
+        btn.disabled = true;
+        
+        loadAvailableDeliveries().finally(() => {
+          icon.classList.remove('fa-spin');
+          btn.disabled = false;
+        });
+      });
+      
+      // View toggle handler
+      window.currentView = 'grid';
+      document.querySelectorAll('#viewToggle button').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('#viewToggle button').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          window.currentView = this.dataset.view;
+          
+          // Re-render with current deliveries
+          if (window.currentDeliveries && window.currentDeliveries.length > 0) {
+            renderDeliveries(window.currentDeliveries);
+          }
+        });
+      });
+      
+      // Auto-refresh every 30 seconds for better real-time updates
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          loadAvailableDeliveries(true); // Silent reload
+        }
+      }, 30000);
+      
+      // Pause/resume polling based on visibility
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+          console.log('✅ Page visible - refreshing available deliveries');
+          loadAvailableDeliveries(true);
+        }
+      });
+    });
+
+    let currentDeliveryCount = 0;
+    let isFirstLoad = true;
+    
+    async function loadAvailableDeliveries(silent = false) {
+      const grid = document.getElementById('deliveryGrid');
+      
+      // Only show loading spinner for non-silent loads
+      if (!silent) {
+        grid.innerHTML = '<div class="col-12 text-center py-5"><i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i><p class="text-muted">Loading available deliveries...</p></div>';
+      }
+      
+      try {
+        const token = AuthManager.getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token');
+        }
+
+        const response = await fetch('/api/rider/deliveries/available', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        console.log('Response status:', response.status, response.statusText);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Available deliveries loaded:', data);
+          
+          // Transform backend data to frontend format
+          const deliveries = data.deliveries.map(delivery => {
+            // Construct full addresses from backend data
+            const pickupAddress = delivery.seller_address || delivery.pickup_address || 'Pickup location not available';
+            const deliveryAddress = delivery.delivery_address || delivery.buyer_address || 'Delivery address not available';
+            
+            // Log for debugging
+            console.log('Delivery addresses:', {
+              orderId: delivery.id,
+              pickup: pickupAddress,
+              delivery: deliveryAddress,
+              rawData: {
+                seller_address: delivery.seller_address,
+                pickup_address: delivery.pickup_address,
+                delivery_address: delivery.delivery_address,
+                buyer_address: delivery.buyer_address
+              }
+            });
+            
+            return {
+              id: delivery.id,
+              order_number: delivery.order_number,
+              customer_name: delivery.customer_name || delivery.buyer_name || 'Unknown Customer',
+              customer_phone: delivery.customer_phone || delivery.buyer_phone || 'N/A',
+              customer_email: delivery.customer_email || delivery.buyer_email || '',
+              seller_name: delivery.seller_name || 'Seller',
+              seller_phone: delivery.seller_phone || 'N/A',
+              pickup_address: pickupAddress,
+              pickup_area: pickupAddress, // For backward compatibility
+              delivery_address: deliveryAddress,
+              delivery_area: deliveryAddress, // For backward compatibility
+              delivery_fee: delivery.delivery_fee || 50.00,
+              distance_text: (typeof delivery.approx_distance_km === 'number' ? `${delivery.approx_distance_km} km` : 'N/A'),
+              estimated_time: delivery.estimated_time || '30-45 mins',
+              delivery_type: delivery.delivery_type || 'standard',
+              priority: (delivery.priority || 'normal'),
+              pick_up_by: delivery.pick_up_by ? new Date(delivery.pick_up_by) : null,
+              order_total: delivery.order_total || 0,
+              created_at: delivery.created_at ? new Date(delivery.created_at) : new Date()
+            };
+          });
+            
+            // Check for new deliveries and show notification
+            if (!isFirstLoad && deliveries.length > currentDeliveryCount) {
+              const newCount = deliveries.length - currentDeliveryCount;
+              riderDashboard.showToast(`🚚 ${newCount} new delivery${newCount > 1 ? 's' : ''} available!`, 'info');
+              
+              // Optional: Play notification sound
+              try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L1um4gCEOO0fPTgjEGJoHJ8N2QQwsVYrbr7q5ZFg1IpOf3v3IkCEeP0/PUgjMHKILJ8N2QQwsVYrbr7q5ZFg1Jper7xXkpCUuR1/LSfCwFJH7K8N2QQwsVYbfq6qxYEwpGouD1vXAkCEeP0/PUgjMHKYLK8N2QQwsUYrfq6qxYEwpGouD1vXAkCEeP0/PUgjMHKYLK8N2QQwsUYrfq6qxYEwpGouD1vXAkCEeP0/PUgjMHKYLK8N2QQwsUYrfq6qxYEwpGouD1vXAkCEeP0/PUgjMHKYLK8N2QQwsUYrfq6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4HKoHK8N2QQgsUYrfr6qxYEwpGouD1vXAkCEeP0/PTgC4H');
+                audio.volume = 0.3;
+                audio.play().catch(() => {}); // Ignore if audio fails
+              } catch (e) {
+                // Ignore audio errors
+              }
+            }
+            
+            currentDeliveryCount = deliveries.length;
+            isFirstLoad = false;
+            
+            // Store deliveries globally for view switching
+            window.currentDeliveries = deliveries;
+            
+            // Update stats
+            updateStats(deliveries);
+            
+            // Render based on current view
+            renderDeliveries(deliveries);
+          
+        } else {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('❌ Failed to load available deliveries:', errorData);
+          console.error('Response status:', response.status);
+          
+          let errorMessage = 'Failed to load deliveries.';
+          if (response.status === 401 || response.status === 403) {
+            errorMessage = 'Authentication failed. Please log in again.';
+            setTimeout(() => {
+              window.location.href = '../Authenticator/login.html';
+            }, 2000);
+          } else if (response.status === 500) {
+            errorMessage = 'Server error. Please try again later.';
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+          
+          showEmptyState(errorMessage);
+        }
+        
+      } catch (error) {
+        console.error('❌ Error loading available deliveries:', error);
+        console.error('Error details:', error.message);
+        
+        let errorMessage = 'Unable to connect to server.';
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = '⚠️ Backend server is not running. Please start the server and refresh.';
+        } else if (error.message.includes('authentication')) {
+          errorMessage = 'Please log in to view deliveries.';
+        }
+        
+        showEmptyState(errorMessage);
+      }
+    }
+    
+    function showEmptyState(message = 'No deliveries available') {
+      const grid = document.getElementById('deliveryGrid');
+      grid.innerHTML = `
+        <div class="col-12">
+          <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>${message}</h4>
+            <p class="text-muted">Check back soon for new delivery opportunities!</p>
+            <button class="btn btn-primary mt-3" onclick="loadAvailableDeliveries()">
+              <i class="fas fa-refresh me-2"></i>Refresh
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function priorityBadgeClass(p) {
+      const map = { urgent: 'bg-danger', high: 'bg-warning text-dark', normal: 'bg-secondary', low: 'bg-light text-dark' };
+      return map[(p||'normal').toLowerCase()] || 'bg-secondary';
+    }
+
+    function formatTime(date) {
+      try {
+        const d = (date instanceof Date) ? date : new Date(date);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch { return ''; }
+    }
+
+    function updateStats(deliveries) {
+      // Total available
+      document.getElementById('statAvailableCount').textContent = deliveries.length;
+      
+      // Nearby (within 5km)
+      const nearby = deliveries.filter(d => {
+        const dist = parseFloat(d.distance_text);
+        return !isNaN(dist) && dist <= 5;
+      }).length;
+      document.getElementById('statNearbyCount').textContent = nearby;
+      
+      // Top fee
+      const topFee = deliveries.length > 0 
+        ? Math.max(...deliveries.map(d => d.delivery_fee || 0))
+        : 0;
+      document.getElementById('statTopFee').textContent = `₱${topFee.toFixed(2)}`;
+      
+      // Urgent deliveries
+      const urgent = deliveries.filter(d => 
+        d.priority === 'urgent' || d.priority === 'high'
+      ).length;
+      document.getElementById('statUrgentCount').textContent = urgent;
+    }
+
+    function renderDeliveries(deliveries) {
+      if (window.currentView === 'table') {
+        renderTableView(deliveries);
+      } else {
+        renderDeliveryCards(deliveries);
+      }
+    }
+
+    function renderTableView(deliveries) {
+      const grid = document.getElementById('deliveryGrid');
+      grid.className = ''; // Remove grid classes
+      
+      if (deliveries.length === 0) {
+        grid.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>No deliveries available</h4>
+            <p class="text-muted">Check back soon for new delivery opportunities!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = `
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Delivery Address</th>
+                <th>Distance</th>
+                <th>Fee</th>
+                <th>Priority</th>
+                <th>Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${deliveries.map(delivery => `
+                <tr style="cursor: pointer;" onclick="showDeliveryDetails('${delivery.id}')">
+                  <td><strong>#${delivery.order_number}</strong></td>
+                  <td>
+                    <div>${delivery.customer_name}</div>
+                    <small class="text-muted">${delivery.customer_phone}</small>
+                  </td>
+                  <td>
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                    ${delivery.delivery_area}
+                  </td>
+                  <td>
+                    <span class="badge bg-info">${delivery.distance_text}</span>
+                  </td>
+                  <td><strong class="text-success">₱${delivery.delivery_fee.toFixed(2)}</strong></td>
+                  <td>
+                    <span class="badge ${priorityBadgeClass(delivery.priority)}">
+                      ${delivery.priority || 'Normal'}
+                    </span>
+                  </td>
+                  <td><small>${formatTime(delivery.created_at)}</small></td>
+                  <td>
+                    <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); showDeliveryDetails('${delivery.id}')">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderDeliveryCards(deliveries) {
+      const grid = document.getElementById('deliveryGrid');
+      grid.className = 'row g-4'; // Reset to grid classes
+      
+      if (deliveries.length === 0) {
+        grid.innerHTML = `
+          <div class="col-12">
+            <div class="text-center py-5">
+              <i class="fas fa-search fa-3x text-muted mb-3"></i>
+              <h4>No deliveries available</h4>
+              <p class="text-muted">Check back soon for new delivery opportunities!</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = deliveries.map(delivery => `
+        <div class="col-lg-6 col-xl-4">
+          <div class="card delivery-card available h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h6 class="card-title mb-0">#${delivery.order_number}</h6>
+                <span class="badge bg-success">Available</span>
+              </div>
+              
+              <div class="customer-info mb-3">
+                <p class="mb-1"><strong><i class="fas fa-user me-2"></i>${delivery.customer_name}</strong></p>
+                <p class="mb-1 text-muted small"><i class="fas fa-phone me-2"></i>${delivery.customer_phone}</p>
+              </div>
+              
+              <div class="delivery-details mb-3">
+                <div class="d-flex align-items-start mb-2">
+                  <i class="fas fa-map-marker-alt text-success me-2 mt-1"></i>
+                  <div>
+                    <div class="fw-bold small">Pickup</div>
+                    <div class="text-muted small">${delivery.pickup_area}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-map-marker-alt text-danger me-2 mt-1"></i>
+                  <div>
+                    <div class="fw-bold small">Delivery</div>
+                    <div class="text-muted small">${delivery.delivery_area}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row g-2 text-center mb-3">
+                <div class="col-4">
+                  <div class="small text-muted">Distance</div>
+                  <div class="fw-bold">${delivery.distance_text}</div>
+                </div>
+                <div class="col-4">
+                  <div class="small text-muted">Time</div>
+                  <div class="fw-bold">${delivery.estimated_time}</div>
+                </div>
+                <div class="col-4">
+                  <div class="small text-muted">Fee</div>
+                  <div class="fw-bold text-success">₱${delivery.delivery_fee.toFixed(2)}</div>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge ${priorityBadgeClass(delivery.priority)} text-uppercase">${delivery.priority}</span>
+                ${delivery.pick_up_by ? `<small class="text-muted">Pick up by: ${formatTime(delivery.pick_up_by)}</small>` : ''}
+              </div>
+              
+              <div class="text-muted small mb-2">
+                <i class="fas fa-info-circle me-1"></i>Exact map appears after you accept this delivery.
+              </div>
+              
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-info btn-sm flex-fill" onclick="viewDeliveryDetails(${delivery.id})">
+                  <i class="fas fa-eye me-1"></i>Details
+                </button>
+                <button class="btn btn-success btn-sm flex-fill" onclick="acceptDelivery(${delivery.id})">
+                  <i class="fas fa-check me-1"></i>Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewDeliveryDetails(deliveryId) {
+      // Show delivery details modal
+      const modal = new bootstrap.Modal(document.getElementById('deliveryModal'));
+      modal.show();
+      
+      // This would typically load from API
+      const modalBody = document.getElementById('deliveryModalBody');
+      modalBody.innerHTML = `
+        <div class="text-center py-4">
+          <i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i>
+          <p class="text-muted">Loading delivery details...</p>
+        </div>
+      `;
+    }
+
+    async function acceptDelivery(deliveryId) {
+      if (!confirm('Accept this delivery request?')) {
+        return;
+      }
+      
+      try {
+        const token = AuthManager.getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token');
+        }
+
+        const response = await fetch(`/api/rider/deliveries/${deliveryId}/accept`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Delivery accepted:', data);
+          riderDashboard.showToast('🎆 Delivery accepted successfully! Status: "On the Way"', 'success');
+          
+          // Immediately update the count and reload
+          currentDeliveryCount = Math.max(0, currentDeliveryCount - 1);
+          loadAvailableDeliveries();
+          
+          // Show success message with next steps
+          setTimeout(() => {
+            riderDashboard.showToast('📦 Check "My Deliveries" to manage this order', 'info');
+          }, 3000);
+          
+        } else {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('❌ Failed to accept delivery:', errorData);
+          riderDashboard.showToast(errorData.error || 'Failed to accept delivery', 'error');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error accepting delivery:', error);
+        riderDashboard.showToast('Unable to connect to server. Please try again.', 'error');
+      }
+    }
+
+    function loadMoreDeliveries() {
+      riderDashboard.showToast('Loading more deliveries...', 'info');
+      // In real implementation, this would load more results
+    }
+  </script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Management - Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <link rel="stylesheet" href="/static/css/admin-compact.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Chat Center Modal - Match Seller Dashboard Exactly - Override admin.css */
+      #chatCenterModal .modal-dialog.modal-xl {
+        max-width: 1400px !important;
+        width: 92vw !important;
+        margin: 1.75rem auto !important;
+      }
+      
+      @media (min-width: 1500px) {
+        #chatCenterModal .modal-dialog.modal-xl {
+          max-width: 1400px !important;
+          width: 1400px !important;
+        }
+      }
+      
+      @media (min-width: 1200px) and (max-width: 1499px) {
+        #chatCenterModal .modal-dialog.modal-xl {
+          max-width: 1300px !important;
+          width: 92vw !important;
+        }
+      }
+      
+      #chatCenterModal .modal-content {
+        height: 85vh !important;
+        max-height: 85vh !important;
+        min-height: 85vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        border: none !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        overflow: hidden !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-y: hidden !important;
+        margin: 0 !important;
+        animation: none !important;
+      }
+      
+      #chatCenterModal .modal-header {
+        padding: 1rem 1.5rem 0.5rem !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        border-top-left-radius: 0.5rem !important;
+        border-top-right-radius: 0.5rem !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+      }
+      
+      #chatCenterModal .modal-title {
+        font-size: 1.25rem !important;
+        font-weight: 500 !important;
+        color: #212529 !important;
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+      }
+      
+      #chatCenterModal .modal-title i {
+        color: #0d6efd !important;
+        margin-right: 0.5rem !important;
+      }
+      
+      #chatCenterModal .btn-close {
+        padding: 0.5rem !important;
+        margin: 0 !important;
+        opacity: 0.5 !important;
+      }
+      
+      #chatCenterModal .btn-close:hover {
+        opacity: 1 !important;
+      }
+      
+      #chatCenterModal .modal-body {
+        padding: 0 !important;
+        margin: 0 !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        max-height: none !important;
+        overflow-y: hidden !important;
+      }
+      
+      #chatCenterModal .chat-container {
+        height: 100% !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        overflow: hidden !important;
+      }
+      
+      #chatCenterModal .chat-window {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+      }
+      
+      #chatCenterModal .chat-messages {
+        flex: 1 !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+      }
+      
+      #chatCenterModal .chat-input-area {
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        padding: 1.75rem !important;
+        border-top: 1px solid #e9ecef !important;
+        background: #fff !important;
+        box-shadow: 0 -4px 12px rgba(0,0,0,.04) !important;
+      }
+      
+      #chatCenterModal .chat-input-area[style*="display: block"] {
+        display: block !important;
+      }
+      
+      #chatCenterModal .chat-input-container {
+        display: flex !important;
+        visibility: visible !important;
+      }
+      
+      #chatCenterModal #chatMessageInput {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      #chatCenterModal #sendMessageBtn {
+        display: flex !important;
+        visibility: visible !important;
+      }
+      
+      #chatCenterModal .chat-sidebar {
+        width: 420px !important;
+        min-width: 420px !important;
+        flex-shrink: 0 !important;
+      }
+      
+      @media (max-width: 1200px) {
+        #chatCenterModal .modal-dialog.modal-xl {
+          width: 95vw !important;
+          max-width: 95vw !important;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        #chatCenterModal .modal-dialog.modal-xl {
+          width: 100vw !important;
+          max-width: 100vw !important;
+          margin: 0 !important;
+          height: 100vh !important;
+        }
+        
+        #chatCenterModal .modal-content {
+          height: 100vh !important;
+          max-height: 100vh !important;
+          border-radius: 0 !important;
+        }
+        
+        #chatCenterModal .chat-sidebar {
+          width: 320px !important;
+          min-width: 320px !important;
+        }
+      }
+    </style>
+    <style>
+        /* Delivery-specific styles - cleaned up and consistent */
+        .emergency-banner {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .emergency-banner.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            background: white;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .filter-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .filter-tab.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .delivery-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-reassign {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-reassign:hover {
+            background: #138496;
+            transform: scale(1.1);
+        }
+        
+        .btn-message {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-message:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+        
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            div[style*="grid-template-columns: 2fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-tabs {
+                gap: 0.25rem;
+            }
+            
+            .filter-tab {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .delivery-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="fas fa-crown"></i>
+                    <span class="brand-text">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="/admin/pending-users" class="nav-item">
+                    <i class="fas fa-user-clock"></i>
+                    <span class="nav-text">Pending Registrations</span>
+                    <span class="nav-badge" id="pendingUsersBadge" style="display:none;">0</span>
+                </a>
+                <a href="/admin/order-management" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span class="nav-text">Order Management</span>
+                </a>
+                <a href="/admin/delivery-management" class="nav-item active">
+                    <i class="fas fa-truck"></i>
+                    <span class="nav-text">Delivery Management</span>
+                    <span class="nav-badge" id="activeDeliveriesBadge">0</span>
+                </a>
+                <a href="/admin/reports" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="nav-text">Reports</span>
+                </a>
+                <a href="/admin/settings" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="/admin/flash-sales" class="nav-item">
+                    <i class="fas fa-bolt"></i>
+                    <span class="nav-text">Flash Sales</span>
+                    <span class="nav-badge" id="flashSalesBadge" style="display:none;">0</span>
+                </a>
+                <a href="/admin/products" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span class="nav-text">Products</span>
+                    <span class="nav-badge" id="productsBadge" style="display:none;">0</span>
+                </a>
+    <a href="/admin/seller-products" class="nav-item">
+        <i class="fas fa-store"></i>
+        <span class="nav-text">Seller Products & Sales</span>
+    </a>
+    <a href="/admin/product-management" class="nav-item">
+        <i class="fas fa-edit"></i>
+        <span class="nav-text">Product Management</span>
+    </a>
+    <a href="/admin/rider-management" class="nav-item">
+        <i class="fas fa-motorcycle"></i>
+        <span class="nav-text">Rider Management</span>
+    </a>
+            </nav>
+
+
+            <div class="sidebar-footer">
+                <a href="#logout" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search deliveries, riders..." id="searchDeliveries">
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="topbar-action" id="refreshBtn" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="topbar-action">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="topbar-action" id="chatCenterBtn" title="Messages">
+                        <i class="fas fa-comments"></i>
+                        <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Delivery Management Content -->
+            <div class="admin-content" id="adminContent">
+                
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Delivery Management</h1>
+                        <p class="page-subtitle">Monitor all deliveries, track riders, and manage delivery operations in real-time.</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <button class="btn-secondary" id="exportBtn">
+                            <i class="fas fa-download" style="margin-right: 0.5rem;"></i>Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Delivery Status Overview -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="statAvailable">0</h3>
+                            <p class="stat-label">Available Orders</p>
+                            <small style="color: #10b981; font-size: 0.7rem;">Ready for riders</small>
+                            </div>
+                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="statAssigned">0</h3>
+                            <p class="stat-label">Assigned</p>
+                            <small style="color: #f59e0b; font-size: 0.7rem;">Riders en route to pickup</small>
+                            </div>
+                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%);">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="statInTransit">0</h3>
+                            <p class="stat-label">In Transit</p>
+                            <small style="color: #3b82f6; font-size: 0.7rem;">On the way to customers</small>
+                            </div>
+                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="statDelivered">0</h3>
+                            <p class="stat-label">Delivered Today</p>
+                            <small style="color: #10b981; font-size: 0.7rem;">Completed successfully</small>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Filter Bar -->
+                <div class="data-card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem;">
+                        <div class="filter-tabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <div class="filter-tab active" data-status="all">All</div>
+                            <div class="filter-tab" data-status="available">Available</div>
+                            <div class="filter-tab" data-status="assigned">Assigned</div>
+                            <div class="filter-tab" data-status="picked_up">Picked Up</div>
+                            <div class="filter-tab" data-status="in_transit">In Transit</div>
+                            <div class="filter-tab" data-status="delivered">Delivered</div>
+                            <div class="filter-tab" data-status="issues">Issues</div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;">
+                            <span style="color: #6c757d; font-size: 0.875rem;" id="activeFilterLabel">Showing: All deliveries (0)</span>
+                            <button class="btn-secondary" id="refreshDeliveries" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                <i class="fas fa-sync" style="margin-right: 0.5rem;"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deliveries Table -->
+                <div class="data-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-list-alt" style="margin-right: 0.5rem;"></i>
+                            Deliveries
+                            <span style="background: #6c757d; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; margin-left: 0.5rem; font-weight: 600;" id="deliveryCount">0</span>
+                        </h2>
+                    </div>
+                    <div class="table-container" id="deliveriesTableContainer">
+                        <table class="data-table" id="deliveriesTable">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Rider</th>
+                                    <th>Route</th>
+                                    <th>Status</th>
+                                    <th>Progress</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #666;"></i>
+                                        <p style="margin-top: 10px; color: #666;">Loading deliveries...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delivery Details Modal -->
+    <div id="deliveryDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+                <div class="modal-header">
+                <h2 class="modal-title" id="deliveryModalTitle">Delivery Details</h2>
+                <button class="modal-close" onclick="closeDeliveryModal()">&times;</button>
+                </div>
+            <div class="modal-body" id="deliveryModalBody" style="max-height: 70vh; overflow: auto;">
+                    <!-- Details will be loaded here -->
+                </div>
+            <div class="modal-actions" style="display: flex; gap: 8px; justify-content: flex-end; padding: 16px;">
+                <button class="btn-secondary" onclick="closeDeliveryModal()">Close</button>
+                <button class="btn-primary" id="reassignBtn" style="background: #f59e0b;">
+                    <i class="fas fa-user-tag" style="margin-right: 0.5rem;"></i>Reassign Rider
+                    </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/static/js/shared-auth.js"></script>
+    <script src="/static/js/chat-center.js"></script>
+    <script src="/static/js/admin.js"></script>
+    <script>
+        // Delivery Management JavaScript
+        let allDeliveries = [];
+        let filteredDeliveries = [];
+        let currentFilter = 'all';
+        let refreshInterval;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDeliveryManagement();
+            loadDeliveryData();
+            startAutoRefresh();
+            
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        function initializeDeliveryManagement() {
+            console.log('🚚 Delivery Management System Initialized');
+            
+            // Initialize filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.status;
+                    filterDeliveries();
+                });
+            });
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchDeliveries').addEventListener('input', debounce(searchDeliveries, 300));
+            
+            // Refresh button
+            document.getElementById('refreshDeliveries').addEventListener('click', loadDeliveryData);
+            document.getElementById('refreshBtn').addEventListener('click', loadDeliveryData);
+            
+            
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportDeliveryReport);
+        }
+
+        async function loadDeliveryData() {
+            try {
+                console.log('📊 Loading delivery data...');
+                
+                // Show loading state
+                const tbody = document.querySelector('#deliveriesTable tbody');
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>Loading deliveries...</td></tr>';
+                
+                const deliveriesResponse = await fetch('/api/admin/deliveries', {
+                    headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+                });
+
+                if (!deliveriesResponse.ok) {
+                    throw new Error('Failed to load delivery data');
+                }
+
+                const deliveriesData = await deliveriesResponse.json();
+                allDeliveries = deliveriesData.deliveries || [];
+
+                // Compute stats on the client based on deliveries list
+                const stats = computeDeliveryStats(allDeliveries);
+                updateDeliveryStats(stats);
+                filterDeliveries();
+                
+                console.log('✅ Delivery data loaded successfully');
+
+            } catch (error) {
+                console.error('❌ Error loading delivery data:', error);
+                showErrorState('Failed to load delivery data. Please check your connection.');
+            }
+        }
+
+        function updateDeliveryStats(stats) {
+            document.getElementById('statAvailable').textContent = stats.available || 0;
+            document.getElementById('statAssigned').textContent = stats.assigned || 0;
+            document.getElementById('statInTransit').textContent = stats.in_transit || 0;
+            document.getElementById('statDelivered').textContent = stats.delivered_today || 0;
+            
+            document.getElementById('activeDeliveriesBadge').textContent = stats.active_total || 0;
+        }
+
+        function computeDeliveryStats(deliveries) {
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0, 10);
+
+            let available = 0;
+            let assigned = 0;
+            let inTransit = 0;
+            let deliveredToday = 0;
+            let success = 0;
+            let totalForRate = 0;
+            let cancelled = 0;
+
+            const activeRiders = new Set();
+            let timeSumMinutes = 0;
+            let timeCount = 0;
+
+            deliveries.forEach(delivery => {
+                const status = delivery.status;
+
+                if (status === 'pending' || status === 'available') {
+                    available++;
+                } else if (status === 'assigned') {
+                    assigned++;
+                } else if (status === 'picked_up' || status === 'in_transit') {
+                    inTransit++;
+                } else if (status === 'delivered') {
+                    success++;
+                    if (delivery.completed_at) {
+                        const completedDate = String(delivery.completed_at).slice(0, 10);
+                        if (completedDate === todayStr) {
+                            deliveredToday++;
+                        }
+                    }
+                } else if (status === 'cancelled') {
+                    cancelled++;
+                }
+
+                if (delivery.rider_id && ['assigned', 'picked_up', 'in_transit'].includes(status)) {
+                    activeRiders.add(delivery.rider_id);
+                }
+
+                // Try to compute actual delivery time in minutes
+                if (typeof delivery.actual_time === 'number' && delivery.actual_time > 0) {
+                    timeSumMinutes += delivery.actual_time;
+                    timeCount++;
+                } else if (delivery.created_at && delivery.completed_at) {
+                    const start = new Date(delivery.created_at);
+                    const end = new Date(delivery.completed_at);
+                    const diffMinutes = (end - start) / 60000;
+                    if (diffMinutes > 0 && diffMinutes < 24 * 60) {
+                        timeSumMinutes += diffMinutes;
+                        timeCount++;
+                    }
+                }
+
+                if (['pending', 'available', 'assigned', 'picked_up', 'in_transit', 'delivered', 'cancelled'].includes(status)) {
+                    totalForRate++;
+                }
+            });
+
+            const avgDeliveryTime = timeCount ? Math.round(timeSumMinutes / timeCount) : 0;
+            const successRate = totalForRate ? Math.round((success / totalForRate) * 100) : 0;
+
+            return {
+                available,
+                assigned,
+                in_transit: inTransit,
+                delivered_today: deliveredToday,
+                active_riders: activeRiders.size,
+                avg_delivery_time: avgDeliveryTime,
+                success_rate: successRate,
+                on_time_rate: successRate, // until we have stricter SLA data
+                active_total: assigned + inTransit,
+                cancelled,
+            };
+        }
+
+        function filterDeliveries() {
+            if (currentFilter === 'all') {
+                filteredDeliveries = [...allDeliveries];
+            } else if (currentFilter === 'available') {
+                // Treat pending deliveries as "available" for riders
+                filteredDeliveries = allDeliveries.filter(delivery =>
+                    delivery.status === 'available' || delivery.status === 'pending'
+                );
+            } else if (currentFilter === 'issues') {
+                // Issues tab shows cancelled/problem deliveries
+                filteredDeliveries = allDeliveries.filter(delivery => delivery.status === 'cancelled');
+            } else {
+                filteredDeliveries = allDeliveries.filter(delivery => delivery.status === currentFilter);
+            }
+            
+            updateActiveFilterLabel();
+            renderDeliveriesTable();
+        }
+
+        function renderDeliveriesTable() {
+            const tbody = document.querySelector('#deliveriesTable tbody');
+            document.getElementById('deliveryCount').textContent = filteredDeliveries.length;
+            
+            if (filteredDeliveries.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-search fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No deliveries found for the selected filter.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = filteredDeliveries.map(delivery => {
+                const sellerAddress = delivery.seller_business_address || delivery.pickup_address || 'N/A';
+                const deliveryAddress = delivery.delivery_address || 'N/A';
+                
+                return `
+                <tr style="cursor: default;">
+                    <td>
+                        <strong>#${delivery.order_number || 'N/A'}</strong><br>
+                        <small style="color: #6c757d;">${delivery.seller_name || 'Grande'}</small>
+                    </td>
+                    <td>
+                        <div>${delivery.customer_name || 'N/A'}</div>
+                        <small style="color: #6c757d;">${delivery.customer_phone || 'N/A'}</small>
+                    </td>
+                    <td>
+                        ${delivery.rider_name && delivery.rider_name !== 'Unassigned' ? `
+                            <div><strong>${delivery.rider_name}</strong></div>
+                            <small style="color: #6c757d;">${delivery.rider_phone || 'N/A'}</small>
+                        ` : '<span style="color: #6c757d;">Not assigned</span>'}
+                    </td>
+                    <td>
+                        <small style="font-size: 0.75rem; line-height: 1.6;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-map-marker-alt" style="color: #10b981; font-size: 0.7rem; margin-right: 0.25rem;"></i>
+                                <strong style="color: #10b981;">Pickup:</strong> ${sellerAddress.length > 40 ? sellerAddress.substring(0, 40) + '...' : sellerAddress}
+                            </div>
+                            <div>
+                                <i class="fas fa-map-marker-alt" style="color: #ef4444; font-size: 0.7rem; margin-right: 0.25rem;"></i>
+                                <strong style="color: #ef4444;">Delivery:</strong> ${deliveryAddress.length > 40 ? deliveryAddress.substring(0, 40) + '...' : deliveryAddress}
+                            </div>
+                        </small>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${delivery.status}">${formatStatus(delivery.status)}</span>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.75rem; color: #6c757d;">
+                            ${renderProgressTimeline(delivery)}
+                        </div>
+                    </td>
+                    <td>
+                        <div>${formatTime(delivery.created_at)}</div>
+                        <small style="color: #6c757d;">${formatDate(delivery.created_at)}</small>
+                    </td>
+                    <td onclick="event.stopPropagation()">
+                        <div class="delivery-actions">
+                            <button class="action-btn btn-primary" onclick="viewDeliveryDetails('${delivery.id}'); return false;" title="View Details" style="background: #3b82f6; color: white; width: auto; padding: 0.5rem 0.75rem;">
+                                <i class="fas fa-eye" style="margin-right: 0.25rem;"></i>View
+                            </button>
+                            <button class="action-btn btn-reassign" onclick="reassignDelivery('${delivery.id}'); return false;" title="Reassign">
+                                <i class="fas fa-user-tag"></i>
+                            </button>
+                            ${delivery.rider_id && delivery.rider_name && delivery.rider_name !== 'Unassigned' ? `
+                            <button class="action-btn btn-message" data-order="${(delivery.order_number || '').replace(/'/g, "\\'")}" data-rider-name="${(delivery.rider_name || 'Rider').replace(/'/g, "\\'")}" data-rider-id="${delivery.rider_id}" title="Message Rider" style="background: #10b981; color: white; cursor: pointer;">
+                                <i class="fas fa-comment-dots"></i>
+                            </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+            
+            // Attach event listeners to message buttons after rendering
+            setTimeout(() => {
+                document.querySelectorAll('.btn-message').forEach(btn => {
+                    // Remove any existing listeners to avoid duplicates
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+                    
+                    newBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const orderNumber = this.dataset.order || '';
+                        const riderName = this.dataset.riderName || 'Rider';
+                        const riderId = this.dataset.riderId;
+                        
+                        console.log('🔵 Message button clicked:', { orderNumber, riderName, riderId });
+                        
+                        if (!riderId) {
+                            alert('Rider ID is missing. Cannot open chat.');
+                            return;
+                        }
+                        
+                        if (window.openChatWithRider) {
+                            window.openChatWithRider(orderNumber, riderName, riderId);
+                        } else {
+                            console.error('❌ window.openChatWithRider is not defined');
+                            alert('Chat function not loaded. Please refresh the page.');
+                        }
+                    });
+                });
+            }, 100);
+        }
+
+        function getStatusColor(status) {
+            const normalized = status === 'pending' ? 'available' : status;
+            const colors = {
+                'available': 'info',
+                'assigned': 'warning',
+                'picked_up': 'primary',
+                'in_transit': 'primary',
+                'delivered': 'success',
+                'cancelled': 'danger'
+            };
+            return colors[normalized] || 'secondary';
+        }
+
+        function formatStatus(status) {
+            const normalized = status === 'pending' ? 'available' : status;
+            const statuses = {
+                'available': 'Available',
+                'assigned': 'Assigned',
+                'picked_up': 'Picked Up',
+                'in_transit': 'In Transit',
+                'delivered': 'Delivered',
+                'cancelled': 'Cancelled'
+            };
+            return statuses[normalized] || normalized;
+        }
+
+        function renderProgressTimeline(delivery) {
+            const steps = [
+                { key: 'available', label: 'Ready', icon: 'fas fa-box' },
+                { key: 'assigned', label: 'Assigned', icon: 'fas fa-user-check' },
+                { key: 'picked_up', label: 'Picked Up', icon: 'fas fa-hand-paper' },
+                { key: 'in_transit', label: 'In Transit', icon: 'fas fa-truck' },
+                { key: 'delivered', label: 'Delivered', icon: 'fas fa-check-circle' }
+            ];
+            
+            const currentIndex = steps.findIndex(step => step.key === delivery.status);
+            const normalizedStatus = delivery.status === 'pending' ? 'available' : delivery.status;
+            const currentIdx = steps.findIndex(step => step.key === normalizedStatus);
+            
+            return steps.slice(0, Math.min(currentIdx + 2, steps.length)).map((step, index) => {
+                let color = '#9ca3af';
+                if (index <= currentIdx) color = '#10b981';
+                if (index === currentIdx) color = '#3b82f6';
+                
+                return `<span style="color: ${color}; margin-right: 0.5rem;"><i class="${step.icon}"></i> ${step.label}</span>`;
+            }).join('');
+        }
+
+        function searchDeliveries() {
+            const searchTerm = document.getElementById('searchDeliveries').value.toLowerCase();
+            if (!searchTerm) {
+                filterDeliveries();
+                return;
+            }
+            
+            filteredDeliveries = allDeliveries.filter(delivery =>
+                String(delivery.order_number || '').toLowerCase().includes(searchTerm) ||
+                String(delivery.customer_name || '').toLowerCase().includes(searchTerm) ||
+                (delivery.rider_name && delivery.rider_name.toLowerCase().includes(searchTerm)) ||
+                String(delivery.customer_phone || '').includes(searchTerm)
+            );
+            
+            updateActiveFilterLabel(searchTerm);
+            renderDeliveriesTable();
+        }
+
+        function viewDeliveryDetails(deliveryId) {
+            const delivery = allDeliveries.find(d => String(d.id) === String(deliveryId));
+            if (!delivery) {
+                console.error('Delivery not found:', deliveryId);
+                alert('Delivery details not found. Please refresh the page.');
+                return;
+            }
+            
+            const modal = document.getElementById('deliveryDetailsModal');
+            if (!modal) {
+                console.error('Modal not found');
+                alert('Delivery details modal not found. Please refresh the page.');
+                return;
+            }
+            
+            document.getElementById('deliveryModalTitle').textContent = `Delivery Details - #${delivery.order_number}`;
+            
+            document.getElementById('deliveryModalBody').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-color);">Order Information</h3>
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Order Number:</strong>
+                                <span>#${delivery.order_number}</span>
+                    </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Customer:</strong>
+                                <span>${delivery.customer_name || 'N/A'}</span>
+                    </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Phone:</strong>
+                                <span>${delivery.customer_phone || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Status:</strong>
+                                <span class="status-badge status-${delivery.status}">${formatStatus(delivery.status)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Order Total:</strong>
+                                <span>PHP ${(delivery.order_total || 0).toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>Delivery Fee:</strong>
+                                <span>PHP ${(delivery.delivery_fee || 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-color);">Rider & Delivery Info</h3>
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Rider:</strong>
+                                <span>${delivery.rider_name || 'Not assigned'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Rider Phone:</strong>
+                                <span>${delivery.rider_phone || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Distance:</strong>
+                                <span>${delivery.distance || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Est. Time:</strong>
+                                <span>${delivery.estimated_time || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>Created:</strong>
+                                <span>${formatDateTime(delivery.created_at)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>Last Update:</strong>
+                                <span>${formatDateTime(delivery.updated_at)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #eee;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-color);">Addresses</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div>
+                            <strong style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <i class="fas fa-map-marker-alt" style="color: #10b981; margin-right: 0.5rem;"></i>Seller Business Address (Pickup):
+                            </strong>
+                            <div style="color: #6c757d; line-height: 1.6; padding: 0.5rem; background: #f9fafb; border-radius: 6px; margin-top: 0.25rem;">
+                                ${delivery.seller_business_address || delivery.pickup_address || 'N/A'}
+                            </div>
+                            ${delivery.seller_name ? `<small style="color: #9ca3af; margin-top: 0.25rem; display: block;">Seller: ${delivery.seller_name}${delivery.seller_phone ? ` (${delivery.seller_phone})` : ''}</small>` : ''}
+                        </div>
+                        <div>
+                            <strong style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <i class="fas fa-map-marker-alt" style="color: #ef4444; margin-right: 0.5rem;"></i>Customer Delivery Address:
+                            </strong>
+                            <div style="color: #6c757d; line-height: 1.6; padding: 0.5rem; background: #f9fafb; border-radius: 6px; margin-top: 0.25rem;">
+                                ${delivery.delivery_address || 'N/A'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('show');
+        }
+        
+        function closeDeliveryModal() {
+            const modal = document.getElementById('deliveryDetailsModal');
+            if (modal) modal.classList.remove('show');
+        }
+        
+
+        async function reassignDelivery(deliveryId) {
+            try {
+                if (!confirm('Reassign this delivery to another rider?')) {
+                    return;
+                }
+
+                // Load available riders
+                const ridersResponse = await fetch('/api/admin/riders/available', {
+                    headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+                });
+
+                if (!ridersResponse.ok) {
+                    throw new Error('Failed to load available riders');
+                }
+
+                const ridersData = await ridersResponse.json();
+                const riders = ridersData.riders || [];
+
+                if (!riders.length) {
+                    alert('No riders are currently available for assignment.');
+                    return;
+                }
+
+                const listText = riders.map(r => `${r.id}: ${r.name} (${r.status}, active: ${r.active_deliveries})`).join('\n');
+                const input = prompt('Enter Rider ID to assign to this delivery:\n\n' + listText);
+                if (!input) return;
+
+                const riderId = parseInt(input, 10);
+                if (!riderId) {
+                    alert('Invalid rider ID.');
+                    return;
+                }
+
+                const assignResponse = await fetch(`/api/admin/deliveries/${deliveryId}/assign`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({ rider_id: riderId })
+                });
+
+                const assignData = await assignResponse.json();
+                if (!assignResponse.ok || !assignData.success) {
+                    throw new Error(assignData.error || 'Failed to assign rider');
+                }
+
+                alert(assignData.message || 'Rider assigned successfully.');
+                loadDeliveryData();
+
+            } catch (error) {
+                console.error('Error reassigning delivery:', error);
+                alert('Failed to reassign delivery: ' + (error.message || error));
+            }
+        }
+
+
+        // Make function globally accessible
+        window.openChatWithRider = async function(orderNumber, riderName, riderId) {
+            try {
+                console.log('🔵 openChatWithRider called with:', { orderNumber, riderName, riderId });
+                
+                // Validate inputs
+                if (!riderId) {
+                    alert('Rider ID is missing. Cannot open chat.');
+                    console.error('❌ Rider ID is missing');
+                    return;
+                }
+                
+                if (!riderName) {
+                    riderName = 'Rider';
+                }
+                
+                const token = getAuthToken();
+                if (!token) {
+                    alert('Please log in to access chat');
+                    return;
+                }
+                
+                // Ensure ChatCenter modal exists
+                if (window.ChatCenter && typeof ChatCenter.ensureModal === 'function') {
+                    ChatCenter.ensureModal();
+                }
+                
+                // Create or get the chat first
+                let chatId = null;
+                try {
+                    const createResponse = await fetch('/api/admin/chats/create-with-rider', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            rider_id: parseInt(riderId),
+                            order_number: orderNumber || ''
+                        })
+                    });
+                    
+                    if (!createResponse.ok) {
+                        const errorData = await createResponse.json().catch(() => ({}));
+                        throw new Error(errorData.error || 'Failed to create chat');
+                    }
+                    
+                    const createData = await createResponse.json();
+                    console.log('Chat creation response:', createData);
+                    
+                    // Handle different response formats
+                    if (createData.success) {
+                        if (createData.chat && createData.chat.id) {
+                            chatId = createData.chat.id;
+                        } else if (createData.chat_id) {
+                            chatId = createData.chat_id;
+                        } else {
+                            throw new Error('Chat created but no chat ID returned');
+                        }
+                    } else {
+                        throw new Error(createData.error || 'Failed to create chat');
+                    }
+                } catch (error) {
+                    console.error('Error creating chat:', error);
+                    alert('Failed to create chat: ' + error.message);
+                    return;
+                }
+                
+                if (!chatId) {
+                    alert('Failed to get chat ID. Please try again.');
+                    return;
+                }
+                
+                // Open the chat center modal
+                const chatModal = document.getElementById('chatCenterModal');
+                if (chatModal) {
+                    // Use Bootstrap modal if available
+                    if (typeof bootstrap !== 'undefined') {
+                        const modal = new bootstrap.Modal(chatModal);
+                        modal.show();
+                    } else {
+                        // Fallback: use ChatCenter.open()
+                        if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+                            ChatCenter.open();
+                        } else {
+                            chatModal.style.display = 'block';
+                            chatModal.classList.add('show');
+                        }
+                    }
+                } else if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+                    ChatCenter.open();
+                } else {
+                    alert('Chat modal not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Wait for modal to be ready, then select the chat
+                setTimeout(async () => {
+                    try {
+                        // Reload chat list first to ensure the new chat appears
+                        if (window.ChatCenter && typeof ChatCenter.loadChatListFallback === 'function') {
+                            await ChatCenter.loadChatListFallback();
+                        }
+                        
+                        // Select the chat in ChatCenter
+                        if (window.ChatCenter && typeof ChatCenter.selectChat === 'function') {
+                            ChatCenter.selectChat(chatId, riderName, orderNumber || '', '', '', {
+                                riderName: riderName,
+                                riderId: parseInt(riderId),
+                                targetType: 'rider'
+                            }, 'rider');
+                        } else {
+                            console.error('ChatCenter.selectChat not available');
+                            alert('Chat opened but could not select conversation. Please select it manually from the chat list.');
+                        }
+                    } catch (error) {
+                        console.error('Error selecting chat:', error);
+                        alert('Chat opened but could not select conversation. Please select it manually from the chat list.');
+                    }
+                }, 800);
+            } catch (error) {
+                console.error('Error opening chat modal:', error);
+                alert('Failed to open chat: ' + (error.message || 'Please try again.'));
+            }
+        }
+
+
+        function startAutoRefresh() {
+            // Refresh every 30 seconds
+            refreshInterval = setInterval(loadDeliveryData, 30000);
+        }
+
+        function exportDeliveryReport() {
+            console.log('📊 Exporting delivery report');
+            // Implementation would generate and download report
+            alert('Delivery report export functionality will be implemented.');
+        }
+
+        // Utility functions
+        function updateActiveFilterLabel(searchTerm = '') {
+            const labelEl = document.getElementById('activeFilterLabel');
+            if (!labelEl) return;
+
+            if (searchTerm) {
+                labelEl.textContent = `Search: "${searchTerm}" (${filteredDeliveries.length})`;
+                return;
+            }
+
+            const labels = {
+                'all': 'All deliveries',
+                'available': 'Available & pending deliveries',
+                'assigned': 'Assigned to riders',
+                'picked_up': 'Picked up from seller',
+                'in_transit': 'Currently in transit',
+                'delivered': 'Completed deliveries',
+                'issues': 'Deliveries with issues / cancelled',
+            };
+
+            const baseLabel = labels[currentFilter] || 'Filtered deliveries';
+            labelEl.textContent = `Showing: ${baseLabel} (${filteredDeliveries.length})`;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function formatTime(dateString) {
+            return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDateTime(dateString) {
+            return new Date(dateString).toLocaleString();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function getAuthToken() {
+            return localStorage.getItem('auth_token') || '';
+        }
+
+        function showErrorState(message) {
+            const tbody = document.querySelector('#deliveriesTable tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                        <p class="text-muted mb-2">${message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadDeliveryData()">
+                            <i class="fas fa-sync me-1"></i>Retry
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+    <!-- Chat Center Modal Placeholder -->
+    <div id="chatCenterPlaceholder"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/shared-auth.js"></script>
+    <script src="/static/js/chat-center.js"></script>
+    <script src="/static/js/message-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const chatBtn = document.getElementById('chatCenterBtn');
+        if (chatBtn) {
+          chatBtn.addEventListener('click', function() {
+            if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+              ChatCenter.open();
+            }
+          });
+        }
+        function updateChatNotificationBadge() {
+          if (!window.ChatCenter) return;
+          const token = window.AuthManager && window.AuthManager.getAuthToken ? window.AuthManager.getAuthToken() : null;
+          if (!token) return;
+          fetch('/api/chats', {
+            headers: { 'Authorization': `Bearer ${token}` },
+            credentials: 'include'
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && data.chats) {
+              const unreadCount = data.chats.reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
+              const notificationDot = document.getElementById('chatNotificationDot');
+              if (notificationDot) {
+                if (unreadCount > 0) {
+                  notificationDot.style.display = 'block';
+                  notificationDot.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                } else {
+                  notificationDot.style.display = 'none';
+                }
+              }
+            }
+          })
+          .catch(err => console.error('Error updating chat notification:', err));
+        }
+        setTimeout(updateChatNotificationBadge, 1000);
+        setInterval(updateChatNotificationBadge, 30000);
+      });
+    </script>
+</body>
+</html>

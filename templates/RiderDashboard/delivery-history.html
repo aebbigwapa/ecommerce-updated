@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery History - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/rider-dashboard.css">
+  <link rel="stylesheet" href="/static/css/rider-compact.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* Collapsible Sidebar Styles */
+    .admin-sidebar { width: 260px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-sidebar.collapsed { width: 75px; }
+    .sidebar-header { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-sidebar:not(.collapsed) .sidebar-header { display: none; }
+    .admin-sidebar.collapsed .sidebar-header { display: flex; justify-content: center; padding: 12px 0; position: sticky; top: 0; z-index: 10; }
+    .sidebar-brand { display: none !important; }
+    .sidebar-toggle { display: flex; align-items: center; justify-content: center; background: rgba(255, 107, 206, 0.12); border: 1px solid rgba(255, 107, 206, 0.2); color: #eee4f4; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15); }
+    .sidebar-toggle:hover { background: rgba(255, 107, 206, 0.25); border-color: rgba(255, 107, 206, 0.4); transform: scale(1.08) translateY(-1px); box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3); }
+    .sidebar-toggle:active { transform: scale(0.98); }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+    .nav-section.first-section { position: relative; }
+    .admin-sidebar .nav-section.first-section .nav-section-title { display: flex !important; align-items: center !important; gap: 12px !important; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span { display: none; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title { justify-content: center !important; padding: 12px 0 !important; margin: 0 0 6px 0 !important; }
+    .sidebar-toggle-inline { display: none; }
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline { display: flex; width: 38px; height: 38px; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-toggle-inline { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 0; min-height: 0; }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 107, 206, 0.3); border-radius: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 206, 0.5); }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-footer { padding: 16px 0; width: 100%; }
+    .admin-sidebar.collapsed .sidebar-footer .nav-item { display: flex; justify-content: center; align-items: center; width: 100%; gap: 0; }
+    .admin-sidebar .nav-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+    .admin-sidebar .nav-item i { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-width: 24px; width: 24px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .admin-sidebar .nav-item .nav-text { transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; overflow: hidden; }
+    .admin-sidebar.collapsed .nav-text, .admin-sidebar.collapsed .nav-badge { opacity: 0; width: 0; margin: 0; padding: 0; pointer-events: none; display: none; }
+    .admin-sidebar.collapsed .nav-section-title { opacity: 0; width: 0; height: 0; overflow: hidden; padding: 0; margin: 0; display: none; }
+    .admin-sidebar.collapsed .nav-item { display: flex; justify-content: center; align-items: center; padding: 14px 0; margin: 4px 0; width: 100%; gap: 0; }
+    .admin-sidebar.collapsed .nav-item i { margin: 0; padding: 0; min-width: 24px; width: 24px; }
+    .admin-sidebar.collapsed .nav-section { padding: 0; width: 100%; }
+    .admin-sidebar.collapsed .nav-divider { margin: 0.75rem 16px; }
+    .admin-sidebar.collapsed .nav-item:hover { transform: scale(1.08); background: rgba(255, 107, 206, 0.15); }
+    .admin-sidebar.collapsed .nav-item.active { transform: none; }
+    .admin-sidebar.collapsed .nav-item.active:hover { transform: scale(1.05); }
+    .admin-main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Self-Contained Rider Dashboard Styles */
+    .admin-container { display: flex; height: 100vh; overflow: hidden; }
+    .admin-sidebar { background: var(--secondary-color); color: #eee4f4; display: flex; flex-direction: column; position: relative; z-index: 100; }
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .admin-topbar { background: var(--container-bg); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+    .admin-content { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--background-light); }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-family: "Poppins", sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.4rem; }
+    .page-subtitle { color: var(--gray-600); font-size: 0.9rem; }
+    @media (max-width: 1024px) { .mobile-toggle { display: block; } }
+
+    /* Sidebar Navigation Styling */
+    .nav-section { padding: 0 12px; margin-bottom: 1rem; }
+    .nav-section-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #eee4f4; text-decoration: none; border-radius: 10px; margin: 4px 0; font-size: 0.95rem; }
+    .nav-item:hover { background: rgba(255, 107, 206, 0.1); color: white; }
+    .nav-item.active { background: linear-gradient(135deg, #ff6bce, #b829d6); color: white; box-shadow: 0 4px 12px rgba(255, 107, 206, 0.3); }
+    .nav-badge { margin-left: auto; background: #ff6bce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .nav-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 1rem 12px; }
+    .logout-btn { color: #ff6b6b !important; }
+    .logout-btn:hover { background: rgba(255, 107, 107, 0.1) !important; color: #ff5252 !important; }
+
+    /* Topbar & User Profile */
+    .search-box { display: flex; align-items: center; gap: 10px; background: var(--background-light); padding: 10px 16px; border-radius: 25px; min-width: 300px; }
+    .search-box i { color: var(--gray-500); }
+    .search-box input { border: none; background: none; outline: none; flex: 1; font-size: 0.95rem; color: var(--text-color); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; position: relative; }
+    .topbar-action { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .topbar-action:hover { background: var(--background-light); color: var(--primary-color); }
+    .notification-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #ff6bce; border-radius: 50%; border: 2px solid white; }
+    .user-profile { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; background: var(--background-light); border-radius: 25px; cursor: pointer; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6bce, #b829d6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-color); }
+    .user-role { font-size: 0.75rem; color: var(--gray-600); }
+    
+    /* Notification Dropdown Styling */
+    .notification-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .notification-container:hover .notification-dropdown {
+      display: block;
+    }
+    
+    .notification-dropdown {
+      position: absolute;
+      top: calc(100% + 15px);
+      right: 0;
+      width: 360px;
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      padding: 0;
+      display: none;
+      z-index: 1000;
+      border: 1px solid #e9ecef;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .notification-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 20px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 1px solid #e9ecef;
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+    }
+    
+    .notification-header {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe0e6 100%);
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0;
+    }
+    
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #ff6bce;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .mark-all-read:hover {
+      background-color: rgba(255, 107, 206, 0.1);
+    }
+    
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .notification-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-item.unread {
+      background-color: #fff8f8;
+      border-left: 3px solid #ff6bce;
+      position: relative;
+    }
+    
+    .notification-item.unread::after {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ff6bce;
+      border-radius: 50%;
+    }
+    
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff6bce, #b829d6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .notification-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-right: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-message {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #2d3748;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .notification-item.unread .notification-message {
+      font-weight: 600;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    
+    .notification-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .notification-empty i {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+    
+    .notification-empty p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    
+    .notification-see-all {
+      padding: 15px 20px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+    }
+    
+    .notification-see-all a {
+      color: #ff6bce;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    
+    .notification-see-all a:hover {
+      color: #b829d6;
+    }
+    
+    /* Message Dropdown Styling */
+    .message-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Chat Center Button - Match notification button style */
+    .topbar-action#chatCenterBtn {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transition: all 0.25s ease !important;
+      cursor: pointer !important;
+      font-family: inherit !important;
+      height: auto !important;
+      min-width: unset !important;
+      width: auto !important;
+      appearance: none !important;
+      transform: none !important;
+      line-height: normal !important;
+      margin: 0 !important;
+    }
+    
+    .topbar-action#chatCenterBtn:hover {
+      color: var(--primary-color) !important;
+      border-color: rgba(255,107,206,0.4) !important;
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important;
+      background: var(--container-bg) !important;
+    }
+    
+    .topbar-action#chatCenterBtn i {
+      font-size: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    .topbar-action#chatCenterBtn span:not(.notification-dot) {
+      font-size: 0.9rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    /* Notification dot for chat button */
+    #chatNotificationDot {
+      position: absolute !important;
+      top: 6px !important;
+      right: 6px !important;
+      width: 8px !important;
+      height: 8px !important;
+      background: #dc3545 !important;
+      border-radius: 50% !important;
+      border: 2px solid var(--container-bg) !important;
+    }
+    
+    /* Ensure proper alignment with notification button */
+    .topbar-right {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    
+    .topbar-action#chatCenterBtn,
+    .topbar-action#notificationBtn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle !important;
+    }
+    
+    /* Chat Center Modal Overrides - Ensure proper display */
+    #chatCenterModal {
+      z-index: 3000 !important;
+    }
+    
+    #chatCenterModal .modal-dialog {
+      max-width: 1200px !important;
+      margin: 1.75rem auto !important;
+    }
+    
+    #chatCenterModal .modal-content {
+      border-radius: 16px !important;
+      border: none !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    #chatCenterModal .chat-container {
+      display: flex !important;
+      height: 600px !important;
+      min-height: 600px !important;
+    }
+    
+    #chatCenterModal .chat-sidebar {
+      width: 420px !important;
+      min-width: 420px !important;
+    }
+    
+    #chatCenterModal .chat-window {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Content Cards */
+    .stat-card { background: var(--container-bg); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
+    .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; flex-shrink: 0; }
+    .stat-details { flex: 1; }
+    .stat-label { color: var(--gray-600); font-size: 0.85rem; margin: 0 0 6px 0; font-weight: 500; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--text-color); margin: 0; }
+    .data-card { background: var(--container-bg); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 1.5rem; }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+    .card-title { font-family: "Poppins", sans-serif; font-size: 1.25rem; font-weight: 600; color: var(--text-color); margin: 0; display: flex; align-items: center; }
+  </style>
+</head>
+<body>
+  <!-- Rider Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <i class="fas fa-bicycle"></i>
+          <span class="brand-text">Rider Panel</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="rider-dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="available-deliveries.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span class="nav-text">Available Orders</span>
+            <span class="nav-badge" id="availableBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="my-deliveries.html" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span class="nav-text">My Deliveries</span>
+            <span class="nav-badge" id="activeBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="delivery-history.html" class="nav-item active">
+            <i class="fas fa-history"></i>
+            <span class="nav-text">Delivery History</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Performance</div>
+        <div>
+          <a href="earnings.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span class="nav-text">Earnings</span>
+          </a>
+        </div>
+        <div>
+  
+        </div>
+      </div>
+
+      </div>
+      <div class="sidebar-footer">
+        <a href="../Authenticator/login.html" class="nav-item logout-btn" onclick="AuthManager.logout(); return false;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search order numbers, customers..." id="searchInput">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="position-relative notification-container">
+            <button class="topbar-action" id="notificationBtn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-dot"></span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty">
+                  <i class="fas fa-bell"></i>
+                  <p>No notifications</p>
+                </div>
+              </div>
+              <div class="notification-see-all">
+                <a href="/templates/UserProfile/notifications.html">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">Delivery History</h1>
+          <p class="page-subtitle">Review your completed and cancelled deliveries.</p>
+        </div>
+      
+      <!-- Delivery History Content -->
+      <div class="content-section active">
+        <!-- Summary Stats -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Total Completed</p>
+                <h3 class="stat-value" id="statTotalCompleted">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #6610f2);">
+                <i class="fas fa-calendar-week"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">This Week</p>
+                <h3 class="stat-value" id="statThisWeek">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Total Earnings</p>
+                <h3 class="stat-value" id="statTotalEarnings">₱0.00</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #e83e8c, #fd7e14);">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Avg Rating</p>
+                <h3 class="stat-value" id="statAvgRating">5.0 ⭐</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="data-card mb-4">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-filter me-2"></i>Filter & Search
+            </h2>
+          </div>
+          <div class="row g-3 p-3">
+            <div class="col-md-3">
+              <label class="form-label">Date Range</label>
+              <select class="form-select" id="dateRangeFilter">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Sort By</label>
+              <select class="form-select" id="sortBy">
+                <option value="date_desc">Newest First</option>
+                <option value="date_asc">Oldest First</option>
+                <option value="earnings_desc">Highest Earnings</option>
+                <option value="earnings_asc">Lowest Earnings</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-primary w-100" id="applyFilters">
+                <i class="fas fa-search me-2"></i>Apply Filters
+              </button>
+            </div>
+          </div>
+          <!-- Custom date range (hidden by default) -->
+          <div class="row g-3 p-3 border-top" id="customDateRange" style="display: none;">
+            <div class="col-md-6">
+              <label class="form-label">From Date</label>
+              <input type="date" class="form-control" id="fromDate">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">To Date</label>
+              <input type="date" class="form-control" id="toDate">
+            </div>
+          </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="data-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-history me-2"></i>Delivery Records
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-secondary" id="totalCount">0 records</span>
+              <button class="btn btn-outline-primary btn-sm" id="exportBtn">
+                <i class="fas fa-download me-1"></i>Export
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover modern-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Route</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Rating</th>
+                  <th>Earnings</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table rows will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+          <nav>
+            <ul class="pagination pagination-rounded" id="pagination">
+              <!-- Pagination will be generated here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delivery Details Modal -->
+  <div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailsModalTitle">Delivery Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detailsModalBody">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script - runs immediately -->
+  <script>
+    (function() {
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initToggle);
+      } else {
+        initToggle();
+      }
+      
+      function initToggle() {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+        const mobileToggle = document.getElementById('mobileToggle');
+        
+        if (!sidebar) {
+          console.warn('Sidebar element not found');
+          return;
+        }
+        
+        // Check localStorage for saved state, default to collapsed
+        const savedState = localStorage.getItem('riderSidebarCollapsed');
+        const isCollapsed = savedState === null ? true : savedState === 'true';
+        
+        // Apply initial state
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+        }
+        
+        // Toggle function
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('riderSidebarCollapsed', sidebar.classList.contains('collapsed'));
+          console.log('Sidebar toggled:', sidebar.classList.contains('collapsed') ? 'collapsed' : 'expanded');
+        }
+        
+        // Desktop toggle (top button when collapsed)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggle listener attached');
+        }
+        
+        // Inline toggle (beside Main when expanded)
+        if (sidebarToggleInline) {
+          sidebarToggleInline.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggleInline listener attached');
+        }
+        
+        // Mobile toggle
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+          });
+          console.log('✅ mobileToggle listener attached');
+        }
+        
+        console.log('✅ Sidebar toggle initialized');
+      }
+    })();
+  </script>
+  
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/rider-dashboard.js"></script>
+  <script>
+    // Delivery History Page JavaScript
+    let deliveryHistory = [];
+    let filteredHistory = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('📜 Delivery History Page Loading...');
+      
+      // Initialize authentication
+      if (!AuthManager.isAuthenticated()) {
+        window.location.href = '../Authenticator/login.html';
+        return;
+      }
+
+      // Initialize UI
+      DashboardUtils.initializeNavigation('delivery-history.html');
+      
+      loadDeliveryHistory();
+      
+      // Filter event listeners
+      document.getElementById('applyFilters').addEventListener('click', applyFilters);
+      document.getElementById('dateRangeFilter').addEventListener('change', toggleCustomDateRange);
+      document.getElementById('searchInput').addEventListener('input', debounce(searchDeliveries, 300));
+      document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+      
+      // Auto-refresh every 5 minutes
+      setInterval(loadDeliveryHistory, 300000);
+    });
+
+    async function loadDeliveryHistory() {
+      try {
+        console.log('📡 Fetching delivery history from /api/rider/deliveries/history...');
+        
+        const data = await DashboardUtils.makeApiCall('/api/rider/deliveries/history');
+        
+        if (data && data.success) {
+          console.log('✅ Delivery history loaded:', data);
+          console.log('📊 History count:', data.deliveries?.length || 0);
+          
+          deliveryHistory = (data.deliveries || []).map(delivery => ({
+            id: delivery.id,
+            order_number: delivery.order_number,
+            customer_name: delivery.customer_name || 'Unknown Customer',
+            customer_phone: delivery.customer_phone || 'N/A',
+            pickup_address: delivery.pickup_address || 'Grande',
+            delivery_address: delivery.delivery_address || 'Unknown Address',
+            delivery_fee: delivery.delivery_fee || 0,
+            total_earnings: delivery.total_earnings || delivery.delivery_fee || 0,
+            distance: delivery.distance ? `${delivery.distance} km` : 'N/A',
+            status: 'delivered',
+            rating: delivery.customer_rating || 0,
+            actual_time: delivery.actual_time,
+            delivered_at: delivery.completed_at || new Date().toISOString(),
+            items: [] // Placeholder for items
+          }));
+          
+          console.log('🎯 Processed history:', deliveryHistory.length);
+          updateSummaryStats();
+          applyFilters();
+        } else {
+          throw new Error(data?.message || 'Failed to load delivery history');
+        }
+      } catch (error) {
+        console.error('Error loading delivery history:', error);
+        deliveryHistory = [];
+        updateSummaryStats();
+        applyFilters();
+        DashboardUtils.showErrorToast(`Unable to load delivery history: ${error.message}`);
+      }
+    }
+
+    function loadDemoHistory() {
+      // No demo data - show empty state
+      deliveryHistory = [];
+      updateSummaryStats();
+      applyFilters();
+      
+      // Show toast message about connecting to backend
+      if (window.riderDashboard && window.riderDashboard.showToast) {
+        riderDashboard.showToast('Unable to load delivery history. Please check your connection.', 'warning');
+      }
+    }
+
+    function updateSummaryStats() {
+      const delivered = deliveryHistory.filter(d => d.status === 'delivered');
+      const thisWeek = delivered.filter(d => {
+        const deliveredDate = new Date(d.delivered_at);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return deliveredDate >= weekAgo;
+      });
+
+      const totalEarnings = delivered.reduce((sum, d) => sum + (d.delivery_fee || 0), 0);
+      const avgRating = delivered.length > 0 
+        ? delivered.reduce((sum, d) => sum + (d.rating || 0), 0) / delivered.length 
+        : 0;
+
+      document.getElementById('statTotalCompleted').textContent = delivered.length;
+      document.getElementById('statThisWeek').textContent = thisWeek.length;
+      document.getElementById('statTotalEarnings').textContent = `₱${totalEarnings.toFixed(2)}`;
+      document.getElementById('statAvgRating').textContent = `${avgRating.toFixed(1)} ⭐`;
+    }
+
+    function toggleCustomDateRange() {
+      const dateRange = document.getElementById('dateRangeFilter').value;
+      const customRange = document.getElementById('customDateRange');
+      customRange.style.display = dateRange === 'custom' ? 'block' : 'none';
+    }
+
+    function applyFilters() {
+      const dateRange = document.getElementById('dateRangeFilter').value;
+      const status = document.getElementById('statusFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+      
+      let filtered = [...deliveryHistory];
+
+      // Apply date filter
+      if (dateRange !== 'all') {
+        const now = new Date();
+        let filterDate;
+        
+        switch (dateRange) {
+          case 'today':
+            filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case 'week':
+            filterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+          case 'month':
+            filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          case 'custom':
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            if (fromDate && toDate) {
+              filtered = filtered.filter(d => {
+                const deliveredDate = new Date(d.delivered_at);
+                return deliveredDate >= new Date(fromDate) && deliveredDate <= new Date(toDate + 'T23:59:59');
+              });
+            }
+            break;
+        }
+        
+        if (dateRange !== 'custom' && filterDate) {
+          filtered = filtered.filter(d => new Date(d.delivered_at) >= filterDate);
+        }
+      }
+
+      // Apply status filter
+      if (status !== 'all') {
+        filtered = filtered.filter(d => d.status === status);
+      }
+
+      // Apply sorting
+      filtered.sort((a, b) => {
+        switch (sortBy) {
+          case 'date_desc':
+            return new Date(b.delivered_at) - new Date(a.delivered_at);
+          case 'date_asc':
+            return new Date(a.delivered_at) - new Date(b.delivered_at);
+          case 'earnings_desc':
+            return (b.delivery_fee || 0) - (a.delivery_fee || 0);
+          case 'earnings_asc':
+            return (a.delivery_fee || 0) - (b.delivery_fee || 0);
+          default:
+            return 0;
+        }
+      });
+
+      filteredHistory = filtered;
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+    }
+
+    function searchDeliveries() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      if (!searchTerm) {
+        applyFilters();
+        return;
+      }
+
+      filteredHistory = deliveryHistory.filter(d => 
+        d.order_number.toLowerCase().includes(searchTerm) ||
+        d.customer_name.toLowerCase().includes(searchTerm) ||
+        d.pickup_address.toLowerCase().includes(searchTerm) ||
+        d.delivery_address.toLowerCase().includes(searchTerm)
+      );
+      
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#historyTable tbody');
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageData = filteredHistory.slice(start, end);
+      
+      document.getElementById('totalCount').textContent = `${filteredHistory.length} records`;
+
+      if (pageData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <i class="fas fa-history fa-2x text-muted mb-2"></i>
+              <p class="text-muted mb-0">No delivery records found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = pageData.map(delivery => {
+        const statusClass = delivery.status === 'delivered' ? 'success' : 'danger';
+        const statusIcon = delivery.status === 'delivered' ? 'check-circle' : 'times-circle';
+        const rating = delivery.rating ? `${delivery.rating} ⭐` : 'N/A';
+        
+        return `
+          <tr>
+            <td>
+              <strong>#${delivery.order_number}</strong>
+            </td>
+            <td>
+              <div>${delivery.customer_name}</div>
+              <small class="text-muted">${delivery.customer_phone}</small>
+            </td>
+            <td>
+              <div class="small">
+                <div><i class="fas fa-circle text-success"></i> ${delivery.pickup_address.substring(0, 30)}...</div>
+                <div><i class="fas fa-circle text-danger"></i> ${delivery.delivery_address.substring(0, 30)}...</div>
+              </div>
+            </td>
+            <td>
+              <div>${formatDate(delivery.delivered_at)}</div>
+              <small class="text-muted">${formatTime(delivery.delivered_at)}</small>
+            </td>
+            <td>
+              <span class="badge bg-${statusClass}">
+                <i class="fas fa-${statusIcon} me-1"></i>${delivery.status}
+              </span>
+            </td>
+            <td>${rating}</td>
+            <td>
+              <strong class="text-success">₱${delivery.delivery_fee.toFixed(2)}</strong>
+            </td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm" onclick="viewDeliveryDetails(${delivery.id})">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let paginationHTML = '';
+      
+      // Previous button
+      if (currentPage > 1) {
+        paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a></li>`;
+      }
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          paginationHTML += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
+        } else if (i <= 3 || i > totalPages - 3 || Math.abs(i - currentPage) <= 1) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+        } else if (i === 4 || i === totalPages - 3) {
+          paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+        }
+      }
+      
+      // Next button
+      if (currentPage < totalPages) {
+        paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a></li>`;
+      }
+      
+      pagination.innerHTML = paginationHTML;
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      renderTable();
+      renderPagination();
+    }
+
+    function viewDeliveryDetails(deliveryId) {
+      const delivery = deliveryHistory.find(d => d.id === deliveryId);
+      if (!delivery) return;
+
+      const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+      document.getElementById('detailsModalTitle').textContent = `Delivery Details - #${delivery.order_number}`;
+      
+      document.getElementById('detailsModalBody').innerHTML = `
+        <div class="row g-3">
+          <div class="col-md-6">
+            <strong>Order Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Order #:</strong> ${delivery.order_number}</div>
+              <div><strong>Status:</strong> <span class="badge bg-${delivery.status === 'delivered' ? 'success' : 'danger'}">${delivery.status}</span></div>
+              <div><strong>Date:</strong> ${formatDate(delivery.delivered_at)} at ${formatTime(delivery.delivered_at)}</div>
+              <div><strong>Distance:</strong> ${delivery.distance}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <strong>Customer Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Name:</strong> ${delivery.customer_name}</div>
+              <div><strong>Phone:</strong> ${delivery.customer_phone}</div>
+              <div><strong>Rating Given:</strong> ${delivery.rating ? `${delivery.rating} ⭐` : 'No rating'}</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <strong>Route:</strong><br>
+            <div class="mt-2">
+              <div><i class="fas fa-circle text-success me-2"></i><strong>Pickup:</strong> ${delivery.pickup_address}</div>
+              <div><i class="fas fa-circle text-danger me-2"></i><strong>Delivery:</strong> ${delivery.delivery_address}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <strong>Items Delivered:</strong><br>
+            <ul class="mt-2">
+              ${delivery.items.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <strong>Earnings:</strong><br>
+            <div class="mt-2">
+              <div class="fs-4 fw-bold text-success">₱${delivery.delivery_fee.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      modal.show();
+    }
+
+    function exportToCSV() {
+      if (filteredHistory.length === 0) {
+        riderDashboard.showToast('No data to export', 'warning');
+        return;
+      }
+
+      const headers = ['Order #', 'Customer', 'Pickup', 'Delivery', 'Date', 'Status', 'Rating', 'Earnings'];
+      const csvContent = [
+        headers.join(','),
+        ...filteredHistory.map(d => [
+          d.order_number,
+          `"${d.customer_name}"`,
+          `"${d.pickup_address}"`,
+          `"${d.delivery_address}"`,
+          formatDate(d.delivered_at),
+          d.status,
+          d.rating || 'N/A',
+          d.delivery_fee.toFixed(2)
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `delivery-history-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      riderDashboard.showToast('Export completed successfully!', 'success');
+    }
+
+    // Utility functions
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function formatTime(dateString) {
+      return new Date(dateString).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+  </script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

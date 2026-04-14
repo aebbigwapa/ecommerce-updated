@@ -1,0 +1,557 @@
+/* ============================================
+   RIDER COMPACT DASHBOARD STYLES
+   Extends compact-dashboard.css for rider-specific needs
+   ============================================ */
+
+/* Import base compact styles */
+@import url('compact-dashboard.css');
+
+:root {
+  /* Rider-specific compact variables */
+  --rider-sidebar-width: 240px;
+  --rider-sidebar-collapsed: 65px;
+  --rider-topbar-height: 52px;
+  --rider-compact-padding: 0.75rem;
+  --rider-compact-margin: 0.5rem;
+  --rider-font-xs: 0.7rem;
+  --rider-font-sm: 0.8rem;
+  --rider-font-md: 0.9rem;
+  --rider-font-lg: 1rem;
+  
+  /* Rider-specific colors */
+  --rider-primary: #007bff;
+  --rider-success: #28a745;
+  --rider-warning: #ffc107;
+  --rider-danger: #dc3545;
+  --rider-info: #17a2b8;
+}
+
+/* ============================================
+   RIDER SIDEBAR OPTIMIZATIONS
+   ============================================ */
+
+.admin-sidebar {
+  width: var(--rider-sidebar-width) !important;
+  background: linear-gradient(180deg, var(--secondary-color) 0%, #1a1a2e 100%);
+}
+
+.admin-sidebar.collapsed {
+  width: var(--rider-sidebar-collapsed) !important;
+}
+
+.sidebar-header {
+  padding: var(--rider-compact-padding) !important;
+  min-height: var(--rider-topbar-height);
+}
+
+.sidebar-brand {
+  font-size: var(--rider-font-md) !important;
+  font-weight: 600;
+}
+
+.sidebar-brand i {
+  font-size: 1.2rem !important;
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-text {
+  font-size: var(--rider-font-md) !important;
+}
+
+/* Compact navigation for rider */
+.nav-item {
+  padding: var(--compact-padding-sm) var(--rider-compact-padding) !important;
+  font-size: var(--rider-font-sm) !important;
+  margin: 2px 8px !important;
+  border-radius: 6px !important;
+  line-height: 1.2;
+}
+
+.nav-item i {
+  width: 18px !important;
+  font-size: var(--rider-font-sm) !important;
+  margin-right: var(--compact-margin-sm) !important;
+  text-align: center;
+}
+
+.nav-text {
+  font-size: var(--rider-font-sm) !important;
+  font-weight: 500;
+}
+
+.nav-badge {
+  font-size: var(--rider-font-xs) !important;
+  padding: 0.1rem 0.4rem !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  border-radius: 10px !important;
+}
+
+.nav-section-title {
+  font-size: var(--rider-font-xs) !important;
+  padding: 0 var(--rider-compact-padding);
+  margin-bottom: var(--compact-margin-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ============================================
+   RIDER TOPBAR OPTIMIZATIONS
+   ============================================ */
+
+.admin-topbar {
+  padding: var(--compact-padding-sm) var(--rider-compact-padding) !important;
+  min-height: var(--rider-topbar-height) !important;
+}
+
+.search-box {
+  width: 240px !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+  border-radius: 20px !important;
+}
+
+.search-box input {
+  font-size: var(--rider-font-sm) !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) var(--compact-padding-xs) 1.8rem !important;
+}
+
+.topbar-action {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: var(--rider-font-sm) !important;
+  border-radius: 6px !important;
+}
+
+.user-profile {
+  padding: 4px 10px 4px 4px !important;
+  border-radius: 18px !important;
+}
+
+.user-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, var(--rider-primary), var(--rider-info));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: var(--rider-font-sm);
+}
+
+.user-name {
+  font-size: var(--rider-font-sm) !important;
+  line-height: 1.2 !important;
+  font-weight: 500;
+}
+
+.user-role {
+  font-size: var(--rider-font-xs) !important;
+  line-height: 1.1 !important;
+}
+
+.rider-info-text {
+  font-size: var(--rider-font-xs) !important;
+  line-height: 1.1;
+}
+
+/* ============================================
+   RIDER CONTENT AREA
+   ============================================ */
+
+.admin-content {
+  padding: var(--rider-compact-padding) !important;
+}
+
+@media (min-width: 768px) {
+  .admin-content {
+    padding: var(--rider-compact-padding) 1.2rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-content {
+    padding: var(--rider-compact-padding) 1.5rem !important;
+  }
+}
+
+/* Page headers */
+.page-header {
+  margin-bottom: 1.2rem !important;
+}
+
+.page-title {
+  font-size: 1.25rem !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: var(--rider-font-md) !important;
+  line-height: 1.3 !important;
+  color: var(--gray-600);
+}
+
+/* ============================================
+   RIDER STATISTICS CARDS
+   ============================================ */
+
+.stats-grid {
+  gap: var(--compact-margin-md) !important;
+  margin-bottom: 1.2rem !important;
+}
+
+.stat-card {
+  padding: var(--rider-compact-padding) !important;
+  border-radius: 8px !important;
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-card.rider-active-card:hover {
+  border-color: var(--rider-success);
+}
+
+.stat-card.rider-completed-card:hover {
+  border-color: var(--rider-primary);
+}
+
+.stat-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+  font-size: var(--rider-font-md) !important;
+}
+
+.stat-details .stat-label {
+  font-size: var(--rider-font-xs) !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.stat-details .stat-value {
+  font-size: 1.2rem !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.1;
+}
+
+.stat-change {
+  font-size: var(--rider-font-xs) !important;
+  font-weight: 500;
+}
+
+.stat-change.positive {
+  color: var(--rider-success);
+}
+
+.stat-change.negative {
+  color: var(--rider-danger);
+}
+
+/* ============================================
+   RIDER DATA CARDS AND TABLES
+   ============================================ */
+
+.data-card {
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  margin-bottom: var(--compact-margin-lg);
+}
+
+.card-header {
+  padding: var(--rider-compact-padding) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-size: var(--rider-font-lg) !important;
+  margin-bottom: 0 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-body {
+  padding: var(--rider-compact-padding) !important;
+}
+
+/* Rider-specific table styling */
+.data-table,
+.rider-table {
+  font-size: var(--rider-font-sm) !important;
+}
+
+.data-table th,
+.rider-table th {
+  padding: var(--compact-padding-sm) var(--rider-compact-padding) !important;
+  font-size: var(--rider-font-xs) !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td,
+.rider-table td {
+  padding: var(--compact-padding-sm) var(--rider-compact-padding) !important;
+  line-height: 1.3 !important;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+/* ============================================
+   RIDER-SPECIFIC COMPONENTS
+   ============================================ */
+
+/* Delivery status cards */
+.delivery-card {
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px !important;
+  padding: var(--rider-compact-padding) !important;
+  margin-bottom: var(--compact-margin-md);
+  transition: all 0.2s ease;
+}
+
+.delivery-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.delivery-status {
+  font-size: var(--rider-font-xs) !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.delivery-status.available {
+  background: #e7f3ff;
+  color: var(--rider-primary);
+  border: 1px solid #b3d9ff;
+}
+
+.delivery-status.assigned {
+  background: #fff8e1;
+  color: var(--rider-warning);
+  border: 1px solid #ffecb3;
+}
+
+.delivery-status.in-transit {
+  background: #e8f5e8;
+  color: var(--rider-success);
+  border: 1px solid #c8e6c9;
+}
+
+.delivery-status.completed {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+
+/* Rider earnings display */
+.earnings-display {
+  background: linear-gradient(135deg, var(--rider-success), #20c997);
+  color: white;
+  border-radius: 8px !important;
+  padding: var(--rider-compact-padding) !important;
+  text-align: center;
+}
+
+.earnings-value {
+  font-size: 1.5rem !important;
+  font-weight: 700;
+  margin-bottom: var(--compact-margin-xs);
+}
+
+.earnings-label {
+  font-size: var(--rider-font-sm) !important;
+  opacity: 0.9;
+}
+
+/* Route planner elements */
+.route-step {
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px !important;
+  padding: var(--compact-padding-sm) !important;
+  margin-bottom: var(--compact-margin-xs);
+  font-size: var(--rider-font-sm) !important;
+}
+
+.route-step.active {
+  border-color: var(--rider-primary);
+  background: #e7f3ff;
+}
+
+.route-step.completed {
+  border-color: var(--rider-success);
+  background: #e8f5e8;
+}
+
+/* ============================================
+   RIDER BUTTONS AND FORMS
+   ============================================ */
+
+.btn {
+  font-size: var(--rider-font-sm) !important;
+  padding: var(--compact-padding-sm) var(--rider-compact-padding) !important;
+  border-radius: 6px !important;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.btn-sm {
+  font-size: var(--rider-font-xs) !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+  height: auto !important;
+}
+
+.btn-rider-primary {
+  background: var(--rider-primary);
+  border-color: var(--rider-primary);
+  color: white;
+}
+
+.btn-rider-success {
+  background: var(--rider-success);
+  border-color: var(--rider-success);
+  color: white;
+}
+
+/* ============================================
+   RIDER RESPONSIVE OPTIMIZATIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 220px !important;
+  }
+  
+  .nav-item {
+    padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+    font-size: var(--rider-font-xs) !important;
+  }
+  
+  .admin-content {
+    padding: var(--compact-padding-sm) !important;
+  }
+  
+  .page-title {
+    font-size: 1.1rem !important;
+  }
+  
+  .stats-grid {
+    gap: var(--compact-margin-sm) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .stat-card {
+    padding: var(--compact-padding-sm) !important;
+  }
+  
+  .stat-icon {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: var(--rider-font-sm) !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .admin-sidebar {
+    width: 260px !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--compact-margin-sm);
+  }
+  
+  .stat-card {
+    padding: var(--compact-padding-sm) !important;
+  }
+  
+  .admin-content {
+    padding: var(--rider-compact-padding) 2rem !important;
+  }
+}
+
+/* ============================================
+   RIDER MAP AND LOCATION COMPONENTS
+   ============================================ */
+
+.map-container {
+  border-radius: 8px !important;
+  height: 300px;
+  background: #f8f9fa;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-600);
+  font-size: var(--rider-font-sm);
+}
+
+.location-info {
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px !important;
+  padding: var(--compact-padding-sm) !important;
+  font-size: var(--rider-font-sm) !important;
+}
+
+.distance-badge {
+  background: var(--rider-info);
+  color: white;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-size: var(--rider-font-xs) !important;
+  font-weight: 600;
+}
+
+/* ============================================
+   RIDER PERFORMANCE METRICS
+   ============================================ */
+
+.performance-metric {
+  text-align: center;
+  padding: var(--compact-padding-sm) !important;
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px !important;
+}
+
+.performance-value {
+  font-size: 1.1rem !important;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: var(--compact-margin-xs);
+}
+
+.performance-label {
+  font-size: var(--rider-font-xs) !important;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}

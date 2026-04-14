@@ -1,0 +1,632 @@
+/* Account page layout - uses existing CSS variables */
+.account-page {
+  background: var(--background-light);
+  /* Shared sizing token for sidebar pills/header */
+  --nav-pill-width: 260px;
+}
+
+.account-card {
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--hover-shadow);
+  margin: 0 auto;               /* center by default */
+  max-width: 1200px;            /* default constraint */
+  padding: 14px;
+}
+
+/* Full-width variant for pages that should span the screen */
+.account-page.full .account-card {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+.account-page.full .container-fluid { padding-left: 24px; padding-right: 24px; }
+@media (max-width: 576px) { .account-page.full .container-fluid { padding-left: 12px; padding-right: 12px; } }
+
+@media (min-width: 768px) {
+  .account-card { padding: 18px; }
+}
+@media (min-width: 992px) {
+  .account-card { padding: 24px; }
+}
+
+.account-sidebar {
+  background: linear-gradient(180deg, var(--accent-cream), #fff);
+  border-right: 1px solid var(--border-color);
+  padding: 24px 20px 20px 24px;
+}
+
+.sidebar-header h5 {
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.account-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Do not stretch items full width so buttons arent long */
+  align-items: flex-start;
+}
+
+.account-nav .nav-section {
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  width: var(--nav-pill-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.account-nav .nav-link {
+  appearance: none;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  color: var(--text-color);
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+  /* make all pills equal length without spanning the whole sidebar */
+  width: var(--nav-pill-width, 240px);
+  justify-content: flex-start;
+}
+.account-nav .nav-link i { width: 18px; text-align: center; color: var(--gray-600); flex-shrink: 0; }
+.account-nav .nav-link:hover { border-color: var(--accent-color); box-shadow: var(--hover-shadow); }
+.account-nav .nav-link.active { border-color: var(--accent-color); background: #ffe7f3; box-shadow: var(--hover-shadow); color: var(--primary-color); }
+.account-nav .nav-link.active i { color: var(--primary-color); }
+
+.account-content { padding: 24px; min-height: 100%; }
+.section { display: none; }
+.section.active { display: block; }
+.section-header { margin-bottom: 16px; }
+.section-header h4 { margin: 0 0 4px; color: var(--primary-dark); }
+
+.info-tile {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+}
+.info-tile .label { font-size: .85rem; color: var(--gray-500); }
+.info-tile .value { font-weight: 600; color: var(--text-color); }
+
+.address-form { border: 1px dashed var(--border-color); border-radius: 12px; padding: 16px; background: #fff; }
+.address-map { height: 260px; border-radius: 12px; border: 1px solid var(--border-color); }
+
+.address-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.address-item { border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; background: #fff; }
+.address-item .title { font-weight: 700; }
+.address-item .meta { color: var(--gray-600); font-size: .9rem; }
+.address-item .actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.notif-list .notif { border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; background: #fff; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+.notif .pic { width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #f4f4f4; flex: 0 0 44px; }
+.notif .pic img { width: 100%; height: 100%; object-fit: cover; }
+.notif .body { flex: 1; }
+
+/* Orders Section Styling */
+.order-filters {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  cursor: pointer;
+  font-weight: 500;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+  border-color: var(--accent-color);
+  box-shadow: var(--hover-shadow);
+}
+
+.filter-tab.active {
+  border-color: var(--accent-color);
+  background: linear-gradient(0deg, #fff, #fff), var(--brand-grad);
+  box-shadow: var(--hover-shadow);
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-500);
+  z-index: 10;
+}
+
+.search-input {
+  padding-left: 2.5rem !important;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--container-bg);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--hover-shadow);
+}
+
+.order-card-header {
+  background: linear-gradient(180deg, var(--accent-cream), #fff);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 0.25rem;
+}
+
+.order-date {
+  color: var(--gray-600);
+  font-size: 0.85rem;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #d1ecf1; color: #0c5460; }
+.status-prepared { background: #d4edda; color: #155724; }
+.status-shipped { background: #ffeeba; color: #856404; }
+.status-delivered { background: #d1e7dd; color: #0f5132; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+
+.info-pill {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.pill-awaiting-buyer { background: #fff3cd; color: #856404; }
+.pill-awaiting-seller { background: #d1ecf1; color: #0c5460; }
+.pill-cancelled-buyer { background: #f8d7da; color: #721c24; }
+
+.order-card-body {
+  padding: 1.5rem;
+}
+
+.order-items {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--background-light);
+  border-radius: 8px;
+  padding: 0.75rem;
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid var(--border-color);
+}
+
+.item-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.item-image-fallback {
+  width: 40px;
+  height: 40px;
+  background: var(--background-light);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-500);
+  border: 1px dashed var(--border-color);
+  font-size: 0.8rem;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+}
+
+.item-details {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+}
+
+.order-summary {
+  background: var(--background-light);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.order-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.order-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-chat {
+  background: var(--brand-grad);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.btn-chat:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--brand-shadow);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-details {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-dark);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.btn-details:hover {
+  background: var(--primary-dark);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: var(--gray-600);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.btn-secondary:hover {
+  background: var(--gray-800);
+  transform: translateY(-1px);
+  color: white;
+}
+
+.empty-orders-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--gray-600);
+}
+
+.empty-orders-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+  color: var(--gray-400);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+.chat-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  color: white;
+  border-radius: 8px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .account-sidebar { border-right: none; border-bottom: 1px solid var(--border-color); }
+  .account-page-header { margin-left: 8px; margin-right: 8px; }
+  
+  /* On small screens, let header and pills stretch for easier tapping */
+  .account-sidebar .sidebar-header { width: 100%; }
+  .account-nav .nav-link { width: 100%; }
+  
+  .order-filters {
+    padding: 1rem;
+  }
+  
+  .filter-tabs {
+    gap: 0.3rem;
+  }
+  
+  .filter-tab {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .order-items {
+    flex-direction: column;
+  }
+  
+  .order-item {
+    min-width: auto;
+  }
+  
+  .order-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .order-actions .btn-chat,
+  .order-actions .btn-details,
+  .order-actions .btn-secondary {
+    justify-content: center;
+  }
+}
+
+/* Centered page header for account page */
+.account-page-header {
+  background: linear-gradient(135deg, var(--accent-cream), var(--background-light));
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+.account-page-header .page-title {
+  font-family: 'Playfair Display', serif;
+  color: var(--primary-dark);
+}
+
+/* Improve sidebar header to avoid left-leaning feel */
+.account-sidebar .sidebar-header {
+  text-align: center;
+  background: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  /* Align width with nav pills */
+  width: var(--nav-pill-width, 240px);
+  /* Center the header card within the sidebar */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Account page modern spacing and layout (scoped) */
+.account-page.spacious {
+  --space-1: 6px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 20px;
+  --space-5: 24px;
+  --space-6: 28px;
+  --space-7: 40px;
+  --radius-card: 18px;
+  --radius-pill: 14px;
+}
+
+/* Layout */
+.account-page.spacious .container { padding-top: var(--space-7); padding-bottom: var(--space-7); }
+.account-page.spacious .account-card { border-radius: 20px; border-color: rgba(0,0,0,0.06); box-shadow: 0 8px 24px rgba(27,14,36,0.08); }
+
+/* Sticky sidebar */
+.account-page.spacious .account-sidebar { position: sticky; top: 84px; align-self: start; padding: var(--space-6); border-right: 1px solid var(--border-color); min-height: calc(100vh - 120px); }
+.account-page.spacious .account-nav { display:flex; flex-direction:column; gap: var(--space-3); align-items: flex-start; }
+.account-page.spacious .account-nav .nav-section { margin: var(--space-4) 0 var(--space-2); font-size:.75rem; letter-spacing:.08em; color: var(--gray-500); }
+.account-page.spacious .account-nav .nav-link { padding: var(--space-3) var(--space-4); border-radius: var(--radius-pill); border:1px solid var(--border-color); background:#fff; display:flex; align-items:center; gap: var(--space-3); transition: all .2s ease; }
+.account-page.spacious .account-nav .nav-link:hover { background: var(--background-light); border-color: var(--accent-color); box-shadow: var(--hover-shadow); }
+.account-page.spacious .account-nav .nav-link.active { background: #ffe7f3; border-color: var(--accent-color); color: var(--primary-color); }
+.account-page.spacious .account-nav .nav-link.active i { color: var(--primary-color); }
+
+/* Content */
+.account-page.spacious .account-content { padding: var(--space-7); }
+/* Override global heavy section header */
+.account-page.spacious .section-header { background: transparent !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; margin-bottom: var(--space-6) !important; border-bottom: 1px solid var(--border-color) !important; padding-bottom: var(--space-3) !important; }
+.account-page.spacious .section-header h4 { margin: 0 0 var(--space-2); color: var(--primary-dark); font-weight: 600; }
+.account-page.spacious .section-header p { margin: 0; color: var(--gray-600); }
+
+/* Tiles and cards */
+.account-page.spacious .info-tile { padding: var(--space-4); border-radius: var(--radius-card); }
+.account-page.spacious .address-form { padding: var(--space-5); border-radius: var(--radius-card); }
+.account-page.spacious .address-list { gap: var(--space-4); }
+.account-page.spacious .address-item { padding: var(--space-4); border-radius: var(--radius-card); }
+.account-page.spacious .notif-list .notif { padding: var(--space-4); margin-bottom: var(--space-3); border-radius: var(--radius-card); }
+
+/* Orders */
+.account-page.spacious .orders-list { gap: var(--space-7); }
+.account-page.spacious .order-card { border-radius: 16px; }
+.account-page.spacious .order-card-header { padding: var(--space-5); }
+.account-page.spacious .order-card-body { padding: var(--space-5); }
+.account-page.spacious .order-items { gap: var(--space-4); }
+.account-page.spacious .order-summary { margin-bottom: var(--space-5); }
+
+/* Forms */
+.account-page.spacious .form-label { margin-bottom: var(--space-2); }
+.account-page.spacious .form-control,
+.account-page.spacious .form-select,
+.account-page.spacious textarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  min-height: 42px;
+}
+.account-page.spacious .form-control:focus,
+.account-page.spacious .form-select:focus,
+.account-page.spacious textarea:focus {
+  box-shadow: var(--focus-ring);
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .account-page.spacious .account-content { padding: var(--space-5); }
+  .account-page.spacious .account-sidebar { position: static; top: auto; padding: var(--space-5); }
+}
+
+/* Modern interaction and spacing refinements (scoped) */
+.account-page.spacious .account-nav .nav-link { position: relative; }
+.account-page.spacious .account-nav .nav-link.active::before { display: none; }
+
+ .account-page.spacious .filter-tab:focus-visible,
+.account-page.spacious .btn:focus-visible,
+.account-page.spacious .form-control:focus-visible,
+.account-page.spacious .form-select:focus-visible,
+.account-page.spacious textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Sidebar nav links should not display the thick pink focus ring.
+   Keep a subtle focus style to avoid visual "filled" effect seen in screenshots. */
+.account-page.spacious .account-nav .nav-link:focus,
+.account-page.spacious .account-nav .nav-link:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--accent-color);
+}
+
+.account-page.spacious .info-tile:hover,
+.account-page.spacious .address-item:hover {
+  border-color: var(--accent-color);
+  box-shadow: var(--hover-shadow);
+}
+
+.account-page.spacious .orders-list .order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--hover-shadow);
+}
+
+/* Increase grid minimum for clearer address cards on wide screens */
+.account-page.spacious .address-list {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* Slightly larger row gaps inside content */
+.account-page.spacious .account-content .row.g-4 {
+  row-gap: var(--space-5);
+}
+
+/* Bigger typography and controls for better readability */
+.account-page.spacious .sidebar-header h5 { font-size: 1.15rem !important; }
+.account-page.spacious .account-nav .nav-link { font-size: 0.95rem; }
+.account-page.spacious .account-nav .nav-link i { font-size: 1rem; }
+.account-page.spacious .section-header h4 { font-size: 1.3rem !important; }
+.account-page.spacious .info-tile .label { font-size: 0.95rem; }
+.account-page.spacious .info-tile .value { font-size: 1.05rem; }
+.account-page.spacious .form-label { font-size: 0.95rem; }
+.account-page.spacious .form-control,
+.account-page.spacious .form-select,
+.account-page.spacious textarea { font-size: 0.95rem; min-height: 48px; padding: 12px 14px; }
+.account-page.spacious .btn { font-size: 0.95rem; padding: 10px 16px; border-radius: 10px; }
+.account-page.spacious .order-number { font-size: 1.2rem; }
+.account-page.spacious .order-total { font-size: 1.25rem; }
+.account-page.spacious .status-badge { font-size: 0.8rem; }
+
+/* Theme-based accents */
+.account-page.spacious .section-header::after {
+  content: '';
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: var(--brand-grad);
+  border-radius: 2px;
+  margin-top: var(--space-2);
+}
+
+/* Themed filter tabs */
+.account-page.spacious .filter-tab:hover { border-color: var(--primary-color); }
+.account-page.spacious .filter-tab.active { background: var(--brand-grad); color: #fff; border-color: transparent; }
+
+/* Themed primary and outline buttons (scoped) */
+.account-page.spacious .btn.btn-primary-custom { background: var(--brand-grad); border: none; color: #fff; box-shadow: none; }
+.account-page.spacious .btn.btn-primary-custom:hover { box-shadow: var(--brand-shadow); color: #fff; transform: translateY(-1px); }
+.account-page.spacious .btn.btn-outline-custom { border: 1px solid var(--primary-color); color: var(--primary-color); background: transparent; }
+.account-page.spacious .btn.btn-outline-custom:hover { background: var(--brand-grad); color: #fff; border-color: transparent; box-shadow: var(--brand-shadow); }

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grande - Verify Email</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/auth.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    
+    <style>
+        .verification-code-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0;
+        }
+        
+        .code-input {
+            width: 55px;
+            height: 60px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            background: #fff;
+        }
+        
+        .code-input:focus {
+            outline: none;
+            border-color: #2d3436;
+            box-shadow: 0 0 0 3px rgba(45, 52, 54, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .code-input.filled {
+            border-color: #00b894;
+            background: #f0fff4;
+        }
+        
+        .code-input.error {
+            border-color: #d63031;
+            background: #fff5f5;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .verification-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .verification-info i {
+            font-size: 48px;
+            color: #00b894;
+            margin-bottom: 15px;
+        }
+        
+        .verification-email {
+            font-weight: 600;
+            color: #2d3436;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #636e72;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+        
+        .timer {
+            font-weight: 600;
+            color: #2d3436;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timer.warning {
+            color: #fdcb6e;
+        }
+        
+        .timer.danger {
+            color: #d63031;
+        }
+        
+        .resend-section {
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .resend-button {
+            background: transparent;
+            border: 2px solid #2d3436;
+            color: #2d3436;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .resend-button:hover:not(:disabled) {
+            background: #2d3436;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .resend-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .success-message i {
+            font-size: 24px;
+        }
+        
+        .attempts-remaining {
+            text-align: center;
+            color: #636e72;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+        
+        .attempts-remaining.warning {
+            color: #f39c12;
+            font-weight: 600;
+        }
+        
+        /* Auth Button Styling */
+        .auth-button {
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 52, 54, 0.3);
+            margin: 25px 0;
+        }
+        
+        .auth-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 52, 54, 0.4);
+            background: linear-gradient(135deg, #000000 0%, #2d3436 100%);
+        }
+        
+        .auth-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .auth-button span {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .auth-button i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+        
+        .auth-button:hover:not(:disabled) i {
+            transform: translateX(4px);
+        }
+        
+        .auth-button .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Logo and Header -->
+        <div class="auth-header">
+            <div class="auth-logo">
+                <img src="/static/image.png" alt="Grande Logo" onerror="this.onerror=null; this.src='/static/images/logo.svg';">
+            </div>
+            <h1 class="auth-title">Verify Your Email</h1>
+            <p class="auth-subtitle">Enter the 6-digit code sent to your email</p>
+        </div>
+
+        <!-- Verification Info -->
+        <div class="verification-info">
+            <i class="fas fa-envelope-open-text"></i>
+            <p class="verification-email" id="displayEmail">Loading...</p>
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span>Code expires in: <span class="timer" id="timer">10:00</span></span>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <span>Email verified successfully! Redirecting to login...</span>
+        </div>
+
+        <!-- Verification Code Inputs -->
+        <div class="verification-code-container">
+            <input type="text" maxlength="1" class="code-input" id="code1" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            <input type="text" maxlength="1" class="code-input" id="code2" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            <input type="text" maxlength="1" class="code-input" id="code3" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            <input type="text" maxlength="1" class="code-input" id="code4" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            <input type="text" maxlength="1" class="code-input" id="code5" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            <input type="text" maxlength="1" class="code-input" id="code6" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+        </div>
+
+        <!-- Attempts Remaining -->
+        <div class="attempts-remaining" id="attemptsInfo"></div>
+
+        <!-- Alert -->
+        <div class="alert" id="alert" style="display: none;"></div>
+
+        <!-- Verify Button -->
+        <button type="button" class="auth-button" id="verifyButton">
+            <span>Verify Email</span>
+            <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <!-- Resend Section -->
+        <div class="resend-section">
+            <p style="color: #636e72; margin-bottom: 12px;">Didn't receive the code?</p>
+            <button type="button" class="resend-button" id="resendButton">
+                <i class="fas fa-redo-alt"></i> Resend Code
+            </button>
+        </div>
+
+        <!-- Back to Login -->
+        <div class="auth-footer">
+            <p>Remember your password? <a href="/templates/Authenticator/login.html">Log In</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Get email from URL parameter or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let userEmail = urlParams.get('email') || localStorage.getItem('verificationEmail');
+        
+        // Display email
+        const displayEmailElement = document.getElementById('displayEmail');
+        if (userEmail) {
+            displayEmailElement.textContent = userEmail;
+            localStorage.setItem('verificationEmail', userEmail);
+        } else {
+            displayEmailElement.textContent = 'No email provided';
+            showAlert('Please register first before verifying', 'error');
+            setTimeout(() => {
+                window.location.href = '/templates/Authenticator/register.html';
+            }, 2000);
+        }
+
+        // Code inputs
+        const codeInputs = document.querySelectorAll('.code-input');
+        const verifyButton = document.getElementById('verifyButton');
+        const resendButton = document.getElementById('resendButton');
+        const alertElement = document.getElementById('alert');
+        const successMessage = document.getElementById('successMessage');
+        const attemptsInfo = document.getElementById('attemptsInfo');
+        
+        let attemptsRemaining = 5;
+        let timerInterval;
+        let timeRemaining = 600; // 10 minutes in seconds
+        
+        // Start timer
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color based on time remaining
+                if (timeRemaining <= 60) {
+                    timerElement.classList.add('danger');
+                } else if (timeRemaining <= 180) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    showAlert('Verification code expired. Please request a new one.', 'error');
+                    codeInputs.forEach(input => input.disabled = true);
+                    verifyButton.disabled = true;
+                }
+            }, 1000);
+        }
+        
+        startTimer();
+        
+        // Handle code input
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+                
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
+                
+                if (value) {
+                    e.target.classList.add('filled');
+                    e.target.classList.remove('error');
+                    
+                    // Move to next input
+                    if (index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    } else {
+                        // All filled, verify automatically
+                        verifyButton.click();
+                    }
+                } else {
+                    e.target.classList.remove('filled');
+                }
+            });
+            
+            // Handle backspace
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+            });
+            
+            // Handle paste
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').slice(0, 6);
+                
+                if (/^\d+$/.test(pastedData)) {
+                    pastedData.split('').forEach((char, i) => {
+                        if (codeInputs[i]) {
+                            codeInputs[i].value = char;
+                            codeInputs[i].classList.add('filled');
+                        }
+                    });
+                    
+                    if (pastedData.length === 6) {
+                        verifyButton.click();
+                    }
+                }
+            });
+        });
+        
+        // Focus first input
+        codeInputs[0].focus();
+        
+        // Verify button
+        verifyButton.addEventListener('click', async () => {
+            const code = Array.from(codeInputs).map(input => input.value).join('');
+            
+            if (code.length !== 6) {
+                showAlert('Please enter all 6 digits', 'error');
+                return;
+            }
+            
+            verifyButton.disabled = true;
+            verifyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            
+            try {
+                const response = await fetch('/api/auth/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, code: code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Success!
+                    clearInterval(timerInterval);
+                    successMessage.style.display = 'flex';
+                    codeInputs.forEach(input => {
+                        input.classList.add('filled');
+                        input.classList.remove('error');
+                        input.disabled = true;
+                    });
+                    
+                    localStorage.removeItem('verificationEmail');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/templates/Authenticator/login.html?verified=true';
+                    }, 2000);
+                } else {
+                    // Error
+                    codeInputs.forEach(input => {
+                        input.classList.add('error');
+                        input.value = '';
+                    });
+                    codeInputs[0].focus();
+                    
+                    if (data.attempts_remaining !== undefined) {
+                        attemptsRemaining = data.attempts_remaining;
+                        updateAttemptsDisplay();
+                    }
+                    
+                    showAlert(data.error || 'Invalid verification code', 'error');
+                    
+                    if (data.expired) {
+                        codeInputs.forEach(input => input.disabled = true);
+                        verifyButton.disabled = true;
+                    }
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+                codeInputs.forEach(input => input.classList.add('error'));
+            } finally {
+                if (!verifyButton.disabled) {
+                    verifyButton.disabled = false;
+                    verifyButton.innerHTML = '<span>Verify Email</span><i class="fas fa-arrow-right"></i>';
+                }
+            }
+        });
+        
+        // Resend button
+        let resendCooldown = 0;
+        resendButton.addEventListener('click', async () => {
+            if (resendCooldown > 0) return;
+            
+            resendButton.disabled = true;
+            resendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            try {
+                const response = await fetch('/api/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showAlert('A new verification code has been sent to your email', 'success');
+                    
+                    // Reset timer
+                    clearInterval(timerInterval);
+                    timeRemaining = 600;
+                    startTimer();
+                    
+                    // Reset code inputs
+                    codeInputs.forEach(input => {
+                        input.value = '';
+                        input.classList.remove('filled', 'error');
+                        input.disabled = false;
+                    });
+                    verifyButton.disabled = false;
+                    
+                    // Reset attempts
+                    attemptsRemaining = 5;
+                    updateAttemptsDisplay();
+                    
+                    // Cooldown
+                    resendCooldown = 60;
+                    updateResendButton();
+                } else {
+                    showAlert(data.error || 'Failed to resend code', 'error');
+                    
+                    if (data.rate_limited && data.seconds_remaining) {
+                        resendCooldown = data.seconds_remaining;
+                        updateResendButton();
+                    }
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                if (resendCooldown === 0) {
+                    resendButton.disabled = false;
+                    resendButton.innerHTML = '<i class="fas fa-redo-alt"></i> Resend Code';
+                }
+            }
+        });
+        
+        function updateResendButton() {
+            const interval = setInterval(() => {
+                resendCooldown--;
+                if (resendCooldown > 0) {
+                    resendButton.innerHTML = `<i class="fas fa-clock"></i> Resend in ${resendCooldown}s`;
+                    resendButton.disabled = true;
+                } else {
+                    resendButton.innerHTML = '<i class="fas fa-redo-alt"></i> Resend Code';
+                    resendButton.disabled = false;
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+        
+        function updateAttemptsDisplay() {
+            if (attemptsRemaining <= 2) {
+                attemptsInfo.textContent = `⚠️ ${attemptsRemaining} attempts remaining`;
+                attemptsInfo.classList.add('warning');
+            } else {
+                attemptsInfo.textContent = `${attemptsRemaining} attempts remaining`;
+                attemptsInfo.classList.remove('warning');
+            }
+        }
+        
+        function showAlert(message, type) {
+            alertElement.textContent = message;
+            alertElement.className = `alert alert-${type}`;
+            alertElement.style.display = 'block';
+            
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Initialize attempts display
+        updateAttemptsDisplay();
+    </script>
+</body>
+</html>

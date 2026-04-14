@@ -1,0 +1,440 @@
+/* ============================================
+   ADMIN COMPACT DASHBOARD STYLES
+   Extends compact-dashboard.css for admin-specific needs
+   ============================================ */
+
+/* Import base compact styles */
+@import url('compact-dashboard.css');
+
+:root {
+  /* Admin-specific compact variables */
+  --admin-sidebar-width: 220px;
+  --admin-sidebar-collapsed: 60px;
+  --admin-topbar-height: 50px;
+  --admin-compact-padding: 0.75rem;
+  --admin-compact-margin: 0.5rem;
+  --admin-font-xs: 0.65rem;
+  --admin-font-sm: 0.75rem;
+  --admin-font-md: 0.85rem;
+  --admin-font-lg: 1rem;
+}
+
+/* ============================================
+   ADMIN SIDEBAR OPTIMIZATIONS
+   ============================================ */
+
+.admin-sidebar {
+  width: var(--admin-sidebar-width) !important;
+  background: linear-gradient(180deg, var(--secondary-color) 0%, var(--light-pink) 100%);
+}
+
+.admin-sidebar.collapsed {
+  width: var(--admin-sidebar-collapsed) !important;
+}
+
+.sidebar-header {
+  padding: var(--admin-compact-padding) var(--admin-compact-padding) !important;
+  min-height: var(--admin-topbar-height);
+}
+
+.sidebar-brand {
+  font-size: var(--admin-font-md) !important;
+  font-weight: 600;
+}
+
+.sidebar-brand i {
+  font-size: 1.1rem !important;
+}
+
+.brand-text {
+  font-size: var(--admin-font-md) !important;
+}
+
+/* Compact navigation items */
+.nav-item {
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  font-size: var(--admin-font-sm) !important;
+  margin: 2px 8px !important;
+  border-radius: 6px !important;
+  line-height: 1.2;
+}
+
+.nav-item i {
+  width: 16px !important;
+  font-size: var(--admin-font-sm) !important;
+  margin-right: var(--compact-margin-sm) !important;
+  text-align: center;
+}
+
+.nav-text {
+  font-size: var(--admin-font-sm) !important;
+  font-weight: 500;
+}
+
+.nav-badge {
+  font-size: var(--admin-font-xs) !important;
+  padding: 0.1rem 0.35rem !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  border-radius: 9px !important;
+}
+
+.nav-section-title {
+  font-size: var(--admin-font-xs) !important;
+  padding: 0 var(--admin-compact-padding);
+  margin-bottom: var(--compact-margin-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ============================================
+   ADMIN TOPBAR OPTIMIZATIONS
+   ============================================ */
+
+.admin-topbar {
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  min-height: var(--admin-topbar-height) !important;
+}
+
+.search-box {
+  width: 220px !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+  border-radius: 20px !important;
+}
+
+.search-box input {
+  font-size: var(--admin-font-sm) !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) var(--compact-padding-xs) 1.8rem !important;
+}
+
+.search-box i {
+  font-size: var(--admin-font-sm) !important;
+}
+
+.topbar-action {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: var(--admin-font-sm) !important;
+  border-radius: 6px !important;
+}
+
+.user-profile {
+  padding: 4px 8px 4px 4px !important;
+  border-radius: 18px !important;
+}
+
+.user-profile img,
+.user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+}
+
+.user-name {
+  font-size: var(--admin-font-sm) !important;
+  line-height: 1.2 !important;
+  font-weight: 500;
+}
+
+.user-role {
+  font-size: var(--admin-font-xs) !important;
+  line-height: 1.1 !important;
+}
+
+/* ============================================
+   ADMIN CONTENT AREA
+   ============================================ */
+
+.admin-content {
+  padding: var(--admin-compact-padding) !important;
+}
+
+@media (min-width: 768px) {
+  .admin-content {
+    padding: var(--admin-compact-padding) 1.2rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-content {
+    padding: var(--admin-compact-padding) 1.5rem !important;
+  }
+}
+
+/* Page headers */
+.page-header {
+  margin-bottom: 1.2rem !important;
+}
+
+.page-title {
+  font-size: 1.3rem !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: var(--admin-font-md) !important;
+  line-height: 1.3 !important;
+  color: var(--gray-600);
+}
+
+/* ============================================
+   ADMIN STATISTICS CARDS
+   ============================================ */
+
+.stats-grid {
+  gap: var(--compact-margin-md) !important;
+  margin-bottom: 1.2rem !important;
+}
+
+.stat-card {
+  padding: var(--admin-compact-padding) !important;
+  border-radius: 8px !important;
+  background: var(--container-bg);
+  border: 1px solid var(--border-color);
+}
+
+.stat-title {
+  font-size: var(--admin-font-xs) !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.1rem !important;
+  margin-bottom: var(--compact-margin-xs) !important;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.1;
+}
+
+.stat-change {
+  font-size: var(--admin-font-xs) !important;
+  font-weight: 500;
+}
+
+.stat-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  font-size: var(--admin-font-sm) !important;
+}
+
+/* ============================================
+   ADMIN DATA CARDS AND TABLES
+   ============================================ */
+
+.data-card {
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  margin-bottom: var(--compact-margin-lg);
+}
+
+.card-header {
+  padding: var(--admin-compact-padding) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-size: var(--admin-font-lg) !important;
+  margin-bottom: 0 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-body {
+  padding: var(--admin-compact-padding) !important;
+}
+
+/* Admin-specific table styling */
+.data-table,
+.admin-table {
+  font-size: var(--admin-font-sm) !important;
+}
+
+.data-table th,
+.admin-table th {
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  font-size: var(--admin-font-xs) !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td,
+.admin-table td {
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  line-height: 1.3 !important;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.data-table tbody tr:hover,
+.admin-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* ============================================
+   ADMIN BUTTONS AND FORMS
+   ============================================ */
+
+.btn {
+  font-size: var(--admin-font-sm) !important;
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  border-radius: 6px !important;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.btn-sm {
+  font-size: var(--admin-font-xs) !important;
+  padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+  height: auto !important;
+}
+
+.form-control,
+.form-select {
+  font-size: var(--admin-font-sm) !important;
+  padding: var(--compact-padding-sm) var(--admin-compact-padding) !important;
+  border-radius: 6px !important;
+  height: 2rem !important;
+}
+
+.form-label {
+  font-size: var(--admin-font-sm) !important;
+  font-weight: 500;
+  margin-bottom: var(--compact-margin-xs);
+  color: var(--text-color);
+}
+
+/* ============================================
+   ADMIN-SPECIFIC COMPONENTS
+   ============================================ */
+
+/* Status badges for admin */
+.status-badge.admin-status {
+  font-size: var(--admin-font-xs) !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Admin alerts and notifications */
+.alert {
+  padding: var(--admin-compact-padding) !important;
+  font-size: var(--admin-font-sm) !important;
+  border-radius: 6px !important;
+}
+
+.alert h6,
+.alert .alert-heading {
+  font-size: var(--admin-font-md) !important;
+  margin-bottom: var(--compact-margin-xs);
+}
+
+/* Modal optimizations for admin */
+.modal-header {
+  padding: var(--admin-compact-padding) !important;
+}
+
+.modal-body {
+  padding: var(--admin-compact-padding) !important;
+}
+
+.modal-footer {
+  padding: var(--admin-compact-padding) !important;
+}
+
+.modal-title {
+  font-size: var(--admin-font-lg) !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ============================================
+   ADMIN RESPONSIVE OPTIMIZATIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 200px !important;
+  }
+  
+  .nav-item {
+    padding: var(--compact-padding-xs) var(--compact-padding-sm) !important;
+    font-size: var(--admin-font-xs) !important;
+  }
+  
+  .admin-content {
+    padding: var(--compact-padding-sm) !important;
+  }
+  
+  .page-title {
+    font-size: 1.1rem !important;
+  }
+  
+  .stats-grid {
+    gap: var(--compact-margin-sm) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .stat-card {
+    padding: var(--compact-padding-sm) !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .admin-sidebar {
+    width: 240px !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--compact-margin-sm);
+  }
+  
+  .stat-card {
+    padding: var(--compact-padding-sm) !important;
+  }
+  
+  .admin-content {
+    padding: var(--admin-compact-padding) 2rem !important;
+  }
+}
+
+/* ============================================
+   ADMIN DARK MODE SUPPORT (Optional)
+   ============================================ */
+
+[data-theme="dark"] .data-card {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .data-table th,
+[data-theme="dark"] .admin-table th {
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+[data-theme="dark"] .data-table td,
+[data-theme="dark"] .admin-table td {
+  border-color: #333;
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .data-table tbody tr:hover,
+[data-theme="dark"] .admin-table tbody tr:hover {
+  background-color: #2a2a2a;
+}

@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED SIDEBAR STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed - FIXED POSITION */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Sticky position when expanded so toggle button stays at top */
+    .admin-sidebar:not(.collapsed) .nav-section.first-section .nav-section-title {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+      padding-bottom: 12px !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 20px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .logout-btn {
+      color: #ff6b6b;
+    }
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* ======================================== */
+    /* Ensure content is visible */
+    .admin-content {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+    }
+    
+    .data-card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+    
+    .sticky-filter-bar {
+      background: white;
+      padding: 1rem;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <div class="sidebar-nav">
+        <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+          <div>
+            <a href="sellerdashboard.html" class="nav-item">
+              <i class="fas fa-tachometer-alt"></i>
+              <span class="nav-text">Dashboard</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Products</div>
+          <div>
+            <a href="add_product.html" class="nav-item">
+              <i class="fas fa-plus-circle"></i>
+              <span class="nav-text">Add Product</span>
+            </a>
+          </div>
+          <div>
+            <a href="inventory.html" class="nav-item">
+              <i class="fas fa-box-open"></i>
+              <span class="nav-text">Manage Inventory</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Orders</div>
+        <div>
+          <a href="orders_clean_new.html" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span class="nav-text">View Orders</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div> 
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="delivery-tracking.html" class="nav-item">
+            <i class="fas fa-truck"></i>
+            <span class="nav-text">Delivery Tracking</span>
+            <span class="nav-badge" id="deliveryBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="awaiting-pickup.html" class="nav-item">
+            <i class="fas fa-clock"></i>
+            <span class="nav-text">Awaiting Pickup</span>
+            <span class="nav-badge" id="awaitingBadge">0</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Reports</div>
+        <div>
+          <a href="analytics.html" class="nav-item active">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">Analytics</span>
+          </a>
+        </div>
+      </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">Analytics & Reports</h1>
+          <p class="page-subtitle">Track performance, sales, and orders over time.</p>
+        </div>
+
+        <!-- Sticky Filters Toolbar -->
+        <div class="sticky-filter-bar">
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fas fa-filter text-muted"></i>
+              <span class="fw-semibold">Filters</span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <input type="date" id="dateFrom" class="form-control form-control-sm">
+              <span class="text-muted">to</span>
+              <input type="date" id="dateTo" class="form-control form-control-sm">
+              <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-secondary" data-range="today">Today</button>
+                <button class="btn btn-outline-secondary" data-range="week">This Week</button>
+                <button class="btn btn-outline-secondary" data-range="month">This Month</button>
+                <button class="btn btn-outline-secondary" data-range="ytd">YTD</button>
+              </div>
+            </div>
+            <div class="ms-auto d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary" id="resetFilters"><i class="fas fa-undo"></i> Reset</button>
+              <button class="btn btn-sm btn-primary" id="applyFilters"><i class="fas fa-sync"></i> Update</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-card" style="padding: 16px;">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Sales This Week</h6>
+                <div class="fs-4 fw-bold" id="analyticsSalesWeek">₱0.00</div>
+                <small class="text-muted" id="analyticsSalesWeekDelta">vs last week</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Sales This Month</h6>
+                <div class="fs-4 fw-bold" id="analyticsSales">₱0.00</div>
+                <small class="text-muted" id="analyticsSalesDelta">+0% from last month</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Sales This Year</h6>
+                <div class="fs-4 fw-bold" id="analyticsSalesYear">₱0.00</div>
+                <small class="text-muted" id="analyticsSalesYearDelta">vs last year</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-card" style="padding: 16px;">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Orders This Week</h6>
+                <div class="fs-4 fw-bold" id="analyticsOrders">0</div>
+                <small class="text-muted" id="analyticsOrdersDelta">+0% from last week</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Orders This Month</h6>
+                <div class="fs-4 fw-bold" id="analyticsOrdersMonth">0</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="data-card" style="padding: 16px;">
+                <h6 class="text-muted">Orders This Year</h6>
+                <div class="fs-4 fw-bold" id="analyticsOrdersYear">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Report Table & Exports -->
+        <div class="data-card mt-2" style="padding:16px;">
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <h6 class="m-0">Sales Report</h6>
+            <div class="ms-auto d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary" id="btnExportCSV"><i class="fas fa-file-csv"></i> Export CSV</button>
+              <button class="btn btn-sm btn-outline-secondary" id="btnExportPDF"><i class="fas fa-file-pdf"></i> Export PDF</button>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mb-2">
+            <div><small class="text-muted">Total Sales:</small> <span class="fw-semibold" id="salesReportTotalSales">₱0.00</span></div>
+            <div><small class="text-muted">Total Orders:</small> <span class="fw-semibold" id="salesReportTotalOrders">0</span></div>
+            <div><small class="text-muted">Total Items:</small> <span class="fw-semibold" id="salesReportTotalItems">0</span></div>
+          </div>
+          <div id="salesReportContainer" class="table-responsive">
+            <table class="table table-sm table-striped align-middle" id="salesReportTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Order #</th>
+                  <th>Product</th>
+                  <th>Variant</th>
+                  <th class="text-end">Qty</th>
+                  <th class="text-end">Unit Price</th>
+                  <th class="text-end">Gross</th>
+                  <th class="text-end">Discount</th>
+                  <th class="text-end">Refunds</th>
+                  <th class="text-end">Net</th>
+                  <th class="text-end">Fees</th>
+                  <th class="text-end">Ship (Seller)</th>
+                  <th class="text-end">Profit</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Buyer</th>
+                </tr>
+              </thead>
+              <tbody id="salesReportTbody">
+                <tr><td colspan="16" class="text-center text-muted py-3">Loading…</td></tr>
+              </tbody>
+              <tfoot id="salesReportTfoot">
+                <tr class="table-light fw-semibold">
+                  <td colspan="4" class="text-end">Totals:</td>
+                  <td class="text-end" id="sfTotalQty">0</td>
+                  <td></td>
+                  <td class="text-end" id="sfTotalGross">₱0.00</td>
+                  <td class="text-end" id="sfTotalDiscounts">₱0.00</td>
+                  <td class="text-end" id="sfTotalRefunds">₱0.00</td>
+                  <td class="text-end" id="sfTotalNet">₱0.00</td>
+                  <td class="text-end" id="sfTotalFees">₱0.00</td>
+                  <td class="text-end" id="sfTotalShip">₱0.00</td>
+                  <td class="text-end" id="sfTotalProfit">₱0.00</td>
+                  <td colspan="3"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="row g-3 mt-1">
+          <div class="col-lg-6">
+            <div class="data-card" style="padding: 16px;">
+              <h6 class="mb-2">Sales Trend</h6>
+              <canvas id="chartSales" height="140"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="data-card" style="padding: 16px;">
+              <h6 class="mb-2">Orders Trend</h6>
+              <canvas id="chartOrders" height="140"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insights row -->
+        <div class="row g-3 mt-1">
+          <div class="col-lg-6">
+            <div class="data-card" style="padding: 16px;">
+              <h6 class="mb-2">Category Mix</h6>
+              <canvas id="chartCategory" height="220"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="data-card" style="padding: 0;">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center" style="padding: 12px 16px;">
+                <div class="fw-semibold">Top Products</div>
+                <a href="inventory.html" class="btn btn-sm btn-outline-primary">Manage</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead><tr><th>Product</th><th>Units</th><th>Sales</th></tr></thead>
+                  <tbody id="topProductsTbody"><tr><td colspan="3" class="text-center text-muted py-3">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="data-card mt-3" style="padding: 0;">
+          <div class="card-header bg-white" style="padding: 12px 16px;"><div class="fw-semibold">Recent Orders</div></div>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead><tr><th>Order #</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+              <tbody id="recentOrdersTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+  </script>
+    <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/seller-sales-report.js"></script>
+  <script>
+    // Initialize analytics page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize authentication (but don't block content rendering)
+      try {
+        if (typeof AuthManager !== 'undefined' && !AuthManager.isLoggedIn()) {
+          console.warn('User not authenticated, but continuing to show content');
+          // Uncomment line below if you want to redirect:
+          // window.location.href = '../Authenticator/login.html';
+          // return;
+        }
+      } catch (e) {
+        console.warn('AuthManager not available:', e);
+      }
+
+      // Initialize UI
+      try {
+        if (typeof DashboardUtils !== 'undefined') {
+          DashboardUtils.initializeNavigation('analytics.html');
+        }
+      } catch (e) {
+        console.warn('DashboardUtils not available:', e);
+      }
+
+      // Bind toolbar
+      try {
+        setDefaultDates();
+        document.querySelectorAll('[data-range]').forEach(btn => {
+          btn.addEventListener('click', () => applyPreset(btn.getAttribute('data-range')));
+        });
+        const applyBtn = document.getElementById('applyFilters');
+        const resetBtn = document.getElementById('resetFilters');
+        if (applyBtn) applyBtn.addEventListener('click', fetchAndRenderAll);
+        if (resetBtn) resetBtn.addEventListener('click', () => { setDefaultDates(); fetchAndRenderAll(); });
+      } catch (e) {
+        console.warn('Error binding toolbar:', e);
+      }
+
+      // initial load
+      try {
+        if (typeof loadAnalyticsData === 'function') {
+          loadAnalyticsData();
+        }
+        fetchAndRenderAll();
+      } catch (e) {
+        console.warn('Error in initial load:', e);
+      }
+
+      console.log('Seller Analytics initialized');
+    });
+
+    function setDefaultDates() {
+      const to = new Date();
+      const from = new Date();
+      from.setDate(to.getDate() - 29);
+      document.getElementById('dateTo').value = to.toISOString().slice(0,10);
+      document.getElementById('dateFrom').value = from.toISOString().slice(0,10);
+    }
+
+    function applyPreset(range) {
+      const now = new Date();
+      let from = new Date();
+      if (range === 'today') {
+        from = new Date(now);
+      } else if (range === 'week') {
+        from.setDate(now.getDate() - 6);
+      } else if (range === 'month') {
+        from.setMonth(now.getMonth() - 1);
+      } else if (range === 'ytd') {
+        from = new Date(now.getFullYear(), 0, 1);
+      }
+      document.getElementById('dateFrom').value = from.toISOString().slice(0,10);
+      document.getElementById('dateTo').value = now.toISOString().slice(0,10);
+    }
+
+    async function fetchAndRenderAll() {
+      try {
+        if (typeof DashboardUtils === 'undefined') {
+          console.warn('fetchAndRenderAll: DashboardUtils not available');
+          return;
+        }
+        const from = document.getElementById('dateFrom').value;
+        const to = document.getElementById('dateTo').value;
+        const ts = await DashboardUtils.makeApiCall(`/api/seller/analytics/timeseries?from=${from}&to=${to}&granularity=day`);
+        if (ts && ts.success) {
+          renderLineChart('chartSales', ts.labels, ts.sales, 'Sales');
+          renderLineChart('chartOrders', ts.labels, ts.orders, 'Orders', '#6366f1');
+        }
+        const cat = await DashboardUtils.makeApiCall(`/api/seller/analytics/category?from=${from}&to=${to}`);
+        if (cat && cat.success) {
+          renderDoughnut('chartCategory', cat.categories || []);
+        }
+        const tops = await DashboardUtils.makeApiCall(`/api/seller/analytics/top-products?from=${from}&to=${to}&limit=10`);
+        if (tops && tops.success) {
+          renderTopProducts(tops.products || []);
+        }
+        const recent = await DashboardUtils.makeApiCall(`/api/seller/analytics/recent-orders?limit=10`);
+        if (recent && recent.success) {
+          renderRecentOrders(recent.orders || []);
+        }
+      } catch (e) {
+        console.error('Fetch/render error:', e);
+      }
+    }
+
+    let _charts = {};
+    function renderLineChart(canvasId, labels, series, label, color='#10b981') {
+      const ctx = document.getElementById(canvasId);
+      if (!ctx) return;
+      if (typeof Chart === 'undefined') {
+        console.warn('renderLineChart: Chart.js not loaded');
+        return;
+      }
+      if (_charts[canvasId]) { _charts[canvasId].destroy(); }
+      _charts[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data: series,
+            borderColor: color,
+            backgroundColor: color + '33',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 0
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }}, y: { beginAtZero: true } } }
+      });
+    }
+
+    function renderDoughnut(canvasId, categories) {
+      const ctx = document.getElementById(canvasId);
+      if (!ctx) return;
+      if (typeof Chart === 'undefined') {
+        console.warn('renderDoughnut: Chart.js not loaded');
+        return;
+      }
+      if (_charts[canvasId]) { _charts[canvasId].destroy(); }
+      const labels = categories.map(c => c.category || 'Uncategorized');
+      const data = categories.map(c => parseFloat(c.sales || 0));
+      const colors = ['#6366f1','#10b981','#ef4444','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#06b6d4'];
+      _charts[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data, backgroundColor: labels.map((_,i)=> colors[i%colors.length]) }] },
+        options: { plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    function renderTopProducts(rows) {
+      const tbody = document.getElementById('topProductsTbody');
+      if (!tbody) return;
+      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">No data</td></tr>'; return; }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${DashboardUtils.escapeHtml(r.name || 'Unnamed')}</td>
+          <td>${r.units || 0}</td>
+          <td>₱${Number(r.sales || 0).toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderRecentOrders(rows) {
+      const tbody = document.getElementById('recentOrdersTbody');
+      if (!tbody) return;
+      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No recent orders</td></tr>'; return; }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${DashboardUtils.escapeHtml(r.order_number)}</td>
+          <td>${r.created_at ? new Date(r.created_at).toLocaleString() : '-'}</td>
+          <td>₱${Number(r.total_amount || 0).toFixed(2)}</td>
+          <td><span class="badge bg-light text-dark">${DashboardUtils.escapeHtml(r.status || '')}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadAnalyticsData() {
+      try {
+        if (typeof DashboardUtils === 'undefined') {
+          console.warn('loadAnalyticsData: DashboardUtils not available');
+          return;
+        }
+        const data = await DashboardUtils.makeApiCall('/api/seller/analytics');
+        
+        if (data && data.success) {
+          // Sales (month for legacy), plus week/year
+          document.getElementById('analyticsSales').textContent = DashboardUtils.formatCurrency(data.sales || 0);
+          document.getElementById('analyticsSalesDelta').textContent = `${data.salesDelta >= 0 ? '+' : ''}${data.salesDelta || 0}% from last month`;
+          document.getElementById('analyticsSalesWeek').textContent = DashboardUtils.formatCurrency(data.salesWeek || 0);
+          document.getElementById('analyticsSalesYear').textContent = DashboardUtils.formatCurrency(data.salesYear || 0);
+
+          // Optional extra deltas if backend provides them
+          if (typeof data.salesWeekDelta !== 'undefined') {
+            const el = document.getElementById('analyticsSalesWeekDelta');
+            if (el) {
+              const d = data.salesWeekDelta || 0;
+              el.textContent = `${d >= 0 ? '+' : ''}${d}% vs last week`;
+            }
+          }
+          if (typeof data.salesYearDelta !== 'undefined') {
+            const el = document.getElementById('analyticsSalesYearDelta');
+            if (el) {
+              const d = data.salesYearDelta || 0;
+              el.textContent = `${d >= 0 ? '+' : ''}${d}% vs last year`;
+            }
+          }
+
+          // Orders (week for legacy), plus month/year
+          document.getElementById('analyticsOrders').textContent = data.orders || 0;
+          document.getElementById('analyticsOrdersDelta').textContent = `${data.ordersDelta >= 0 ? '+' : ''}${data.ordersDelta || 0}% from last week`;
+          document.getElementById('analyticsOrdersMonth').textContent = data.ordersMonth || 0;
+          document.getElementById('analyticsOrdersYear').textContent = data.ordersYear || 0;
+        }
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        // Defaults
+        const d = {
+          sales: 0, salesDelta: 0, salesWeek: 0, salesYear: 0,
+          orders: 0, ordersDelta: 0, ordersMonth: 0, ordersYear: 0
+        };
+        document.getElementById('analyticsSales').textContent = '₱0.00';
+        document.getElementById('analyticsSalesDelta').textContent = '+0% from last month';
+        document.getElementById('analyticsSalesWeek').textContent = '₱0.00';
+        document.getElementById('analyticsSalesYear').textContent = '₱0.00';
+        document.getElementById('analyticsOrders').textContent = '0';
+        document.getElementById('analyticsOrdersDelta').textContent = '+0% from last week';
+        document.getElementById('analyticsOrdersMonth').textContent = '0';
+        document.getElementById('analyticsOrdersYear').textContent = '0';
+      }
+    }
+    
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <script src="/static/js/chat-center.js" defer></script>
+  
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

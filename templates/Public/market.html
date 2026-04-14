@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Apparel - Shop</title>
+    <meta name="description" content="Shop women's apparel. Browse categories, filter products, and find deals.">
+    <link rel="canonical" href="/Public/market.html">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/market.css">
+    
+    <style>
+      .notification-see-all, .message-see-all { display:none; }
+      .notification-container:hover .notification-see-all,
+      .message-container:hover .message-see-all { display:block; }
+      .notification-dropdown, .message-dropdown, .cart-dropdown {
+        min-width: 320px; background: #fff; border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.1);
+      }
+      .message-container:hover .message-dropdown { display:block; }
+      .notification-dropdown::before,
+      .message-dropdown::before,
+      .cart-dropdown::before {
+        content: '';
+        position: absolute; top: -8px; right: 18px;
+        border-left: 8px solid transparent; border-right: 8px solid transparent;
+        border-bottom: 8px solid #fff; filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.06));
+      }
+      /* Force-show and position badges on this page */
+      .notification-container .action-btn,
+      .message-container .action-btn,
+      .cart-container .action-btn { position: relative; }
+      .notification-container #notificationCount,
+      .message-container #messageCount,
+      .cart-container #cartCount {
+        display: flex !important;
+        position: absolute;
+        top: -8px; right: -8px;
+        min-width: 20px; height: 20px;
+        align-items: center; justify-content: center;
+        background: var(--accent-coral, #ff6f61);
+        color: #fff; border-radius: 50%;
+        font-weight: 600; font-size: .75rem;
+        z-index: 5;
+      }
+    </style>
+</head>
+<body>
+    <!-- Copy the exact header from index.html -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                   <a href="/" class="brand">
+                <img src="/static/image.png" alt="Grande" class="brand-logo">
+                </a>
+                </a>
+                
+                <div class="header-divider d-none d-lg-block">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/Public/market.html">Shop</a>
+                        </li>
+                    </ul>
+
+                    <div class="search-wrapper ms-lg-3">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input form-control" placeholder="Search products...">
+                    </div>
+
+                    <div class="position-relative notification-container">
+                        <button class="action-btn notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+<span class="cart-count" id="notificationCount">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h5 class="notification-title">Notifications</h5>
+                                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="loading-notifications">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="notification-see-all" style="display:none; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.05); text-align:center;">
+                                <a href="#" style="color:#FF2BAC; text-decoration:none; font-weight:500;">See All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative message-container">
+                        <button class="action-btn message-btn" id="messageBtn" title="Messages">
+                            <i class="fas fa-comments"></i>
+<span class="cart-count" id="messageCount">0</span>
+                        </button>
+                        
+                        <div class="message-dropdown" id="messageDropdown">
+                            <div class="message-header">
+                                <h6 class="message-title">Messages</h6>
+                                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+                            </div>
+                            <div class="message-list" id="messageList">
+                                 Messages will be loaded here 
+                            </div>
+                            <div class="message-see-all" style="display:none; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.05); text-align:center;">
+                                <a href="#" style="color:#FF2BAC; text-decoration:none; font-weight:500;">See All Messages</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative cart-container">
+                        <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                        <div class="cart-dropdown" id="cartDropdown">
+                            <div class="cart-dropdown-header">
+                                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+                            </div>
+                            <div class="cart-dropdown-items" id="cartDropdownItems">
+                                <div class="loading-cart" id="cartLoading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span id="cartTotal">₱0.00</span>
+                                </div>
+                                <div class="cart-actions">
+                                    <a href="/Public/cart.html" class="btn-view-cart">View Cart</a
+                                    ><a href="/Public/checkout.html" class="btn-checkout">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-section" id="userSection">
+                        <!-- Not logged in state -->
+                        <div id="authLinks" class="auth-buttons">
+                            <a href="/Authenticator/login.html" class="action-btn login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span class="btn-text">Login</span>
+                            </a>
+                            <a href="/Authenticator/register.html" class="action-btn register-btn">
+                                <i class="fas fa-user-plus"></i>
+                                <span class="btn-text">Register</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Logged in state -->
+                        <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+                            <button class="user-profile-btn" id="userProfileBtn" type="button">
+                                <div class="user-avatar" id="userAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info" id="userInfo">
+                                    <span class="user-name" id="userName">User Name</span>
+                                    <span class="user-role" id="userRole">Role</span>
+                                </div>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            
+                            <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-avatar-large">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="dropdown-user-name" id="dropdownUserName"></h6>
+                                        <p class="dropdown-user-email" id="dropdownUserEmail"></p>
+                                        <span class="dropdown-user-role" id="dropdownUserRole"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="../UserProfile/account.html" class="dropdown-item" id="profileLink">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                    <a href="../UserProfile/my_orders.html" class="dropdown-item" id="ordersLink">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                    <a href="/templates/UserProfile/wishlist.html" class="dropdown-item" id="wishlistLink">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Wishlist</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item" id="settingsLink">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <!-- Role-specific dashboard links will be inserted here by JavaScript -->
+                                <div class="dropdown-section" id="roleDashboardSection">
+                                    <!-- Dynamic content based on user role -->
+                                </div>
+                                
+                                <div class="dropdown-divider" id="roleDivider" style="display: none;"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="#" class="dropdown-item text-danger" id="logoutBtn" onclick="AuthManager.logout(); return false;">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Market Header -->
+    <section class="market-header">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                </ol>
+            </nav>
+
+    </section>
+
+    <!-- Main Market Content -->
+    <div class="container">
+        <div class="market-container">
+            <!-- Mobile Filter Toggle -->
+            <button class="mobile-filter-toggle" id="mobileFilterToggle" style="display: none;">
+                <i class="fas fa-filter me-2"></i> Filters
+            </button>
+
+            <!-- Filters Sidebar -->
+            <aside class="filters-sidebar" id="filtersSidebar">
+                <div class="filters-title">
+                    <i class="fas fa-sliders-h me-2"></i>Filters
+                </div>
+
+                <!-- Categories Filter -->
+                <div class="filter-section">
+                    <h6>Categories</h6>
+                    <div id="categoryFilters">
+                        <!-- Categories will be loaded from database -->
+                    </div>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="filter-section">
+                    <h6>Price Range</h6>
+                    <div class="price-inputs">
+                        <input type="number" class="price-input" placeholder="Min" id="priceMin" min="0" step="0.01" inputmode="decimal">
+                        <span class="price-separator">-</span>
+                        <input type="number" class="price-input" placeholder="Max" id="priceMax" min="0" step="0.01" inputmode="decimal">
+                    </div>
+                </div>
+
+                <!-- Size Filter -->
+                <div class="filter-section">
+                    <h6>Sizes</h6>
+                    <div id="sizeFilters" class="d-flex flex-wrap gap-2">
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="XS"> XS</label>
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="S"> S</label>
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="M"> M</label>
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="L"> L</label>
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="XL"> XL</label>
+                        <label class="form-check form-chip"><input class="form-check-input" type="checkbox" value="XXL"> XXL</label>
+                    </div>
+                </div>
+
+                <!-- Saved Filters -->
+                <div class="filter-section">
+                    <h6>Saved Filters</h6>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="text" id="saveFiltersName" class="form-control" placeholder="Name this filter set">
+                        <button class="btn btn-sm btn-outline-secondary" id="saveFiltersBtn"><i class="fas fa-bookmark me-1"></i>Save</button>
+                    </div>
+                    <ul id="savedFiltersList" class="list-unstyled small mb-0"></ul>
+                </div>
+
+                <!-- Rating Filter -->
+                <div class="filter-section">
+                    <h6>Customer Rating</h6>
+                    <div class="rating-filter">
+                        <input type="radio" id="rating-5" name="rating" value="5">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-text">5 stars</span>
+                    </div>
+                    <div class="rating-filter">
+                        <input type="radio" id="rating-4" name="rating" value="4">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-text">4 stars & up</span>
+                    </div>
+                    <div class="rating-filter">
+                        <input type="radio" id="rating-3" name="rating" value="3">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-text">3 stars & up</span>
+                    </div>
+                </div>
+
+
+                <!-- Clear Filters Button -->
+                <button class="clear-filters" id="clearFilters">
+                    <i class="fas fa-times me-2"></i>Clear All Filters
+                </button>
+            </aside>
+
+            <!-- Products Section -->
+            <main class="products-section">
+                <!-- Products Header -->
+                <div class="products-header">
+                    <div class="products-count" id="productCount">
+                        Loading products...
+                    </div>
+                    <div class="sort-controls">
+                        <select class="sort-select" id="sortSelect">
+                            <option value="relevance">Sort by Relevance</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Customer Rating</option>
+                            <option value="newest">Newest First</option>
+                            <option value="bestseller">Best Sellers</option>
+                        </select>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid" id="productsGrid">
+                    <div class="products-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading products...</p>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-wrapper">
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be generated dynamically -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer" style="background: var(--gray-800); color: white; padding: 3rem 0 1rem;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-brand">
+                        <h3>Women's Apparel</h3>
+                        <p>Elevating your style with premium women's fashion. Discover pieces that celebrate your unique beauty and confidence.</p>
+                        <div class="social-links" style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-facebook"></i></a>
+                            <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-instagram"></i></a>
+                            <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-twitter"></i></a>
+                            <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h4>Shop</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li><a href="/Public/market.html" style="color: #ccc; text-decoration: none;">New Arrivals</a></li>
+                            <li><a href="/Public/market.html?category=Dresses" style="color: #ccc; text-decoration: none;">Dresses</a></li>
+                            <li><a href="/Public/market.html?category=Tops" style="color: #ccc; text-decoration: none;">Tops</a></li>
+                            <li><a href="/Public/market.html?category=Activewear" style="color: #ccc; text-decoration: none;">Activewear</a></li>
+                            <li><a href="/Public/flash-sales.html" style="color: #ccc; text-decoration: none;">Sale</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h4>Company</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">About Us</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Careers</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Press</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Blog</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Sustainability</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Help Center</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Size Guide</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Returns</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Shipping</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h4>Account</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li><a href="/Authenticator/login.html" style="color: #ccc; text-decoration: none;">My Account</a></li>
+                            <li><a href="/templates/UserProfile/my_orders.html" style="color: #ccc; text-decoration: none;">Orders</a></li>
+                            <li><a href="/templates/UserProfile/wishlist.html" style="color: #ccc; text-decoration: none;">Wishlist</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Rewards</a></li>
+                            <li><a href="#" style="color: #ccc; text-decoration: none;">Gift Cards</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom" style="border-top: 1px solid #555; padding-top: 2rem; margin-top: 2rem;">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p>&copy; 2025 Women's Apparel. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="payment-methods" style="display: flex; gap: 0.5rem; justify-content: end;">
+                            <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=VISA" alt="Visa">
+                            <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=MC" alt="Mastercard">
+                            <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=AMEX" alt="American Express">
+                            <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=PP" alt="PayPal">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/shared-auth.js"></script>
+    <script src="/static/js/user-dropdown.js"></script>
+    <script src="/static/js/shared-header.js"></script>
+    <script src="/static/js/message-manager.js"></script>
+    <script src="/static/js/market.js"></script>
+    
+    <!-- Enhanced JavaScript for consistent auth and functionality across pages -->
+    <script>
+// Enhanced E-commerce Script - Market Page Version
+// ==========================================
+
+// Global Variables
+let cartCount = 0;
+let countdownTimer;
+
+// Using shared authentication system from shared-auth.js
+// SessionManager and AuthManager are now loaded from the shared script
+
+// NotificationManager (same as index.html)
+class NotificationManager {
+    constructor() {
+        this.notifications = [];
+        this.unreadCount = 0;
+        this.notificationBtn = document.getElementById('notificationBtn');
+        this.notificationDropdown = document.getElementById('notificationDropdown');
+        this.notificationList = document.getElementById('notificationList');
+        this.badge = document.querySelector('.notification-btn .cart-count');
+        this.isLoading = false;
+        this.retryCount = 0;
+        this.maxRetries = 3;
+        this.hideTimeout = null;
+        
+        this.init();
+    }
+    
+    async init() {
+        this.setupEventListeners();
+        
+        if (AuthManager.isLoggedIn()) {
+            await this.loadNotifications();
+            this.startRealtime();
+        } else {
+            this.renderUnauthenticatedState();
+        }
+    }
+
+    setupEventListeners() {
+        if (!this.notificationBtn || !this.notificationDropdown) {
+            console.warn('Notification elements not found');
+            return;
+        }
+
+        if (window.innerWidth > 768) {
+            this.notificationBtn.addEventListener('mouseenter', () => {
+                this.showDropdown();
+            });
+
+            this.notificationDropdown.addEventListener('mouseenter', () => {
+                clearTimeout(this.hideTimeout);
+            });
+
+            this.notificationBtn.addEventListener('mouseleave', () => {
+                this.hideTimeout = setTimeout(() => {
+                    if (!this.notificationDropdown.matches(':hover')) {
+                        this.hideDropdown();
+                    }
+                }, 100);
+            });
+
+            this.notificationDropdown.addEventListener('mouseleave', () => {
+                this.hideDropdown();
+            });
+        } else {
+            this.notificationBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleDropdown();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!this.notificationBtn.contains(e.target) && 
+                    !this.notificationDropdown.contains(e.target)) {
+                    this.hideDropdown();
+                }
+            });
+        }
+
+        const markAllReadBtn = document.getElementById('markAllRead');
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.markAllAsRead();
+            });
+        }
+    }
+
+    showDropdown() {
+        if (!this.notificationDropdown) return;
+        
+        clearTimeout(this.hideTimeout);
+        this.notificationDropdown.style.display = 'block';
+        
+        if (AuthManager.isLoggedIn()) {
+            if (this.notifications.length === 0 && !this.isLoading) {
+                this.loadNotifications();
+            }
+        } else {
+            this.renderUnauthenticatedState();
+        }
+    }
+
+    async loadNotifications() {
+        if (this.isLoading) return;
+        
+        const token = AuthManager.getAuthToken();
+        
+        if (!token) {
+            this.renderUnauthenticatedState();
+            return;
+        }
+
+        this.isLoading = true;
+        
+        if (this.notificationList) {
+            this.notificationList.innerHTML = `
+                <div class="loading-notifications">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">Loading notifications...</p>
+                </div>
+            `;
+        }
+
+        try {
+            const response = await fetch('/api/notifications', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                this.notifications = data.notifications || [];
+                this.unreadCount = data.unread_count || 0;
+                
+                this.updateBadge();
+                this.renderNotifications();
+                
+                this.retryCount = 0;
+            } else {
+                throw new Error(data.error || 'Failed to load notifications');
+            }
+
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+            this.handleNotificationLoadError(error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    handleNotificationLoadError(error) {
+        this.retryCount++;
+        
+        if (this.notificationList) {
+            if (error.message.includes('401') || error.message.includes('403')) {
+                AuthManager.clearAuthState();
+                this.renderUnauthenticatedState();
+            } else if (this.retryCount < this.maxRetries) {
+                this.notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load notifications</p>
+                        <small>${error.message}</small>
+                        <button onclick="notificationManager.loadNotifications()" 
+                                class="btn btn-primary-custom btn-sm mt-3">
+                            <i class="fas fa-sync"></i> Retry (${this.retryCount}/${this.maxRetries})
+                        </button>
+                    </div>
+                `;
+            } else {
+                this.notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-times-circle"></i>
+                        <p>Unable to load notifications</p>
+                        <small>Please refresh the page or try again later</small>
+                        <button onclick="window.location.reload()" 
+                                class="btn btn-primary-custom btn-sm mt-3">
+                            <i class="fas fa-refresh"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    renderUnauthenticatedState() {
+        if (!this.notificationList) return;
+        
+        this.notificationList.innerHTML = `
+            <div class="notification-empty">
+                <i class="fas fa-bell-slash"></i>
+                <p>Login to view notifications</p>
+                <small>Sign in to see your order updates and messages</small>
+                <a href="../Authenticator/login.html" 
+                   class="btn btn-primary-custom btn-sm mt-3">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        `;
+        
+        if (this.badge) {
+            this.badge.style.display = 'none';
+        }
+    }
+
+    renderNotifications() {
+        if (!this.notificationList) return;
+
+        if (!this.notifications || this.notifications.length === 0) {
+            this.notificationList.innerHTML = `
+                <div class="notification-empty">
+                    <i class="fas fa-bell"></i>
+                    <p>No notifications yet</p>
+                    <small>We'll notify you about order updates and important messages</small>
+                </div>
+            `;
+            return;
+        }
+
+        this.notificationList.innerHTML = this.notifications.map(notification => {
+            const hasProductImage = notification.image_url && 
+                                   (notification.image_url.includes('/products/') || 
+                                    notification.image_url.includes('product') ||
+                                    notification.type.startsWith('order_'));
+            
+            return `
+                <div class="notification-item ${notification.is_read ? '' : 'unread'}" 
+                     data-id="${notification.id}">
+                    ${hasProductImage ? `
+                        <img src="${notification.image_url}" 
+                             alt="Product" 
+                             class="notification-image"
+                             style="border-radius: 8px; object-fit: cover;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="notification-icon" style="display: none;">
+                            <i class="fas ${this.getNotificationIcon(notification.type)}"></i>
+                        </div>
+                    ` : `
+                        <div class="notification-icon" style="background: ${this.getNotificationIconColor(notification.type)};">
+                            <i class="fas ${this.getNotificationIcon(notification.type)}"></i>
+                        </div>
+                    `}
+                    <div class="notification-content">
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${notification.time_ago || this.formatTime(notification.created_at)}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    getNotificationIconColor(type) {
+        const colorMap = {
+            'order_pending': 'linear-gradient(135deg, #ffa726, #ff9800)',
+            'order_confirmed': 'linear-gradient(135deg, #66bb6a, #4caf50)',
+            'order_prepared': 'linear-gradient(135deg, #42a5f5, #2196f3)',
+            'order_shipped': 'linear-gradient(135deg, #26c6da, #00bcd4)',
+            'order_delivered': 'linear-gradient(135deg, #66bb6a, #4caf50)',
+            'order_cancelled': 'linear-gradient(135deg, #ef5350, #f44336)',
+            'payment_success': 'linear-gradient(135deg, #66bb6a, #4caf50)',
+            'payment_failed': 'linear-gradient(135deg, #ef5350, #f44336)',
+            'promotion': 'linear-gradient(135deg, #ab47bc, #9c27b0)',
+            'message': 'linear-gradient(135deg, #5c6bc0, #3f51b5)'
+        };
+        return colorMap[type] || 'linear-gradient(135deg, var(--accent-coral), var(--accent-pink))';
+    }
+
+    getNotificationIcon(type) {
+        const iconMap = {
+            'order_pending': 'fa-clock',
+            'order_confirmed': 'fa-check-circle',
+            'order_prepared': 'fa-hammer',
+            'order_shipped': 'fa-truck',
+            'order_delivered': 'fa-box-open',
+            'order_cancelled': 'fa-times-circle',
+            'payment_success': 'fa-credit-card',
+            'payment_failed': 'fa-exclamation-triangle',
+            'promotion': 'fa-gift',
+            'message': 'fa-comment'
+        };
+        return iconMap[type] || 'fa-bell';
+    }
+
+    formatTime(timestamp) {
+        if (!timestamp) return 'Unknown';
+        
+        try {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+            
+            if (diffInMinutes < 1) return 'Just now';
+            if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+            if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+            if (diffInMinutes < 10080) return `${Math.floor(diffInMinutes / 1440)}d ago`;
+            
+            return date.toLocaleDateString();
+        } catch (e) {
+            return 'Unknown';
+        }
+    }
+
+    startRealtime() {
+        try {
+            const token = AuthManager.getAuthToken ? AuthManager.getAuthToken() : null;
+            if (!token || typeof EventSource === 'undefined') {
+                this.startPolling();
+                return;
+            }
+            const lastId = (this.notifications && this.notifications.length > 0) ? this.notifications[0].id : 0;
+            const url = `/api/notifications/stream?token=${encodeURIComponent(token)}${lastId ? `&lastId=${lastId}` : ''}`;
+            this._es = new EventSource(url);
+            this._es.onmessage = (evt) => {
+                if (!evt || !evt.data) return;
+                try {
+                    const data = JSON.parse(evt.data);
+                    if (!data || !data.id) return;
+                    // Prepend new notification, update counts/UI
+                    this.notifications = [data, ...(this.notifications || [])].slice(0, 50);
+                    if (!data.is_read) {
+                        this.unreadCount = (this.unreadCount || 0) + 1;
+                        this.updateBadge();
+                    }
+                    this.renderNotifications();
+                } catch (_) { /* ignore non-JSON messages (e.g., heartbeat) */ }
+            };
+            this._es.onerror = () => {
+                try { this._es && this._es.close(); } catch (_) {}
+                // Fallback to polling
+                this.startPolling();
+            };
+        } catch (_) {
+            this.startPolling();
+        }
+    }
+
+    updateBadge() {
+        if (this.badge) {
+            if (this.unreadCount > 0) {
+                this.badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+                this.badge.style.display = 'flex';
+            } else {
+                this.badge.style.display = 'none';
+            }
+        }
+    }
+
+    toggleDropdown() {
+        if (this.notificationDropdown.style.display === 'block') {
+            this.hideDropdown();
+        } else {
+            this.showDropdown();
+        }
+    }
+
+    hideDropdown() {
+        if (this.notificationDropdown) {
+            this.notificationDropdown.style.display = 'none';
+        }
+    }
+
+    startPolling() {
+        setInterval(() => {
+            if (AuthManager.isLoggedIn() && !this.isLoading) {
+                if (this.notificationDropdown.style.display !== 'block') {
+                    this.loadNotifications();
+                }
+            }
+        }, 30000);
+    }
+
+    async markAsRead(notificationId) {
+        const token = AuthManager.getAuthToken();
+        if (!token) return;
+
+        try {
+            const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const notification = this.notifications.find(n => n.id == notificationId);
+                if (notification && !notification.is_read) {
+                    notification.is_read = true;
+                    this.unreadCount = Math.max(0, this.unreadCount - 1);
+                    this.updateBadge();
+                    this.renderNotifications();
+                }
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    }
+
+    async markAllAsRead() {
+        const token = AuthManager.getAuthToken();
+        if (!token) {
+            showNotification('Please login to manage notifications', 'info');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/notifications/read-all', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                this.notifications.forEach(n => n.is_read = true);
+                this.unreadCount = 0;
+                this.updateBadge();
+                this.renderNotifications();
+                showNotification('All notifications marked as read', 'success');
+            } else {
+                throw new Error('Failed to mark notifications as read');
+            }
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+            showNotification('Failed to mark notifications as read', 'error');
+        }
+    }
+}
+
+// Message Manager will be loaded from external file
+
+// Enhanced Cart Manager (simplified for market page)
+class EnhancedCartManager {
+    constructor() {
+        this.cartItems = [];
+        this.isInitialized = false;
+        this.pendingSync = false;
+        
+        this.cartCountElement = document.querySelector('.cart-count');
+        this.cartDropdown = document.getElementById('cartDropdown');
+        this.cartDropdownItems = document.getElementById('cartDropdownItems');
+        this.cartTotal = document.getElementById('cartTotal');
+        
+        this.init();
+    }
+    
+    init() {
+        this.loadCartFromStorage();
+        this.setupEventListeners();
+        this.updateCartDisplay();
+        this.isInitialized = true;
+    }
+    
+    loadCartFromStorage() {
+        const isAuthenticated = AuthManager.isLoggedIn();
+        const userInfo = AuthManager.getAuthUser();
+        
+        if (isAuthenticated && userInfo) {
+            const userCartKey = `cart_${userInfo.email || userInfo.id || 'user'}`;
+            const savedCart = localStorage.getItem(userCartKey);
+            
+            if (savedCart) {
+                try {
+                    this.cartItems = JSON.parse(savedCart);
+                } catch (e) {
+                    console.error('Error loading user cart:', e);
+                    this.cartItems = [];
+                }
+            }
+            
+            this.mergeGuestCart();
+        } else {
+            const guestCart = localStorage.getItem('guest_cart');
+            if (guestCart) {
+                try {
+                    this.cartItems = JSON.parse(guestCart);
+                } catch (e) {
+                    console.error('Error loading guest cart:', e);
+                    this.cartItems = [];
+                }
+            }
+        }
+    }
+    
+    mergeGuestCart() {
+        const guestCart = localStorage.getItem('guest_cart');
+        if (guestCart) {
+            try {
+                const guestItems = JSON.parse(guestCart);
+                
+                guestItems.forEach(guestItem => {
+                    const existingItem = this.cartItems.find(item => item.id === guestItem.id);
+                    if (existingItem) {
+                        existingItem.quantity += guestItem.quantity;
+                    } else {
+                        this.cartItems.push(guestItem);
+                    }
+                });
+                
+                this.saveCartToStorage();
+                localStorage.removeItem('guest_cart');
+                
+                if (guestItems.length > 0) {
+                    this.showNotification(`${guestItems.length} item(s) merged from your previous session`, 'success');
+                }
+            } catch (e) {
+                console.error('Error merging guest cart:', e);
+            }
+        }
+    }
+    
+    saveCartToStorage() {
+        const isAuthenticated = AuthManager.isLoggedIn();
+        const userInfo = AuthManager.getAuthUser();
+        
+        if (isAuthenticated && userInfo) {
+            const userCartKey = `cart_${userInfo.email || userInfo.id || 'user'}`;
+            localStorage.setItem(userCartKey, JSON.stringify(this.cartItems));
+            this.syncWithBackend();
+        } else {
+            localStorage.setItem('guest_cart', JSON.stringify(this.cartItems));
+        }
+    }
+    
+    syncWithBackend() {
+        if (!AuthManager.isLoggedIn() || this.pendingSync) return;
+        
+        this.pendingSync = true;
+        
+        setTimeout(() => {
+            this.pendingSync = false;
+        }, 1000);
+    }
+    
+    addItem(product) {
+        if (!product.id || !product.name || !product.price) {
+            console.error('Invalid product data:', product);
+            return false;
+        }
+        
+        const existingItem = this.cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.cartItems.push({
+                id: product.id,
+                name: product.name,
+                price: parseFloat(product.price),
+                originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+                image: product.image,
+                quantity: 1,
+                addedAt: Date.now()
+            });
+        }
+        
+        this.saveCartToStorage();
+        this.updateCartDisplay();
+        
+        return true;
+    }
+    
+    removeItem(productId) {
+        const itemIndex = this.cartItems.findIndex(item => item.id === productId);
+        
+        if (itemIndex > -1) {
+            const removedItem = this.cartItems[itemIndex];
+            this.cartItems.splice(itemIndex, 1);
+            this.saveCartToStorage();
+            this.updateCartDisplay();
+            
+            this.showNotification(`${removedItem.name} removed from cart`, 'info');
+            return true;
+        }
+        
+        return false;
+    }
+    
+    updateQuantity(productId, newQuantity) {
+        const item = this.cartItems.find(item => item.id === productId);
+        
+        if (item) {
+            if (newQuantity <= 0) {
+                this.removeItem(productId);
+            } else {
+                item.quantity = newQuantity;
+                this.saveCartToStorage();
+                this.updateCartDisplay();
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
+    clearCart() {
+        this.cartItems = [];
+        this.saveCartToStorage();
+        this.updateCartDisplay();
+        this.showNotification('Cart cleared', 'info');
+    }
+    
+    getItemCount() {
+        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
+    
+    getTotal() {
+        return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    
+    updateCartDisplay() {
+        if (!this.isInitialized) return;
+        
+        const itemCount = this.getItemCount();
+        if (this.cartCountElement) {
+            this.cartCountElement.textContent = itemCount;
+            
+            if (itemCount > 0) {
+                this.cartCountElement.classList.add('bounce');
+                setTimeout(() => {
+                    this.cartCountElement.classList.remove('bounce');
+                }, 600);
+            }
+        }
+        
+        this.updateCartDropdown();
+    }
+    
+    updateCartDropdown() {
+        if (!this.cartDropdownItems) return;
+        
+        if (this.cartItems.length === 0) {
+            this.cartDropdownItems.innerHTML = `
+                <div class="cart-empty-message">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>Your cart is empty</p>
+                    <a href="/Public/market.html" class="btn btn-start-shopping" style="margin-top:8px;">Start Shopping</a>
+                </div>
+            `;
+            
+            if (document.getElementById('cartDropdownFooter')) {
+                document.getElementById('cartDropdownFooter').style.display = 'none';
+            }
+        } else {
+            this.cartDropdownItems.innerHTML = this.cartItems.map(item => `
+                <div class="cart-item" data-id="${item.id}">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image" 
+                         onerror="this.src='https://via.placeholder.com/60x60/f0f0f0/666?text=IMG'">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">₱${item.price.toFixed(2)}</div>
+                        <div class="cart-item-quantity">Qty: ${item.quantity}</div>
+                    </div>
+                    <button class="cart-item-remove" onclick="cartManager.removeItem('${item.id}')" 
+                            title="Remove item">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            if (this.cartTotal) {
+                this.cartTotal.textContent = `₱${this.getTotal().toFixed(2)}`;
+            }
+            
+            if (document.getElementById('cartDropdownFooter')) {
+                document.getElementById('cartDropdownFooter').style.display = 'block';
+            }
+        }
+    }
+    
+    setupEventListeners() {
+        const cartBtn = document.getElementById('cartBtn');
+        if (!cartBtn || !this.cartDropdown) return;
+        
+        let hoverTimeout;
+        
+        if (window.innerWidth > 768) {
+            cartBtn.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimeout);
+                this.showCartDropdown();
+            });
+            
+            cartBtn.addEventListener('mouseleave', () => {
+                hoverTimeout = setTimeout(() => {
+                    this.hideCartDropdown();
+                }, 300);
+            });
+            
+            this.cartDropdown.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimeout);
+            });
+            
+            this.cartDropdown.addEventListener('mouseleave', () => {
+                hoverTimeout = setTimeout(() => {
+                    this.hideCartDropdown();
+                }, 300);
+            });
+        } else {
+            cartBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                if (this.cartDropdown.style.display === 'block') {
+                    this.hideCartDropdown();
+                } else {
+                    this.showCartDropdown();
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!cartBtn.contains(e.target) && !this.cartDropdown.contains(e.target)) {
+                    this.hideCartDropdown();
+                }
+            });
+        }
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                this.cartDropdown.style.position = 'fixed';
+            } else {
+                this.cartDropdown.style.position = 'absolute';
+            }
+        });
+    }
+    
+    showCartDropdown() {
+        if (this.cartDropdown) {
+            this.cartDropdown.style.display = 'block';
+            this.updateCartDropdown();
+        }
+    }
+    
+    hideCartDropdown() {
+        if (this.cartDropdown) {
+            this.cartDropdown.style.display = 'none';
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        showNotification(message, type);
+    }
+}
+
+// User Profile Dropdown Handler (for market.html)
+function setupUserProfileDropdown() {
+    const userProfileBtn = document.getElementById('userProfileBtn');
+    const userDropdownMenu = document.getElementById('userDropdownMenu');
+    
+    if (!userProfileBtn || !userDropdownMenu) return;
+
+    let dropdownOpen = false;
+
+    userProfileBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (dropdownOpen) {
+            userDropdownMenu.classList.remove('show');
+            userProfileBtn.classList.remove('active');
+            dropdownOpen = false;
+        } else {
+            userDropdownMenu.classList.add('show');
+            userProfileBtn.classList.add('active');
+            dropdownOpen = true;
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!userProfileBtn.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+            userDropdownMenu.classList.remove('show');
+            userProfileBtn.classList.remove('active');
+            dropdownOpen = false;
+        }
+    });
+}
+
+// Utility function for notifications
+function showNotification(message, type = 'info') {
+    document.querySelectorAll('.toast').forEach(toast => toast.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas ${icons[type] || icons.info}"></i>
+            <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" 
+                style="background: none; border: none; color: inherit; font-size: 1.2rem; cursor: pointer; margin-left: auto;">&times;</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 4000);
+}
+
+// Initialize managers globally
+let cartManager;
+let notificationManager;
+let messageManager;
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize managers
+    cartManager = new EnhancedCartManager();
+    notificationManager = new NotificationManager();
+    
+    // Initialize message manager (will be loaded from external file)
+    if (typeof MessageManager !== 'undefined') {
+        messageManager = new MessageManager();
+    }
+    
+    // Setup user profile dropdown
+    setupUserProfileDropdown();
+    
+    // Authentication is now handled automatically by shared-auth.js
+    // Listen for auth changes to reinitialize managers
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'auth_user' || e.key === 'auth_token') {
+            // Reinitialize managers if auth changes
+            if (notificationManager) {
+                notificationManager.init();
+            }
+            if (messageManager) {
+                messageManager.init();
+            }
+            if (cartManager) {
+                cartManager.loadCartFromStorage();
+                cartManager.updateCartDisplay();
+            }
+        }
+    });
+    
+    // Initialize market-specific functionality if market.js is loaded
+    if (typeof initializeMarket === 'function') {
+        initializeMarket();
+    }
+});
+
+// Global functions for external access
+window.logout = () => AuthManager.logout();
+window.closeCart = () => cartManager?.hideCartDropdown();
+window.addItemToCart = (product) => cartManager?.addItem(product);
+
+    </script>
+</body>
+</html>

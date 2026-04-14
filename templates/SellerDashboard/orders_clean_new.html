@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders Management - Seller Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed - FIXED POSITION */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Section title wrapper - flex container for toggle + title */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+
+    /* Hide the text span when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none;
+    }
+
+    /* Center the section when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 !important;
+      margin: 0 0 6px 0 !important;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Sticky position when expanded so toggle button stays at top */
+    .admin-sidebar:not(.collapsed) .nav-section.first-section .nav-section-title {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+      padding-bottom: 12px !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Removed generic .topbar-action style to prevent conflicts with button styles */
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    @media (min-width: 992px) {
+      .admin-content { padding: 1.2rem; }
+    }
+
+    @media (min-width: 1200px) {
+      .admin-content { padding: 1.5rem; }
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+      .page-title { font-size: 1.4rem; }
+    }
+
+    @media (min-width: 1200px) {
+      .page-title { font-size: 1.5rem; }
+    }
+    
+    /* Single-line truncation utility */
+    .truncate-1, .text-truncate-1 {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    /* Recent Products: first column (Product) */
+    #recentProductsBody td:nth-child(1) {
+      width: 360px;
+      max-width: 360px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #recentProductsBody td:nth-child(1) a,
+    #recentProductsBody td:nth-child(1) span,
+    #recentProductsBody td:nth-child(1) div,
+    #recentProductsBody td:nth-child(1) strong,
+    #recentProductsBody td:nth-child(1) h6,
+    #recentProductsBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Hard clamp nested content in case of complex wrappers */
+    #recentProductsBody td:nth-child(1) * { max-width: 100%; }
+    /* Best Selling: first column (Product) */
+    #bestProductsBody td:nth-child(1) { width: 340px; max-width: 340px; }
+    #bestProductsBody td:nth-child(1) a,
+    #bestProductsBody td:nth-child(1) span,
+    #bestProductsBody td:nth-child(1) div,
+    #bestProductsBody td:nth-child(1) strong,
+    #bestProductsBody td:nth-child(1) h6,
+    #bestProductsBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Low Stock: first column (Product) */
+    #lowStockBody td:nth-child(1) { width: 340px; max-width: 340px; }
+    #lowStockBody td:nth-child(1) a,
+    #lowStockBody td:nth-child(1) span,
+    #lowStockBody td:nth-child(1) div,
+    #lowStockBody td:nth-child(1) strong,
+    #lowStockBody td:nth-child(1) h6,
+    #lowStockBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 768px) {
+      #recentProductsBody td:nth-child(1) { width: 220px; max-width: 220px; }
+      #recentProductsBody td:nth-child(1) a,
+      #recentProductsBody td:nth-child(1) span,
+      #recentProductsBody td:nth-child(1) div,
+      #bestProductsBody td:nth-child(1) { width: 200px; max-width: 200px; }
+      #bestProductsBody td:nth-child(1) a,
+      #bestProductsBody td:nth-child(1) span,
+      #bestProductsBody td:nth-child(1) div,
+      #lowStockBody td:nth-child(1) { width: 200px; max-width: 200px; }
+      #lowStockBody td:nth-child(1) a,
+      #lowStockBody td:nth-child(1) span,
+      #lowStockBody td:nth-child(1) div { max-width: 100%; }
+    }
+    /* Improve truncation in tables */
+    .admin-content .modern-card table.table { table-layout: fixed; }
+
+    /* Smooth scrolling for entire page */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Better scrollbar for main content */
+    .admin-content {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 43, 172, 0.3) #f0f0f0;
+    }
+
+    .admin-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .admin-content::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+
+    .admin-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #FF2BAC, #FF6BCE);
+      border-radius: 4px;
+    }
+
+    .admin-content::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #FF6BCE, #FF2BAC);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* Topbar refinements */
+    .admin-topbar {
+      padding: 12px 24px !important;
+      background: var(--container-bg) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+    .topbar-right { gap: 10px; display: flex; align-items: center; }
+  </style>
+</head>
+<body>
+  <!-- Seller Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+        <div class="nav-section first-section">
+          <div class="nav-section-title">
+            <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+            <span>Main</span>
+          </div>
+          <div>
+            <a href="sellerdashboard.html" class="nav-item">
+              <i class="fas fa-tachometer-alt"></i>
+              <span class="nav-text">Dashboard</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Products</div>
+          <div>
+            <a href="add_product.html" class="nav-item">
+              <i class="fas fa-plus-circle"></i>
+              <span class="nav-text">Add Product</span>
+            </a>
+          </div>
+          <div>
+            <a href="inventory.html" class="nav-item">
+              <i class="fas fa-box-open"></i>
+              <span class="nav-text">Manage Inventory</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Orders</div>
+          <div>
+            <a href="orders_clean_new.html" class="nav-item active">
+              <i class="fas fa-receipt"></i>
+              <span class="nav-text">View Orders</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div> 
+
+        <div class="nav-section">
+          <div class="nav-section-title">Deliveries</div>
+          <div>
+            <a href="delivery-tracking.html" class="nav-item">
+              <i class="fas fa-truck"></i>
+              <span class="nav-text">Delivery Tracking</span>
+              <span class="nav-badge" id="deliveryBadge">0</span>
+            </a>
+          </div>
+          <div>
+            <a href="awaiting-pickup.html" class="nav-item">
+              <i class="fas fa-clock"></i>
+              <span class="nav-text">Awaiting Pickup</span>
+              <span class="nav-badge" id="awaitingBadge">0</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Reports</div>
+          <div>
+            <a href="analytics.html" class="nav-item">
+              <i class="fas fa-chart-line"></i>
+              <span class="nav-text">Analytics</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Admin-style Topbar (no public site header) -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h1 class="page-title">Orders Management</h1>
+              <p class="page-subtitle">Manage customer orders and track fulfillment status.</p>
+            </div>
+          </div>
+        </div>
+      <!-- Dashboard Section -->
+      <div class="content-section active" id="dashboardSection">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Pending Orders</p>
+              <h3 class="stat-value" id="pendingOrdersCount">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Confirmed Orders</p>
+              <h3 class="stat-value" id="confirmedOrdersCount">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+              <i class="fas fa-shipping-fast"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Shipped Orders</p>
+              <h3 class="stat-value" id="shippedOrdersCount">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: var(--brand-grad);">
+              <i class="fas fa-peso-sign"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Total Revenue</p>
+              <h3 class="stat-value" id="totalRevenue">₱0.00</h3>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Orders Management Section -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-shopping-bag" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">All Orders</h5>
+                <p class="text-muted mb-0 small">Manage and track customer orders</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <select class="form-select form-select-sm" id="statusFilter" style="width: auto;">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-sm btn-outline-primary" onclick="refreshOrders()">
+                <i class="fas fa-refresh me-1"></i>Refresh
+              </button>
+              <button class="btn btn-sm btn-primary" onclick="exportOrders()">
+                <i class="fas fa-download me-1"></i>Export
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0" style="table-layout: fixed; width: 100%;">
+                <thead class="bg-light">
+                  <tr>
+                    <th style="width: 10%;">Order #</th>
+                    <th style="width: 18%;">Customer</th>
+                    <th style="width: 20%;">Products</th>
+                    <th style="width: 10%;">Total</th>
+                    <th style="width: 10%;">Status</th>
+                    <th style="width: 10%;">Date</th>
+                    <th style="width: 10%;">Payment</th>
+                    <th style="width: 12%;" class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                      <i class="fas fa-spinner fa-spin me-2"></i>Loading orders...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top" id="paginationSection" style="display: none !important;">
+              <div class="text-muted" id="paginationInfo">
+                Showing <span class="fw-bold" id="showingStart">0</span>-<span class="fw-bold" id="showingEnd">0</span> of <span class="fw-bold" id="totalOrders">0</span> orders
+              </div>
+              <nav id="paginationNav">
+                <!-- Pagination will be dynamically generated -->
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Low Stock Alert -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Low Stock Alert</h5>
+                <p class="text-muted mb-0 small">Products running low on inventory</p>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-outline-warning" href="inventory.html">
+              <i class="fas fa-warehouse me-1"></i>Manage Inventory
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Stock Left</th>
+                    <th>Price</th>
+                    <th class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lowStockBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Edit Product Modal (shared with inventory) -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editProductForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editProductId" name="product_id">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" id="editName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Base Price (₱)</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="editPrice" name="price" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Total Stock</label>
+                <input type="number" min="0" class="form-control" id="editTotalStock" name="total_stock" required>
+              </div>
+            </div>
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="editCategory" name="category">
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <div class="form-check mt-4">
+                  <input class="form-check-input" type="checkbox" value="1" id="editFlashSale" name="is_flash_sale">
+                  <label class="form-check-label" for="editFlashSale">Flash Sale</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Are you sure you want to delete <strong id="deleteProductName">this product</strong>? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteProductBtn">
+            <i class="fas fa-trash me-1"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/chat-center.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-dashboard.js"></script>
+
+  <!-- Essential JavaScript for Orders and Chat -->
+  <script>
+  // Orders Management JavaScript - Connected to Backend
+  let allOrders = [];
+  let filteredOrders = [];
+  let buyerProfileCache = {}; // Cache buyer profile pictures
+  
+  // Helper function to truncate text
+  function truncateText(text, maxLength) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+  
+  // Helper to get avatar background color based on name (Gmail-style)
+  function getAvatarColor(name) {
+    const colors = [
+      '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e',
+      '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+      '#f39c12', '#e67e22', '#e74c3c', '#95a5a6', '#d35400'
+    ];
+    const charCode = (name || 'A').charCodeAt(0);
+    return colors[charCode % colors.length];
+  }
+  
+  // Smart truncate order ID - keeps date, shows first 4 chars of hash
+  function truncateOrderId(orderId) {
+    if (!orderId) return 'N/A';
+    // Format: ORD-20251021-EE06C8C5 -> ORD-20251021-EE06...
+    const parts = orderId.split('-');
+    if (parts.length === 3 && parts[2].length > 4) {
+      return `${parts[0]}-${parts[1]}-${parts[2].substring(0, 4)}...`;
+    }
+    return orderId;
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load real data from backend
+    loadOrdersData();
+    loadLowStockData();
+    
+    // Initialize status filter
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+      statusFilter.addEventListener('change', function() {
+        filterOrdersByStatus(this.value);
+      });
+    }
+  });
+  
+  async function loadOrdersData() {
+    try {
+      const token = AuthManager.getAuthToken();
+      const response = await fetch('/api/seller/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load orders');
+      
+      const data = await response.json();
+      allOrders = data.orders || [];
+      filteredOrders = allOrders;
+      
+      updateOrdersStats();
+      renderOrders(filteredOrders);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      document.getElementById('ordersTableBody').innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-danger py-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>Failed to load orders
+          </td>
+        </tr>`;
+    }
+  }
+  
+  function updateOrdersStats() {
+    const pending = allOrders.filter(o => o.status === 'pending').length;
+    const confirmed = allOrders.filter(o => o.status === 'confirmed').length;
+    const shipped = allOrders.filter(o => o.status === 'shipped' || o.status === 'out_for_delivery').length;
+    const totalRevenue = allOrders
+      .filter(o => o.status !== 'cancelled')
+      .reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
+    
+    document.getElementById('pendingOrdersCount').textContent = pending;
+    document.getElementById('confirmedOrdersCount').textContent = confirmed;
+    document.getElementById('shippedOrdersCount').textContent = shipped;
+    document.getElementById('totalRevenue').textContent = `₱${totalRevenue.toFixed(2)}`;
+  }
+  
+  function renderOrders(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    
+    if (!orders || orders.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-muted py-4">
+            <i class="fas fa-inbox me-2"></i>No orders found
+          </td>
+        </tr>`;
+      return;
+    }
+    
+    tbody.innerHTML = orders.map(order => {
+      const statusBadge = getStatusBadge(order.status);
+      const paymentBadge = getPaymentBadge(order.payment_method);
+      const orderDate = new Date(order.created_at);
+      const dateStr = orderDate.toLocaleDateString();
+      const timeStr = orderDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+      const buyerName = truncateText(order.buyer_name || 'Customer', 20);
+      const initials = (order.buyer_name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const itemCount = order.items ? order.items.length : 0;
+      
+      // Get first product for thumbnail
+      const firstProduct = order.items && order.items[0];
+      const productImage = firstProduct?.image_url || firstProduct?.product_image || '/static/image.png';
+      const productNames = order.items ? order.items.slice(0, 2).map(i => truncateText(i.product_name, 25)).join(', ') : 'Items';
+      const moreItems = itemCount > 2 ? '...' : '';
+      
+      const fullOrderId = order.order_number || order.id;
+      const displayOrderId = truncateOrderId(fullOrderId);
+      
+      return `
+        <tr style="height: 60px;">
+          <td class="align-middle"><span class="fw-bold text-primary" title="${fullOrderId}" style="font-size: 0.85rem;">#${displayOrderId}</span></td>
+          <td class="align-middle">
+            <div class="d-flex align-items-center gap-2">
+              ${order.buyer_profile_picture ? 
+                `<img src="${order.buyer_profile_picture}" alt="${buyerName}" class="rounded-circle flex-shrink-0" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid #e9ecef;" onerror="this.outerHTML='<div class=\\'rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0\\'style=\\'width:32px;height:32px;font-size:11px;border:2px solid #e9ecef;background:${getAvatarColor(order.buyer_name)}\\'>${initials}</div>';">` 
+                : `<div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; font-size: 11px; border: 2px solid #e9ecef; background: ${getAvatarColor(order.buyer_name)}">${initials}</div>`
+              }
+              <div style="overflow: hidden; min-width: 0;">
+                <div class="fw-medium text-truncate" style="font-size: 0.85rem;" title="${order.buyer_name || 'Customer'}">${buyerName}</div>
+                <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;" title="${order.buyer_email || ''}">${truncateText(order.buyer_email || '', 20)}</small>
+              </div>
+            </div>
+          </td>
+          <td class="align-middle">
+            <div class="d-flex align-items-center gap-2">
+              <img src="${productImage}" alt="Product" class="flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid #e9ecef;" onerror="this.src='/static/image.png'">
+              <div style="overflow: hidden; min-width: 0;">
+                <small class="text-muted" style="font-size: 0.75rem;">${itemCount} item${itemCount !== 1 ? 's' : ''}</small>
+                <div class="small text-truncate" style="font-size: 0.8rem;" title="${order.items ? order.items.map(i => i.product_name).join(', ') : 'Items'}">${productNames}${moreItems}</div>
+              </div>
+            </div>
+          </td>
+          <td class="fw-bold align-middle" style="font-size: 0.9rem;">₱${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+          <td class="align-middle">${statusBadge}</td>
+          <td class="text-muted align-middle" style="font-size: 0.8rem;">
+            <div>${dateStr}</div>
+            <small style="font-size: 0.75rem;">${timeStr}</small>
+          </td>
+          <td class="align-middle">${paymentBadge}</td>
+          <td class="text-end align-middle">
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-primary btn-sm" onclick="viewOrder(${order.id})" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-outline-info btn-sm" onclick="openChatForOrder(${order.id}, '${(order.buyer_name || 'Customer').replace(/'/g, "\\'")}', '${order.order_number}', '${productNames.replace(/'/g, "\\'")}', ${order.buyer_id || 0}, '${order.buyer_profile_picture ? order.buyer_profile_picture.replace(/'/g, "\\'") : ''}')" title="Chat with Buyer">
+                <i class="fas fa-comments"></i>
+              </button>
+              ${getActionButtons(order)}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+  
+  function getActionButtons(order) {
+    // Seller status update rights:
+    // pending → confirmed or cancelled
+    // confirmed → prepared or cancelled
+    // prepared → shipped or cancelled
+    // shipped → (cannot change - only rider can mark as delivered)
+    // delivered → (final state)
+    // cancelled → (final state)
+    
+    const status = order.status;
+    let buttons = '';
+    
+    switch(status) {
+      case 'pending':
+        buttons = `
+          <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${order.id}, 'confirmed')" title="Confirm Order">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})" title="Cancel">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        break;
+        
+      case 'confirmed':
+        buttons = `
+          <button class="btn btn-primary btn-sm" onclick="updateOrderStatus(${order.id}, 'prepared')" title="Mark as Prepared">
+            <i class="fas fa-box"></i>
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})" title="Cancel">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        break;
+        
+      case 'prepared':
+        buttons = `
+          <button class="btn btn-info btn-sm" onclick="updateOrderStatus(${order.id}, 'shipped')" title="Mark as Shipped">
+            <i class="fas fa-shipping-fast"></i>
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})" title="Cancel">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        break;
+        
+      case 'shipped':
+        buttons = `
+          <span class="badge bg-secondary" title="In Transit - Awaiting Delivery">
+            <i class="fas fa-truck"></i>
+          </span>
+        `;
+        break;
+        
+      case 'delivered':
+        buttons = `
+          <span class="badge bg-success" title="Order Completed">
+            <i class="fas fa-check-circle"></i>
+          </span>
+        `;
+        break;
+        
+      case 'cancelled':
+        buttons = `
+          <span class="badge bg-danger" title="Order Cancelled">
+            <i class="fas fa-ban"></i>
+          </span>
+        `;
+        break;
+        
+      case 'accepted_by_rider':
+      case 'in_transit':
+      case 'out_for_delivery':
+        buttons = `
+          <span class="badge bg-primary" title="With Rider - In Transit">
+            <i class="fas fa-motorcycle"></i>
+          </span>
+        `;
+        break;
+        
+      case 'processing':
+        buttons = `
+          <span class="badge bg-info" title="Processing Order">
+            <i class="fas fa-cog fa-spin"></i>
+          </span>
+        `;
+        break;
+        
+      case 'awaiting_pickup':
+        buttons = `
+          <span class="badge bg-warning text-dark" title="Awaiting Pickup by Rider">
+            <i class="fas fa-clock"></i>
+          </span>
+        `;
+        break;
+        
+      default:
+        buttons = '';
+    }
+    
+    return buttons;
+  }
+  
+  function getStatusBadge(status) {
+    const badges = {
+      'pending': '<span class="badge bg-warning text-dark">Pending</span>',
+      'confirmed': '<span class="badge bg-success">Confirmed</span>',
+      'prepared': '<span class="badge bg-info">Prepared</span>',
+      'shipped': '<span class="badge bg-primary">Shipped</span>',
+      'out_for_delivery': '<span class="badge bg-info">Out for Delivery</span>',
+      'delivered': '<span class="badge bg-success">Delivered</span>',
+      'cancelled': '<span class="badge bg-danger">Cancelled</span>',
+      'accepted_by_rider': '<span class="badge bg-primary">With Rider</span>',
+      'in_transit': '<span class="badge bg-primary">In Transit</span>',
+      'processing': '<span class="badge bg-info">Processing</span>',
+      'awaiting_pickup': '<span class="badge bg-warning text-dark">Awaiting Pickup</span>'
+    };
+    return badges[status] || `<span class="badge bg-secondary">${status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>`;
+  }
+  
+  function getPaymentBadge(method) {
+    const badges = {
+      'gcash': '<span class="badge bg-info">GCash</span>',
+      'paymongo': '<span class="badge bg-primary">Card</span>',
+      'paypal': '<span class="badge bg-primary">PayPal</span>',
+      'cod': '<span class="badge bg-success">Cash on Delivery</span>',
+      'cash': '<span class="badge bg-success">Cash</span>'
+    };
+    return badges[method] || `<span class="badge bg-secondary">${method || 'N/A'}</span>`;
+  }
+  
+  function refreshOrders() {
+    loadOrdersData();
+  }
+  
+  function exportOrders() {
+    alert('Export feature will be available soon!');
+  }
+  
+  async function viewOrder(orderId) {
+    try {
+      const token = AuthManager.getAuthToken();
+      const response = await fetch(`/api/seller/orders/${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load order details');
+      
+      const data = await response.json();
+      const order = data.order;
+      
+      // Generate shipping label HTML
+      const labelHtml = generateShippingLabel(order);
+      document.getElementById('shippingLabelContent').innerHTML = labelHtml;
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('shippingLabelModal'));
+      modal.show();
+    } catch (error) {
+      console.error('Error loading order details:', error);
+      alert('Failed to load order details');
+    }
+  }
+  
+  async function openChatForOrder(orderId, customerName, orderNumber, productName, buyerId, profilePicture = '') {
+    // Set flag to indicate this is a buyer chat
+    window.currentChatType = 'buyer';
+    
+    // Open the Chat Center modal
+    if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+      ChatCenter.open();
+      
+      // Wait a bit for the modal to render
+      setTimeout(async () => {
+        try {
+          // Try to find or create a chat for this order
+          const token = AuthManager.getAuthToken();
+          if (!token) {
+            alert('Please log in to access chat');
+            return;
+          }
+          const headers = { 'Authorization': `Bearer ${token}` };
+          
+          // Fetch chats to find the one for this order (only user's own chats)
+          const res = await fetch('/api/chats', { 
+            headers,
+            credentials: 'include' // Ensure authentication context
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const chats = data.chats || [];
+            
+            // Find chat with this order number
+            let chat = chats.find(c => c.order_number === orderNumber);
+            
+            if (chat) {
+              // Select the existing chat with profile picture
+              if (typeof ChatCenter.selectChat === 'function') {
+                ChatCenter.selectChat(chat.id, customerName, orderNumber, productName, profilePicture);
+                
+                // Add BUYER label after chat is loaded
+                setTimeout(() => {
+                  const chatNameEl = document.querySelector('.chat-details .chat-name');
+                  if (chatNameEl && !chatNameEl.querySelector('.badge')) {
+                    const buyerBadge = '<span class="badge bg-primary me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">BUYER</span>';
+                    chatNameEl.innerHTML = buyerBadge + chatNameEl.textContent;
+                  }
+                  
+                  // Ensure input area is visible and enabled
+                  const inputArea = document.getElementById('chatInputArea');
+                  const input = document.getElementById('chatMessageInput');
+                  const sendBtn = document.getElementById('sendMessageBtn');
+                  
+                  if (inputArea) inputArea.style.display = 'block';
+                  if (input) input.disabled = false;
+                  if (sendBtn) sendBtn.disabled = false;
+                }, 100);
+              }
+            } else {
+              // No chat exists yet - try to create one or prepare for message sending
+              // First, try to create a chat for this order using seller endpoint
+              try {
+                const createChatRes = await fetch('/api/seller/chats', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  credentials: 'include',
+                  body: JSON.stringify({
+                    order_number: orderNumber,
+                    participant_name: customerName || 'Buyer'
+                  })
+                });
+                
+                if (createChatRes.ok) {
+                  const createData = await createChatRes.json();
+                  if (createData.success && createData.chat) {
+                    // Chat created successfully, select it
+                    chat = createData.chat;
+                    if (typeof ChatCenter.selectChat === 'function') {
+                      ChatCenter.selectChat(chat.id, customerName, orderNumber, productName, profilePicture);
+                      setTimeout(() => {
+                        const chatNameEl = document.querySelector('.chat-details .chat-name');
+                        if (chatNameEl && !chatNameEl.querySelector('.badge')) {
+                          const buyerBadge = '<span class="badge bg-primary me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">BUYER</span>';
+                          chatNameEl.innerHTML = buyerBadge + chatNameEl.textContent;
+                        }
+                      }, 100);
+                    }
+                    return; // Exit early since chat is now created and selected
+                  }
+                } else {
+                  const errorData = await createChatRes.json().catch(() => ({}));
+                  console.warn('Could not create chat automatically:', errorData.error || 'Unknown error');
+                }
+              } catch (createError) {
+                console.warn('Could not create chat automatically, will create on first message:', createError);
+              }
+              
+              // If chat creation failed or not possible, set up UI for manual chat creation
+              // Display order context in the chat header even if no chat exists yet
+              const chatWindowHeader = document.getElementById('chatWindowHeader');
+              const initials = customerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+              
+              if (chatWindowHeader) {
+                chatWindowHeader.innerHTML = `
+                  <div class="chat-participant-info">
+                    <div class="chat-avatar">
+                      ${profilePicture ? 
+                        `<img src="${profilePicture}" alt="${customerName}" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; border: 2px solid #e9ecef;" onerror="this.outerHTML='<div class=\\'rounded-circle text-white d-flex align-items-center justify-content-center\\'style=\\'width:45px;height:45px;font-size:16px;border:2px solid #e9ecef;background:#6c757d\\'>${initials}</div>'">` 
+                        : `<i class="fas fa-user-circle"></i>`
+                      }
+                    </div>
+                    <div class="chat-details">
+                      <div class="chat-name">
+                        <span class="badge bg-primary me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">BUYER</span>
+                        ${customerName || 'Customer'}
+                      </div>
+                      <div class="chat-status">
+                        <i class="fas fa-shopping-bag me-1"></i>Order: ${orderNumber}
+                        ${productName ? ` • ${productName}` : ''}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chat-actions">
+                    <button class="btn btn-outline-primary btn-sm" onclick="createAdminChatFromCurrentOrder('${orderNumber}')" title="Chat with Admin about this order">
+                      <i class="fas fa-headset me-1"></i>Chat Admin
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="window.ChatCenter && ChatCenter.loadChatListFallback && ChatCenter.loadChatListFallback()">
+                      <i class="fas fa-sync-alt"></i>
+                    </button>
+                  </div>
+                `;
+              }
+              
+              // Show message in chat area
+              const chatMessages = document.getElementById('chatMessages');
+              if (chatMessages) {
+                chatMessages.innerHTML = `
+                  <div class="empty-chat-state">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No messages yet for this order.</p>
+                    <div class="text-start" style="max-width: 300px; margin: 0 auto;">
+                      <p class="text-muted small mb-2"><strong>Chat Type:</strong> <span class="badge bg-primary">Buyer</span></p>
+                      <p class="text-muted small mb-2"><strong>Order ID:</strong> ${orderNumber}</p>
+                      <p class="text-muted small mb-2"><strong>Buyer Name:</strong> ${customerName}</p>
+                      ${productName ? `<p class="text-muted small mb-2"><strong>Product:</strong> ${productName}</p>` : ''}
+                    </div>
+                    <p class="text-muted small mt-4"><i class="fas fa-arrow-down me-2"></i>Start a conversation with the buyer below</p>
+                  </div>
+                `;
+              }
+              
+              // IMPORTANT: Enable the chat input area so seller can type messages
+              const inputArea = document.getElementById('chatInputArea');
+              const input = document.getElementById('chatMessageInput');
+              const sendBtn = document.getElementById('sendMessageBtn');
+              
+              if (inputArea) {
+                inputArea.style.display = 'block';
+              }
+              if (input) {
+                input.disabled = false;
+                input.placeholder = 'Type your message...';
+              }
+              if (sendBtn) {
+                sendBtn.disabled = false;
+              }
+              
+              // Store buyer info for when chat is created (on first message send)
+              if (buyerId) {
+                window.pendingChatInfo = {
+                  buyerId: buyerId,
+                  orderNumber: orderNumber,
+                  customerName: customerName,
+                  productName: productName,
+                  profilePicture: profilePicture
+                };
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading chat for order:', error);
+        }
+      }, 300);
+    }
+  }
+  
+  async function updateOrderStatus(orderId, newStatus) {
+    try {
+      const token = AuthManager.getAuthToken();
+      const response = await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      
+      if (!response.ok) {
+        // Try to extract detailed error from the server
+        let message = `Failed to update status (HTTP ${response.status})`;
+        try {
+          const text = await response.text();
+          try {
+            const data = JSON.parse(text);
+            message = (data.error || message) + (data.detail ? `: ${data.detail}` : '');
+          } catch (_) {
+            if (text) message = `${message}: ${text}`;
+          }
+        } catch (_) {}
+        console.error('Update status failed:', { status: response.status, message });
+        throw new Error(message);
+      }
+      
+      alert('Order status updated successfully!');
+      loadOrdersData();
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      alert(error.message || 'Failed to update order status');
+    }
+  }
+  
+  async function cancelOrder(orderId) {
+    const reason = prompt('Please provide a reason for cancellation (optional):');
+    if (reason === null) return; // User clicked cancel
+    
+    try {
+      const token = AuthManager.getAuthToken();
+      const response = await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          status: 'cancelled',
+          cancel_reason: reason || 'Cancelled by seller'
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to cancel order');
+      }
+      
+      alert('Order cancelled successfully');
+      loadOrdersData();
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert(error.message || 'Failed to cancel order');
+    }
+  }
+  
+  function filterOrdersByStatus(status) {
+    if (!status) {
+      filteredOrders = allOrders;
+    } else {
+      filteredOrders = allOrders.filter(o => o.status === status);
+    }
+    renderOrders(filteredOrders);
+  }
+  
+  async function loadLowStockData() {
+    try {
+      const token = AuthManager.getAuthToken();
+      const response = await fetch('/api/seller/low-stock', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load low stock data');
+      
+      const data = await response.json();
+      const products = data.products || [];
+      const tbody = document.getElementById('lowStockBody');
+      
+      if (products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No low stock products</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = products.map(product => `
+        <tr>
+          <td>${truncateText(product.name || 'N/A', 35)}</td>
+          <td>${truncateText(product.category || 'N/A', 20)}</td>
+          <td><span class="badge bg-warning text-dark">${product.total_stock || 0}</span></td>
+          <td>₱${parseFloat(product.price || 0).toFixed(2)}</td>
+          <td class="text-end">
+            <a href="inventory.html?id=${product.id}" class="btn btn-sm btn-outline-primary">Restock</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (error) {
+      console.error('Error loading low stock:', error);
+      document.getElementById('lowStockBody').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load</td></tr>';
+    }
+  }
+  
+  // Chat Center Integration - Use chat-center.js directly
+  // Note: ChatCenter is already defined in chat-center.js, don't override it
+  // Just ensure it's available when buttons are clicked
+  
+  // Generate shipping label HTML (Grande Express style)
+  function generateShippingLabel(order) {
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    // Extract buyer and seller info from the order structure
+    const buyerInfo = order.buyer || {};
+    const buyerName = buyerInfo.name || buyerInfo.full_name || order.customer_name || 'Customer';
+    const buyerPhone = buyerInfo.phone || order.contact_number || 'N/A';
+    const shippingInfo = order.shipping || {};
+    const deliveryAddress = shippingInfo.full_address || shippingInfo.address || order.address || 'N/A';
+    
+    // Calculate items summary
+    const items = order.items || [];
+    const itemsHtml = items.map(item => `
+      <tr>
+        <td>${item.name || item.product_name}</td>
+        <td class="text-center">${item.quantity}</td>
+        <td class="text-end">₱${parseFloat(item.price || 0).toFixed(2)}</td>
+      </tr>
+    `).join('');
+    
+    return `
+      <style>
+        @media print {
+          /* Hide everything except the label */
+          body * { 
+            visibility: hidden; 
+          }
+          
+          /* Show only the shipping label content */
+          #shippingLabelContent, 
+          #shippingLabelContent * { 
+            visibility: visible; 
+          }
+          
+          /* Position the label for printing */
+          #shippingLabelContent { 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            padding: 20px;
+          }
+          
+          /* Hide modal chrome */
+          .modal-header, 
+          .modal-footer,
+          .btn, 
+          .btn-close,
+          button { 
+            display: none !important; 
+          }
+          
+          /* Ensure shipping label takes full width */
+          .shipping-label {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 30px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+          }
+          
+          /* Optimize table for printing */
+          .items-table {
+            page-break-inside: avoid;
+          }
+          
+          /* Ensure rows don't break across pages */
+          .info-section,
+          .barcode-section,
+          .label-header {
+            page-break-inside: avoid;
+          }
+          
+          /* Remove backgrounds for better printing */
+          .barcode-section,
+          .items-table th,
+          .total-row {
+            background: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          
+          /* Ensure colors print correctly */
+          .label-logo,
+          .label-header {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+        .shipping-label {
+          font-family: 'Inter', sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          background: white;
+          padding: 30px;
+        }
+        .label-header {
+          border-bottom: 3px solid #FF2BAC;
+          padding-bottom: 20px;
+          margin-bottom: 25px;
+        }
+        .label-logo {
+          font-size: 28px;
+          font-weight: 700;
+          color: #FF2BAC;
+          margin-bottom: 5px;
+        }
+        .label-subtitle {
+          color: #6c757d;
+          font-size: 14px;
+        }
+        .info-section {
+          margin-bottom: 25px;
+        }
+        .info-label {
+          font-size: 11px;
+          color: #6c757d;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 5px;
+          font-weight: 600;
+        }
+        .info-content {
+          font-size: 15px;
+          color: #212529;
+          line-height: 1.6;
+        }
+        .barcode-section {
+          text-align: center;
+          padding: 20px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          margin: 25px 0;
+        }
+        .barcode-text {
+          font-family: 'Courier New', monospace;
+          font-size: 24px;
+          font-weight: bold;
+          letter-spacing: 2px;
+          color: #212529;
+          margin-top: 10px;
+        }
+        .items-table {
+          width: 100%;
+          margin-top: 15px;
+          border-collapse: collapse;
+        }
+        .items-table th {
+          background: #f8f9fa;
+          padding: 10px;
+          text-align: left;
+          font-size: 12px;
+          font-weight: 600;
+          color: #495057;
+          border-bottom: 2px solid #dee2e6;
+        }
+        .items-table td {
+          padding: 10px;
+          border-bottom: 1px solid #dee2e6;
+          font-size: 14px;
+        }
+        .total-row {
+          font-weight: 700;
+          font-size: 16px;
+          background: #f8f9fa;
+        }
+        .label-footer {
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 2px solid #dee2e6;
+          text-align: center;
+          color: #6c757d;
+          font-size: 12px;
+        }
+      </style>
+      
+      <div class="shipping-label">
+        <!-- Header -->
+        <div class="label-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="label-logo">Grande Express</div>
+              <div class="label-subtitle">Fast & Reliable Delivery</div>
+            </div>
+            <div class="text-end">
+              <div class="info-label">Order Date</div>
+              <div class="info-content">${dateStr}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Barcode/Order ID Section -->
+        <div class="barcode-section">
+          <div class="info-label">Tracking Number</div>
+          <div class="barcode-text">${order.order_number || 'N/A'}</div>
+        </div>
+        
+        <!-- Sender and Receiver Info -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-section">
+              <div class="info-label">From (Seller)</div>
+              <div class="info-content">
+                <strong>${items[0]?.seller_name || 'Seller'}</strong><br>
+                ${items[0]?.seller_info?.business_name ? items[0].seller_info.business_name + '<br>' : ''}
+                ${items[0]?.seller_info?.phone ? 'Phone: ' + items[0].seller_info.phone + '<br>' : ''}
+                ${items[0]?.seller_info?.email || ''}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-section">
+              <div class="info-label">To (Buyer)</div>
+              <div class="info-content">
+                <strong>${buyerName}</strong><br>
+                ${deliveryAddress}<br>
+                ${buyerPhone !== 'N/A' ? 'Phone: ' + buyerPhone : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Order Details -->
+        <div class="info-section">
+          <div class="info-label">Order Details</div>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th class="text-center">Qty</th>
+                <th class="text-end">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+              <tr class="total-row">
+                <td colspan="2">Total Amount</td>
+                <td class="text-end">₱${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Payment & Delivery Info -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-section">
+              <div class="info-label">Payment Method</div>
+              <div class="info-content">${getPaymentMethodName(order.payment_method)}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-section">
+              <div class="info-label">Delivery Status</div>
+              <div class="info-content">${getStatusName(order.status)}</div>
+            </div>
+          </div>
+        </div>
+        
+        ${order.delivery_notes ? `
+        <div class="info-section">
+          <div class="info-label">Delivery Notes</div>
+          <div class="info-content">${order.delivery_notes}</div>
+        </div>
+        ` : ''}
+        
+        <!-- Footer -->
+        <div class="label-footer">
+          <p class="mb-1"><strong>Grande Express</strong> - Your trusted delivery partner</p>
+          <p class="mb-0">For inquiries, contact: support@grandeexpress.com | (02) 123-4567</p>
+        </div>
+      </div>
+    `;
+  }
+  
+  function getPaymentMethodName(method) {
+    const methods = {
+      'gcash': 'GCash',
+      'paymongo': 'Credit/Debit Card',
+      'paypal': 'PayPal',
+      'cod': 'Cash on Delivery',
+      'cash': 'Cash'
+    };
+    return methods[method] || method || 'N/A';
+  }
+  
+  function getStatusName(status) {
+    const statuses = {
+      'pending': 'Pending',
+      'confirmed': 'Confirmed',
+      'prepared': 'Prepared for Shipping',
+      'shipped': 'Shipped',
+      'out_for_delivery': 'Out for Delivery',
+      'delivered': 'Delivered',
+      'cancelled': 'Cancelled',
+      'accepted_by_rider': 'Accepted by Rider',
+      'in_transit': 'In Transit',
+      'processing': 'Processing',
+      'awaiting_pickup': 'Awaiting Pickup'
+    };
+    return statuses[status] || status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+  
+  function printShippingLabel() {
+    window.print();
+  }
+  
+  // Initialize message manager (exact copy from index.html)
+  document.addEventListener('DOMContentLoaded', function() {
+    try { 
+      window.messageManager = new MessageManager(); 
+    } catch (_) {}
+  });
+  </script>
+
+  <!-- Shipping Label Modal -->
+  <div class="modal fade" id="shippingLabelModal" tabindex="-1" aria-labelledby="shippingLabelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-2">
+          <h5 class="modal-title" id="shippingLabelModalLabel">Order Details</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="printShippingLabel()">
+              <i class="fas fa-print me-1"></i>Print
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body" id="shippingLabelContent">
+          <!-- Shipping label content will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+
+      // Chat Center Button
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+            ChatCenter.open();
+          }
+        });
+      }
+
+      // Monitor chat window for label preservation
+      const chatLabelObserver = new MutationObserver(() => {
+        const chatNameEl = document.querySelector('.chat-details .chat-name');
+        if (chatNameEl && chatNameEl.textContent && !chatNameEl.querySelector('.badge')) {
+          // Check if this is a buyer chat by looking for shopping bag icon or checking context
+          const statusEl = document.querySelector('.chat-details .chat-status');
+          if (statusEl) {
+            const isBuyerChat = statusEl.innerHTML.includes('fa-shopping-bag') || 
+                              statusEl.textContent.includes('Order') ||
+                              window.currentChatType === 'buyer';
+            
+            if (isBuyerChat) {
+              const buyerBadge = '<span class="badge bg-primary me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">BUYER</span>';
+              chatNameEl.innerHTML = buyerBadge + chatNameEl.textContent;
+            }
+          }
+        }
+      });
+
+      // Start observing when chat modal is opened
+      setTimeout(() => {
+        const chatWindow = document.querySelector('.chat-window-header');
+        if (chatWindow) {
+          chatLabelObserver.observe(chatWindow, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+        
+        // Ensure chat input is always enabled when modal is open
+        const checkAndEnableInput = () => {
+          const inputArea = document.getElementById('chatInputArea');
+          const input = document.getElementById('chatMessageInput');
+          const sendBtn = document.getElementById('sendMessageBtn');
+          const chatModal = document.getElementById('chatCenterModal');
+          
+          // If modal is visible and a chat is selected (or buyer info is set), enable input
+          if (chatModal && chatModal.classList.contains('show')) {
+            const hasChatId = window.ChatCenter && window.ChatCenter.currentChatId;
+            const hasPendingChat = window.pendingChatInfo;
+            const hasBuyerInfo = document.querySelector('.chat-details .chat-name') && 
+                                 document.querySelector('.chat-details .chat-name').textContent !== 'Select a conversation';
+            
+            if (hasChatId || hasPendingChat || hasBuyerInfo) {
+              if (inputArea) inputArea.style.display = 'block';
+              if (input) input.disabled = false;
+              if (sendBtn) sendBtn.disabled = false;
+            }
+          }
+        };
+        
+        // Check immediately and set up interval to check periodically
+        checkAndEnableInput();
+        setInterval(checkAndEnableInput, 500);
+      }, 1000);
+    });
+
+    // Create admin chat from current order (for seller)
+    async function createAdminChatFromCurrentOrder(orderNumber) {
+      try {
+        if (!window.ChatCenter) {
+          alert('Chat system not available');
+          return;
+        }
+
+        // Use ChatCenter's method if available
+        if (window.ChatCenter.createAdminChatFromCurrentChat) {
+          await window.ChatCenter.createAdminChatFromCurrentChat();
+          return;
+        }
+
+        // Fallback: Create admin chat with order context
+        const token = AuthManager.getAuthToken();
+        if (!token) {
+          alert('Please log in to chat with admin');
+          return;
+        }
+
+        if (!orderNumber) {
+          // Try to get from ChatCenter
+          orderNumber = window.ChatCenter.currentOrderNumber;
+          if (!orderNumber) {
+            alert('No order context available. Please select a conversation with an order first.');
+            return;
+          }
+        }
+
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
+        const res = await fetch('/api/chats/create-with-admin', {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify({
+            order_id: window.ChatCenter.currentOrderId,
+            order_number: orderNumber
+          })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Failed to create admin chat');
+        }
+
+        const data = await res.json();
+        if (data.success && data.chat) {
+          // Reload chat list and select the admin chat
+          if (window.ChatCenter && window.ChatCenter.loadChatListFallback) {
+            await window.ChatCenter.loadChatListFallback();
+            setTimeout(() => {
+              const chatId = data.chat.id;
+              const chatList = document.getElementById('chatList');
+              if (chatList) {
+                const chatItems = chatList.querySelectorAll('.chat-list-item');
+                for (const item of chatItems) {
+                  const onclick = item.getAttribute('onclick');
+                  if (onclick && onclick.includes(`ChatCenter.selectChat(${chatId}`)) {
+                    item.click();
+                    break;
+                  }
+                }
+              }
+            }, 500);
+          }
+        }
+      } catch (e) {
+        console.error('Error creating admin chat:', e);
+        alert(e.message || 'Failed to create admin chat. Please try again.');
+      }
+    }
+  </script>
+
+</body>
+</html>

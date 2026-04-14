@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Product - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  <style>
+    /* Override Bootstrap and all external CSS for chat button - must be after external stylesheets */
+    /* Multiple selectors for maximum specificity - override Bootstrap button defaults */
+    button#chatCenterBtn.topbar-action,
+    #chatCenterBtn.topbar-action,
+    button.topbar-action#chatCenterBtn,
+    .topbar-right button#chatCenterBtn,
+    .admin-topbar button#chatCenterBtn,
+    .topbar-right #chatCenterBtn.topbar-action,
+    .admin-topbar .topbar-right button#chatCenterBtn.topbar-action {
+      /* Reset Bootstrap button defaults */
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+      /* Layout */
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      /* Spacing */
+      padding: 8px 12px !important;
+      margin: 0 !important;
+      /* Typography */
+      font-size: 0.9rem !important;
+      font-family: inherit !important;
+      font-weight: normal !important;
+      line-height: normal !important;
+      text-align: left !important;
+      text-decoration: none !important;
+      text-transform: none !important;
+      letter-spacing: normal !important;
+      /* Visual */
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      background-color: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      /* Sizing */
+      height: auto !important;
+      min-height: auto !important;
+      max-height: none !important;
+      width: auto !important;
+      min-width: auto !important;
+      max-width: none !important;
+      /* Behavior */
+      cursor: pointer !important;
+      position: relative !important;
+      overflow: visible !important;
+      transition: all 0.25s ease !important;
+      vertical-align: middle !important;
+      /* Remove Bootstrap button pseudo-elements */
+    }
+    button#chatCenterBtn.topbar-action::before,
+    button#chatCenterBtn.topbar-action::after {
+      display: none !important;
+      content: none !important;
+    }
+    button#chatCenterBtn.topbar-action:hover,
+    #chatCenterBtn.topbar-action:hover,
+    button.topbar-action#chatCenterBtn:hover,
+    .topbar-right button#chatCenterBtn:hover,
+    .admin-topbar button#chatCenterBtn:hover,
+    .topbar-right #chatCenterBtn.topbar-action:hover,
+    .admin-topbar .topbar-right button#chatCenterBtn.topbar-action:hover {
+      color: var(--primary-color) !important;
+      border-color: rgba(255,107,206,0.4) !important;
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important;
+      background: var(--container-bg) !important;
+      background-color: var(--container-bg) !important;
+      transform: none !important;
+    }
+    button#chatCenterBtn.topbar-action:active,
+    button#chatCenterBtn.topbar-action:focus,
+    button#chatCenterBtn.topbar-action:focus-visible {
+      outline: none !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transform: none !important;
+    }
+    button#chatCenterBtn.topbar-action i,
+    #chatCenterBtn.topbar-action i,
+    button.topbar-action#chatCenterBtn i,
+    .topbar-right button#chatCenterBtn i,
+    .admin-topbar button#chatCenterBtn i,
+    .admin-topbar .topbar-right button#chatCenterBtn.topbar-action i {
+      font-size: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  </style>
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED SIDEBAR STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 20px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .logout-btn {
+      color: #ff6b6b;
+    }
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action,
+    button#chatCenterBtn.topbar-action {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transition: all 0.25s ease !important;
+      cursor: pointer !important;
+      font-family: inherit !important;
+    }
+    .topbar-action.home-btn i, 
+    .topbar-action.logout-btn i, 
+    .topbar-action#chatCenterBtn i,
+    button#chatCenterBtn.topbar-action i { 
+      font-size: 1rem !important; 
+    }
+    .topbar-action#chatCenterBtn,
+    button#chatCenterBtn.topbar-action { 
+      position: relative !important; 
+    }
+    .topbar-action#chatCenterBtn:hover,
+    button#chatCenterBtn.topbar-action:hover { 
+      color: var(--primary-color) !important; 
+      border-color: rgba(255,107,206,0.4) !important; 
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important; 
+    }
+    .topbar-action.home-btn:hover { 
+      color: var(--primary-color) !important; 
+      border-color: rgba(255,107,206,0.4) !important; 
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important; 
+    }
+    .topbar-action.logout-btn:hover { 
+      color: #dc3545 !important; 
+      border-color: rgba(220,53,69,0.35) !important; 
+      box-shadow: 0 4px 14px rgba(220,53,69,0.15) !important; 
+    }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute !important;
+      top: 6px !important;
+      right: 6px !important;
+      width: 8px !important;
+      height: 8px !important;
+      background: #dc3545 !important;
+      border-radius: 50% !important;
+      border: 2px solid var(--container-bg) !important;
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span,
+      button#chatCenterBtn.topbar-action span { 
+        display: none !important; 
+      }
+    }
+
+    /* ========================================
+       ADD PRODUCT PAGE SPECIFIC STYLES
+       ======================================== */
+    /* Additional component tweaks specific to Add Product page */
+    .data-card { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 16px; }
+    .step-indicator { margin-bottom: 1rem; }
+    
+    /* Variant Matrix Layout Stability */
+    .variant-matrix-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: white;
+    }
+    
+    .matrix-table {
+      width: 100%;
+      min-width: 800px;
+      margin: 0;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .matrix-table th:first-child {
+      width: 100px;
+      min-width: 100px;
+      max-width: 100px;
+    }
+    
+    .matrix-table th:not(:first-child),
+    .matrix-table td:not(:first-child) {
+      width: 280px;
+      min-width: 280px;
+      max-width: 280px;
+    }
+    
+    .matrix-table th,
+    .matrix-table td {
+      padding: 12px;
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+      position: relative;
+    }
+    
+    .matrix-table th:last-child,
+    .matrix-table td:last-child {
+      border-right: none;
+    }
+    
+    .matrix-table tr:last-child th,
+    .matrix-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .variant-cell {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .variant-cell .row {
+      margin: 0;
+      width: 100%;
+    }
+    
+    .variant-cell .col-6,
+    .variant-cell .col-12 {
+      padding: 0 4px;
+      margin-bottom: 8px;
+    }
+    
+    .variant-cell .form-control-sm {
+      height: 32px;
+      font-size: 0.875rem;
+      padding: 4px 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .variant-cell .form-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: var(--text-color);
+    }
+    
+    /* Image preview styling for Review & Save section */
+    .images-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .images-preview-grid .color-preview-item {
+      text-align: center;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--container-bg);
+    }
+    
+    .images-preview-grid .color-preview-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      margin-bottom: 0.5rem;
+    }
+    
+    .images-preview-grid .color-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 0.25rem;
+    }
+    
+    .images-preview-grid .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin: 0 auto;
+      border: 2px solid var(--border-color);
+    }
+    
+    /* Variants matrix preview styling */
+    .variants-matrix-preview {
+      overflow-x: auto;
+    }
+    
+    .variants-matrix-preview table {
+      width: 100%;
+      min-width: 600px;
+      font-size: 0.875rem;
+    }
+    
+    .variants-matrix-preview th,
+    .variants-matrix-preview td {
+      padding: 0.5rem;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+    
+    .variants-matrix-preview th {
+      background: var(--background-light);
+      font-weight: 600;
+    }
+    
+    /* General image controls throughout the form */
+    .product-summary img,
+    .images-preview-grid img,
+    .color-image-preview,
+    .variant-image {
+      max-width: 100px;
+      max-height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+    
+    /* Smaller images for inline previews */
+    .inline-color-preview,
+    .summary-color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 2px solid var(--border-color);
+      margin-right: 0.5rem;
+    }
+    
+    /* Product summary styling improvements */
+    .product-summary {
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--container-bg);
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    
+    .summary-item span:first-child {
+      font-weight: 600;
+      color: var(--text-color);
+      flex: 0 0 auto;
+      margin-right: 1rem;
+    }
+    
+    .summary-item span:last-child {
+      color: var(--text-muted);
+      text-align: right;
+      flex: 1;
+    }
+    
+    /* Default Images Preview Grid */
+    .default-images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .default-image-item {
+      position: relative;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+    
+    .default-image-preview {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .default-image-remove {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(220, 53, 69, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .default-image-remove:hover {
+      background: #dc3545;
+      transform: scale(1.1);
+    }
+    
+    .default-image-order {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .images-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.75rem;
+      }
+      
+      .images-preview-grid .color-preview-image {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .variants-matrix-preview {
+        font-size: 0.75rem;
+      }
+      
+      .summary-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+      
+      .summary-item span:last-child {
+        text-align: left;
+      }
+      
+      .default-images-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.75rem;
+      }
+      
+      .default-image-preview {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="sellerdashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Products</div>
+        <div>
+          <a href="add_product.html" class="nav-item active">
+            <i class="fas fa-plus-circle"></i>
+            <span class="nav-text">Add Product</span>
+          </a>
+        </div>
+        <div>
+          <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i>
+            <span class="nav-text">Manage Inventory</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Orders</div>
+        <div>
+          <a href="orders_clean_new.html" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span class="nav-text">View Orders</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div> 
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="delivery-tracking.html" class="nav-item">
+            <i class="fas fa-truck"></i>
+            <span class="nav-text">Delivery Tracking</span>
+            <span class="nav-badge" id="deliveryBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="awaiting-pickup.html" class="nav-item">
+            <i class="fas fa-clock"></i>
+            <span class="nav-text">Awaiting Pickup</span>
+            <span class="nav-badge" id="awaitingBadge">0</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Reports</div>
+        <div>
+          <a href="analytics.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">Analytics</span>
+          </a>
+        </div>
+      </div>
+      </div>
+    </aside>
+
+
+    <!-- Main content -->
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; font-size: 0.9rem !important; border-radius: 10px !important; text-decoration: none !important; color: var(--text-color) !important; background: var(--container-bg) !important; border: 1px solid var(--border-color) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important; transition: all 0.25s ease !important; cursor: pointer !important; font-family: inherit !important; position: relative !important;">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="page-header">
+          <h1 class="page-title">Add New Product</h1>
+          <p class="page-subtitle">Create and manage your product listings with sizes, colors, images, and prices.</p>
+        </div>
+
+        <div class="alert alert-info d-flex align-items-center gap-2" role="alert" style="border-radius: 12px;">
+          <i class="fas fa-shield-alt text-primary"></i>
+          <div>
+            Every new product is submitted for admin review. Listings stay hidden from buyers until an admin approves them.
+          </div>
+        </div>
+
+        <!-- Original Add Product content starts -->
+        <div class="content-section active" id="productSection">
+          <div class="card p-3">
+            <h5 class="mb-3">Add New Product</h5>
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+              <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <span>Basic Info</span>
+              </div>
+              <i class="fas fa-chevron-right text-muted"></i>
+              <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <span>Variants</span>
+              </div>
+              <i class="fas fa-chevron-right text-muted"></i>
+              <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <span>Review & Save</span>
+              </div>
+            </div>
+
+            <form id="addProductForm" enctype="multipart/form-data">
+              <!-- Step 1: Basic Information -->
+              <div class="form-step active" id="step1">
+                <h6 class="mb-3">Product Information</h6>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Product Name *</label>
+                    <input type="text" class="form-control" name="name" placeholder="Enter product name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Category *</label>
+                    <select class="form-select" name="category" id="productCategory" required>
+                      <option value="">Loading your registered category...</option>
+                    </select>
+                    <small class="text-muted">You can only add products in your registered category.</small>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea 
+                      class="form-control" 
+                      name="description" 
+                      id="productDescription"
+                      rows="5" 
+                      placeholder="Describe your product in detail (features, materials, care instructions, etc.)..."
+                      style="resize: vertical; min-height: 120px;"
+                      maxlength="2000"></textarea>
+                    <small class="text-muted">
+                      <span id="descriptionCharCount">0</span>/2000 characters
+                    </small>
+                  </div>
+
+                  <!-- Flash Sale Toggle -->
+                  <div class="col-12">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="flashSaleToggle" name="is_flash_sale">
+                      <label class="form-check-label" for="flashSaleToggle">
+                        <i class="fas fa-bolt text-warning me-1"></i>
+                        Enable Flash Sale
+                      </label>
+                      <small class="text-muted d-block">If enabled, this product will appear in Flash Sales immediately once published (subject to schedule).</small>
+                    </div>
+                  </div>
+
+                  <!-- Default Product Images -->
+                  <div class="col-12">
+                    <label class="form-label">Default Product Images *</label>
+                    <input type="file" class="form-control" name="default_images" id="defaultImages" accept="image/*" multiple required>
+                    <small class="text-muted">Upload multiple product images that will be shown by default. At least one image is required.</small>
+                    
+                    <!-- Default Images Preview -->
+                    <div id="defaultImagesPreview" class="mt-3" style="display: none;">
+                      <h6 class="mb-2">Default Images Preview:</h6>
+                      <div id="defaultImagesGrid" class="default-images-grid"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Variations -->
+              <div class="form-step" id="step2">
+                <h6 class="mb-4">Configure Product Variations</h6>
+                
+                <!-- Colors Section (Primary Variation) -->
+                <div class="mb-5">
+                  <h6 class="mb-3 text-primary"><i class="fas fa-palette me-2"></i>Colors & Images</h6>
+                  
+                  <!-- Preset Colors -->
+                  <div class="mb-4">
+                    <label class="form-label">Quick Add Colors</label>
+                    <div class="preset-colors-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;">
+                      <button type="button" class="preset-color-btn" data-color="#000000" data-name="Black">
+                        <span class="color-preview" style="background-color: #000000;"></span>
+                        Black
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#FFFFFF" data-name="White">
+                        <span class="color-preview" style="background-color: #FFFFFF; border: 1px solid #ccc;"></span>
+                        White
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#FF0000" data-name="Red">
+                        <span class="color-preview" style="background-color: #FF0000;"></span>
+                        Red
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#0000FF" data-name="Blue">
+                        <span class="color-preview" style="background-color: #0000FF;"></span>
+                        Blue
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#008000" data-name="Green">
+                        <span class="color-preview" style="background-color: #008000;"></span>
+                        Green
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#FFFF00" data-name="Yellow">
+                        <span class="color-preview" style="background-color: #FFFF00;"></span>
+                        Yellow
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#FFC0CB" data-name="Pink">
+                        <span class="color-preview" style="background-color: #FFC0CB;"></span>
+                        Pink
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#800080" data-name="Purple">
+                        <span class="color-preview" style="background-color: #800080;"></span>
+                        Purple
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#808080" data-name="Gray">
+                        <span class="color-preview" style="background-color: #808080;"></span>
+                        Gray
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#A52A2A" data-name="Brown">
+                        <span class="color-preview" style="background-color: #A52A2A;"></span>
+                        Brown
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#F5F5DC" data-name="Beige">
+                        <span class="color-preview" style="background-color: #F5F5DC;"></span>
+                        Beige
+                      </button>
+                      <button type="button" class="preset-color-btn" data-color="#000080" data-name="Navy">
+                        <span class="color-preview" style="background-color: #000080;"></span>
+                        Navy
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Custom Color Addition -->
+                  <div class="mb-4">
+                    <label class="form-label">Add Custom Color</label>
+                    <div class="custom-color-input" style="display: flex; gap: 0.5rem; align-items: end;">
+                      <div style="flex: 1;">
+                        <input type="text" class="form-control" id="customColorName" placeholder="Color name (e.g., Coral)">
+                      </div>
+                      <div style="flex: 0 0 60px;">
+                        <input type="color" class="form-control form-control-color" id="customColorPicker" value="#ff0000" style="height: 38px;">
+                      </div>
+                      <button type="button" class="btn btn-outline-primary" id="addCustomColorBtn">
+                        <i class="fas fa-plus"></i> Add
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Selected Colors Grid -->
+                  <div id="colorsConfigGrid" class="colors-config-grid">
+                    <div class="empty-state" style="text-align: center; padding: 3rem; color: #6c757d;">
+                      <i class="fas fa-palette" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                      <p>Select colors above to configure them with images</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sizes Section (Secondary Variation) -->
+                <div class="mb-5">
+                  <h6 class="mb-3 text-secondary"><i class="fas fa-ruler-horizontal me-2"></i>Available Sizes</h6>
+                  
+                  <!-- Size Selection -->
+                  <div class="mb-4">
+                    <label class="form-label">Select Available Sizes *</label>
+                    <!-- Clothing Sizes (for non-shoe categories) -->
+                    <div class="size-selector" id="clothingSizes">
+                      <div class="size-pill" data-size="XS">XS</div>
+                      <div class="size-pill" data-size="S">S</div>
+                      <div class="size-pill" data-size="M">M</div>
+                      <div class="size-pill" data-size="L">L</div>
+                      <div class="size-pill" data-size="XL">XL</div>
+                      <div class="size-pill" data-size="XXL">XXL</div>
+                    </div>
+                    <!-- Shoe Sizes (for Shoes & Accessories category) -->
+                    <div class="size-selector" id="shoeSizes" style="display: none;">
+                      <div class="size-pill" data-size="35">35</div>
+                      <div class="size-pill" data-size="36">36</div>
+                      <div class="size-pill" data-size="37">37</div>
+                      <div class="size-pill" data-size="38">38</div>
+                      <div class="size-pill" data-size="39">39</div>
+                      <div class="size-pill" data-size="40">40</div>
+                      <div class="size-pill" data-size="41">41</div>
+                      <div class="size-pill" data-size="42">42</div>
+                      <div class="size-pill" data-size="43">43</div>
+                      <div class="size-pill" data-size="44">44</div>
+                      <div class="size-pill" data-size="45">45</div>
+                      <div class="size-pill" data-size="46">46</div>
+                    </div>
+                    <!-- Custom Shoe Size Input (for Shoes & Accessories category) -->
+                    <div id="customShoeSizeInput" style="display: none; margin-top: 1rem;">
+                      <label class="form-label">Add Custom Size</label>
+                      <div class="input-group" style="max-width: 300px;">
+                        <input type="number" 
+                               class="form-control" 
+                               id="customShoeSize" 
+                               placeholder="e.g., 36.5, 47, 48" 
+                               step="0.5" 
+                               min="20" 
+                               max="60">
+                        <button type="button" 
+                                class="btn btn-outline-primary" 
+                                id="addCustomShoeSizeBtn">
+                          <i class="fas fa-plus"></i> Add
+                        </button>
+                      </div>
+                      <small class="text-muted">Enter any numerical size (supports decimals like 36.5)</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Variant Matrix -->
+                <div class="mb-4" id="variantMatrixSection" style="display: none;">
+                  <h6 class="mb-3 text-success"><i class="fas fa-table me-2"></i>Size-Color Variants Matrix</h6>
+                  <p class="text-muted mb-3">Set price, discount price, and stock for each size-color combination</p>
+                  <div id="variantMatrix" class="variant-matrix-container">
+                    <!-- Matrix will be generated here -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Review & Save -->
+              <div class="form-step" id="step3">
+                <h6 class="mb-3">Review Product Information</h6>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="product-summary">
+                      <h6>Product Details</h6>
+                      <div class="summary-item">
+                        <span>Name:</span>
+                        <span id="summary-name">-</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Category:</span>
+                        <span id="summary-category">-</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Description:</span>
+                        <span id="summary-description">-</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Flash Sale:</span>
+                        <span id="summary-flash-sale">-</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="product-summary">
+                      <h6>Configuration Summary</h6>
+                      <div class="summary-item">
+                        <span>Available Sizes:</span>
+                        <span id="summary-sizes">-</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Available Colors:</span>
+                        <span id="summary-colors">-</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Total Variants:</span>
+                        <span id="summary-total-variants">0</span>
+                      </div>
+                      <div class="summary-item">
+                        <span>Total Stock:</span>
+                        <span id="summary-total-stock">0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Variants Matrix Preview -->
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <div class="product-summary">
+                      <h6>Size-Color Matrix Preview</h6>
+                      <div id="summary-variants-matrix" class="variants-matrix-preview">
+                        <!-- Matrix will be shown here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Images Preview -->
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <div class="product-summary">
+                      <h6>Product Images Preview</h6>
+                      <div id="summary-images-preview" class="images-preview-grid">
+                        <!-- Images will be shown here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Navigation -->
+              <div class="form-navigation">
+                <button type="button" class="btn btn-outline-secondary btn-step" id="prevBtn" style="display: none;">
+                  <i class="fas fa-arrow-left me-2"></i>Previous
+                </button>
+                <button type="button" class="btn btn-primary btn-step" id="nextBtn">
+                  Next<i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="display: none;">
+                  <i class="fas fa-save me-2"></i>Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Original Add Product content ends -->
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+
+    // Description character counter
+    document.addEventListener('DOMContentLoaded', function() {
+      const descriptionTextarea = document.getElementById('productDescription');
+      const charCountElement = document.getElementById('descriptionCharCount');
+      
+      if (descriptionTextarea && charCountElement) {
+        // Update counter on input
+        descriptionTextarea.addEventListener('input', function() {
+          const currentLength = this.value.length;
+          charCountElement.textContent = currentLength;
+          
+          // Change color when approaching limit
+          if (currentLength > 1800) {
+            charCountElement.style.color = '#dc3545';
+          } else if (currentLength > 1500) {
+            charCountElement.style.color = '#ffc107';
+          } else {
+            charCountElement.style.color = '#6c757d';
+          }
+        });
+        
+        // Initialize counter
+        charCountElement.textContent = descriptionTextarea.value.length;
+      }
+    });
+  </script>
+  
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-dashboard.js"></script>
+  <script src="/static/js/product-management.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

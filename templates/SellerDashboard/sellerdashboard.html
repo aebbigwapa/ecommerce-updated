@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Dashboard - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed - FIXED POSITION */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Section title wrapper - flex container for toggle + title */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+
+    /* Hide the text span when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none;
+    }
+
+    /* Center the section when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 !important;
+      margin: 0 0 6px 0 !important;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Sticky position when expanded so toggle button stays at top */
+    .admin-sidebar:not(.collapsed) .nav-section.first-section .nav-section-title {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      z-index: 10;
+      padding-bottom: 12px !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    @media (min-width: 992px) {
+      .admin-content { padding: 1.2rem; }
+    }
+
+    @media (min-width: 1200px) {
+      .admin-content { padding: 1.5rem; }
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+      .page-title { font-size: 1.4rem; }
+    }
+
+    @media (min-width: 1200px) {
+      .page-title { font-size: 1.5rem; }
+    }
+
+    /* Single-line truncation utility */
+    .truncate-1, .text-truncate-1 {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    /* Recent Products: first column (Product) */
+    #recentProductsBody td:nth-child(1) {
+      width: 360px;
+      max-width: 360px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #recentProductsBody td:nth-child(1) a,
+    #recentProductsBody td:nth-child(1) span,
+    #recentProductsBody td:nth-child(1) div,
+    #recentProductsBody td:nth-child(1) strong,
+    #recentProductsBody td:nth-child(1) h6,
+    #recentProductsBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Hard clamp nested content in case of complex wrappers */
+    #recentProductsBody td:nth-child(1) * { max-width: 100%; }
+    /* Best Selling: first column (Product) */
+    #bestProductsBody td:nth-child(1) { width: 340px; max-width: 340px; }
+    #bestProductsBody td:nth-child(1) a,
+    #bestProductsBody td:nth-child(1) span,
+    #bestProductsBody td:nth-child(1) div,
+    #bestProductsBody td:nth-child(1) strong,
+    #bestProductsBody td:nth-child(1) h6,
+    #bestProductsBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Low Stock: first column (Product) */
+    #lowStockBody td:nth-child(1) { width: 340px; max-width: 340px; }
+    #lowStockBody td:nth-child(1) a,
+    #lowStockBody td:nth-child(1) span,
+    #lowStockBody td:nth-child(1) div,
+    #lowStockBody td:nth-child(1) strong,
+    #lowStockBody td:nth-child(1) h6,
+    #lowStockBody td:nth-child(1) p {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 768px) {
+      #recentProductsBody td:nth-child(1) { width: 220px; max-width: 220px; }
+      #recentProductsBody td:nth-child(1) a,
+      #recentProductsBody td:nth-child(1) span,
+      #recentProductsBody td:nth-child(1) div,
+      #bestProductsBody td:nth-child(1) { width: 200px; max-width: 200px; }
+      #bestProductsBody td:nth-child(1) a,
+      #bestProductsBody td:nth-child(1) span,
+      #bestProductsBody td:nth-child(1) div,
+      #lowStockBody td:nth-child(1) { width: 200px; max-width: 200px; }
+      #lowStockBody td:nth-child(1) a,
+      #lowStockBody td:nth-child(1) span,
+      #lowStockBody td:nth-child(1) div { max-width: 100%; }
+    }
+    /* Improve truncation in tables */
+    .admin-content .modern-card table.table { table-layout: fixed; }
+
+    /* Smooth scrolling for entire page */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Better scrollbar for main content */
+    .admin-content {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 43, 172, 0.3) #f0f0f0;
+    }
+
+    .admin-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .admin-content::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+
+    .admin-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #FF2BAC, #FF6BCE);
+      border-radius: 4px;
+    }
+
+    .admin-content::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #FF6BCE, #FF2BAC);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* Topbar refinements */
+    .admin-topbar {
+      padding: 12px 24px !important;
+      background: var(--container-bg) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+    .topbar-right { gap: 10px; display: flex; align-items: center; }
+
+    /* =============================
+       Dashboard layout refinements
+       ============================= */
+    /* Make stat cards lay out nicely across screen sizes */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Slightly elevate modern data cards for better separation */
+    .data-card.modern-card {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .data-card.modern-card .card-header {
+      padding: 0.9rem 1.15rem;
+    }
+
+    .data-card.modern-card .card-body {
+      padding: 0.9rem 1.15rem;
+    }
+
+    /* Tighten tables and headers on smaller screens for readability */
+    @media (max-width: 768px) {
+      .data-card.modern-card .table {
+        font-size: 0.85rem;
+      }
+
+      .data-card.modern-card .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Seller Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+        <div class="nav-section first-section">
+          <div class="nav-section-title">
+            <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+            <span>Main</span>
+          </div>
+          <div>
+            <a href="sellerdashboard.html" class="nav-item active">
+              <i class="fas fa-tachometer-alt"></i>
+              <span class="nav-text">Dashboard</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Products</div>
+          <div>
+            <a href="add_product.html" class="nav-item">
+              <i class="fas fa-plus-circle"></i>
+              <span class="nav-text">Add Product</span>
+            </a>
+          </div>
+          <div>
+            <a href="inventory.html" class="nav-item">
+              <i class="fas fa-box-open"></i>
+              <span class="nav-text">Manage Inventory</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Orders</div>
+          <div>
+            <a href="orders_clean_new.html" class="nav-item">
+              <i class="fas fa-receipt"></i>
+              <span class="nav-text">View Orders</span>
+            </a>
+          </div>
+        </div>
+
+
+        <div class="nav-divider"></div> 
+
+        <div class="nav-section">
+          <div class="nav-section-title">Deliveries</div>
+          <div>
+            <a href="delivery-tracking.html" class="nav-item">
+              <i class="fas fa-truck"></i>
+              <span class="nav-text">Delivery Tracking</span>
+              <span class="nav-badge" id="deliveryBadge">0</span>
+            </a>
+          </div>
+          <div>
+            <a href="awaiting-pickup.html" class="nav-item">
+              <i class="fas fa-clock"></i>
+              <span class="nav-text">Awaiting Pickup</span>
+              <span class="nav-badge" id="awaitingBadge">0</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Reports</div>
+          <div>
+            <a href="analytics.html" class="nav-item">
+              <i class="fas fa-chart-line"></i>
+              <span class="nav-text">Analytics</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Admin-style Topbar (no public site header) -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h1 class="page-title">Seller Dashboard</h1>
+              <p class="page-subtitle">Manage products, track orders, and view performance.</p>
+            </div>
+          </div>
+        </div>
+      <!-- Dashboard Section -->
+      <div class="content-section active" id="dashboardSection">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: var(--brand-grad);">
+              <i class="fas fa-peso-sign"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Total Revenue</p>
+              <h3 class="stat-value" id="statRevenue">₱0.00</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Total Orders</p>
+              <h3 class="stat-value" id="statOrders">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Total Products</p>
+              <h3 class="stat-value" id="statProducts">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-details">
+              <p class="stat-label">Pending Orders</p>
+              <h3 class="stat-value" id="statPending">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-3 mt-1" id="sellerDashboardChartsRow">
+          <div class="col-12">
+            <div class="data-card modern-card sales-chart-card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title mb-1">Total Sales (Visual Report)</h5>
+                  <p class="text-muted mb-0 small">Total sales over time</p>
+                </div>
+                <div class="chart-controls btn-group" role="group" aria-label="Sales range">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-sales-range="7d">7D</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm active" data-sales-range="30d">30D</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-sales-range="90d">90D</button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="sellerSalesTrendChart"></canvas>
+                </div>
+                <div id="sellerSalesTrendMessage" class="small text-muted mt-2 chart-helper-text"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 mt-3">
+            <div class="data-card modern-card order-status-card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title mb-1">Order Status (Recent)</h5>
+                  <p class="text-muted mb-0 small">Distribution of your latest orders</p>
+                </div>
+              </div>
+              <div class="card-body text-center">
+                <div class="chart-container order-status-chart-container mx-auto">
+                  <canvas id="sellerOrderStatusChart"></canvas>
+                </div>
+                <div id="orderStatusLegend" class="order-status-legend small mt-3 text-start mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Products Quick Manage -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-box-open" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Recent Products</h5>
+                <p class="text-muted mb-0 small">Manage your latest inventory</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <a class="btn btn-sm btn-outline-primary" href="add_product.html">
+                <i class="fas fa-plus me-1"></i>Add New
+              </a>
+              <a class="btn btn-sm btn-primary" href="inventory.html">
+                <i class="fas fa-cogs me-1"></i>Manage All
+              </a>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="recentProductsBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Best Selling Products -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-trophy" style="color: #fbbf24; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Best Selling Products</h5>
+                <p class="text-muted mb-0 small">Top performers by sales volume</p>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-outline-secondary" href="analytics.html">
+              <i class="fas fa-chart-line me-1"></i>View Analytics
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Units Sold</th>
+                    <th>Revenue</th>
+                    <th>Current Price</th>
+                  </tr>
+                </thead>
+                <tbody id="bestProductsBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Recent Orders -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-receipt" style="color: #10b981; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Recent Orders</h5>
+                <p class="text-muted mb-0 small">Latest customer orders</p>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-primary" href="orders.html">
+              <i class="fas fa-list me-1"></i>View All Orders
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Top Customers -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-users" style="color: #8b5cf6; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Top Customers</h5>
+                <p class="text-muted mb-0 small">Your most frequent buyers</p>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-outline-secondary" href="#">
+              <i class="fas fa-user-friends me-1"></i>View All
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Orders</th>
+                    <th>Total Spent</th>
+                    <th>Favorite Product</th>
+                    <th>Last Order</th>
+                  </tr>
+                </thead>
+                <tbody id="topCustomersBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Low Stock Alert -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Low Stock Alert</h5>
+                <p class="text-muted mb-0 small">Products running low on inventory</p>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-outline-warning" href="inventory.html">
+              <i class="fas fa-warehouse me-1"></i>Manage Inventory
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Stock Left</th>
+                    <th>Price</th>
+                    <th class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lowStockBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Section: Sales Report -->
+        <div class="data-card modern-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i class="fas fa-chart-bar" style="color: #6366f1; font-size: 1.2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">Sales Report</h5>
+                <p class="text-muted mb-0 small">Product sales with commission breakdown</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <div class="input-group input-group-sm" style="width: auto;">
+                <input type="date" class="form-control" id="salesReportFrom" style="width: 140px;">
+                <span class="input-group-text">to</span>
+                <input type="date" class="form-control" id="salesReportTo" style="width: 140px;">
+              </div>
+              <button class="btn btn-sm btn-outline-primary" id="loadSalesReportBtn">
+                <i class="fas fa-sync me-1"></i>Load Report
+              </button>
+              <button class="btn btn-sm btn-success" id="downloadSalesReportBtn" disabled>
+                <i class="fas fa-download me-1"></i>Download PDF
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="salesReportSummary" class="mb-3" style="display: none;">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">Total Sales</small>
+                    <strong class="text-primary" id="reportTotalSales">₱0.00</strong>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">Admin Commission (5%)</small>
+                    <strong class="text-warning" id="reportTotalCommission">₱0.00</strong>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">Your Earnings</small>
+                    <strong class="text-success" id="reportTotalEarnings">₱0.00</strong>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">Total Orders</small>
+                    <strong class="text-info" id="reportTotalOrders">0</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0" id="salesReportTable">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity Sold</th>
+                    <th>Total Sales</th>
+                    <th>Commission (5%)</th>
+                    <th>Your Earnings</th>
+                  </tr>
+                </thead>
+                <tbody id="salesReportBody">
+                  <tr>
+                    <td colspan="5" class="text-muted text-center py-4">
+                      <i class="fas fa-info-circle me-2"></i>Select a date range and click "Load Report" to view sales data
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+  </script>
+  
+  <!-- Edit Product Modal (shared with inventory) -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editProductForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editProductId" name="product_id">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" id="editName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Base Price (₱)</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="editPrice" name="price" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Total Stock</label>
+                <input type="number" min="0" class="form-control" id="editTotalStock" name="total_stock" required>
+              </div>
+            </div>
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="editCategory" name="category">
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <div class="form-check mt-4">
+                  <input class="form-check-input" type="checkbox" value="1" id="editFlashSale" name="is_flash_sale">
+                  <label class="form-check-label" for="editFlashSale">Flash Sale</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Are you sure you want to delete <strong id="deleteProductName">this product</strong>? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteProductBtn">
+            <i class="fas fa-trash me-1"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-dashboard.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Sales Report functionality
+    let currentSalesReport = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default date range (last 30 days)
+      const today = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(today.getDate() - 30);
+      
+      const fromInput = document.getElementById('salesReportFrom');
+      const toInput = document.getElementById('salesReportTo');
+      const loadBtn = document.getElementById('loadSalesReportBtn');
+      const downloadBtn = document.getElementById('downloadSalesReportBtn');
+      
+      if (fromInput && toInput) {
+        fromInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+        toInput.value = today.toISOString().split('T')[0];
+      }
+      
+      if (loadBtn) {
+        loadBtn.addEventListener('click', loadSalesReport);
+      }
+      
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', downloadSalesReportPDF);
+      }
+    });
+    
+    async function loadSalesReport() {
+      const fromInput = document.getElementById('salesReportFrom');
+      const toInput = document.getElementById('salesReportTo');
+      const loadBtn = document.getElementById('loadSalesReportBtn');
+      const tbody = document.getElementById('salesReportBody');
+      const summaryDiv = document.getElementById('salesReportSummary');
+      
+      if (!fromInput || !toInput || !loadBtn || !tbody) return;
+      
+      const from = fromInput.value;
+      const to = toInput.value;
+      
+      if (!from || !to) {
+        alert('Please select both start and end dates');
+        return;
+      }
+      
+      loadBtn.disabled = true;
+      loadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+      
+      try {
+        const token = AuthManager.getAuthToken();
+        const response = await fetch(`/api/seller/sales-report?from=${from}&to=${to}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to load sales report');
+        }
+        
+        currentSalesReport = data;
+        
+        // Update summary
+        if (summaryDiv && data.summary) {
+          summaryDiv.style.display = 'block';
+          document.getElementById('reportTotalSales').textContent = `₱${data.summary.total_sales.toFixed(2)}`;
+          document.getElementById('reportTotalCommission').textContent = `₱${data.summary.total_commission.toFixed(2)}`;
+          document.getElementById('reportTotalEarnings').textContent = `₱${data.summary.total_earnings.toFixed(2)}`;
+          document.getElementById('reportTotalOrders').textContent = data.summary.total_orders;
+        }
+        
+        // Update table
+        if (data.products && data.products.length > 0) {
+          tbody.innerHTML = data.products.map(p => `
+            <tr>
+              <td class="fw-medium">${escapeHtml(p.product)}</td>
+              <td><span class="badge bg-info">${p.quantity}</span></td>
+              <td>₱${p.sales.toFixed(2)}</td>
+              <td class="text-warning">₱${p.commission.toFixed(2)}</td>
+              <td class="text-success fw-bold">₱${p.earnings.toFixed(2)}</td>
+            </tr>
+          `).join('');
+          
+          document.getElementById('downloadSalesReportBtn').disabled = false;
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-4">No sales data found for the selected date range</td></tr>';
+          document.getElementById('downloadSalesReportBtn').disabled = true;
+        }
+        
+      } catch (error) {
+        console.error('Error loading sales report:', error);
+        tbody.innerHTML = `<tr><td colspan="5" class="text-danger text-center py-4">${error.message}</td></tr>`;
+        document.getElementById('downloadSalesReportBtn').disabled = true;
+      } finally {
+        loadBtn.disabled = false;
+        loadBtn.innerHTML = '<i class="fas fa-sync me-1"></i>Load Report';
+      }
+    }
+    
+    function downloadSalesReportPDF() {
+      if (!currentSalesReport) {
+        alert('Please load a sales report first');
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(18);
+      doc.text('Sales Report', 14, 20);
+      
+      // Date range
+      doc.setFontSize(10);
+      const fromInput = document.getElementById('salesReportFrom');
+      const toInput = document.getElementById('salesReportTo');
+      doc.text(`Period: ${fromInput.value} to ${toInput.value}`, 14, 30);
+      
+      // Summary
+      if (currentSalesReport.summary) {
+        doc.setFontSize(12);
+        doc.text('Summary', 14, 45);
+        doc.setFontSize(10);
+        let y = 52;
+        doc.text(`Total Sales: ₱${currentSalesReport.summary.total_sales.toFixed(2)}`, 14, y);
+        y += 7;
+        doc.text(`Admin Commission (5%): ₱${currentSalesReport.summary.total_commission.toFixed(2)}`, 14, y);
+        y += 7;
+        doc.text(`Your Earnings: ₱${currentSalesReport.summary.total_earnings.toFixed(2)}`, 14, y);
+        y += 7;
+        doc.text(`Total Orders: ${currentSalesReport.summary.total_orders}`, 14, y);
+        y += 10;
+      }
+      
+      // Product table
+      if (currentSalesReport.products && currentSalesReport.products.length > 0) {
+        doc.autoTable({
+          startY: currentSalesReport.summary ? 75 : 40,
+          head: [['Product', 'Quantity', 'Total Sales', 'Commission (5%)', 'Your Earnings']],
+          body: currentSalesReport.products.map(p => [
+            p.product,
+            p.quantity.toString(),
+            `₱${p.sales.toFixed(2)}`,
+            `₱${p.commission.toFixed(2)}`,
+            `₱${p.earnings.toFixed(2)}`
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [99, 102, 241], textColor: 255 },
+          styles: { fontSize: 9 },
+          columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 25, halign: 'center' },
+            2: { cellWidth: 30, halign: 'right' },
+            3: { cellWidth: 35, halign: 'right' },
+            4: { cellWidth: 35, halign: 'right' }
+          }
+        });
+      }
+      
+      // Footer
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(
+          `Page ${i} of ${pageCount}`,
+          doc.internal.pageSize.getWidth() / 2,
+          doc.internal.pageSize.getHeight() - 10,
+          { align: 'center' }
+        );
+      }
+      
+      // Save
+      const filename = `sales-report-${fromInput.value}-to-${toInput.value}.pdf`;
+      doc.save(filename);
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

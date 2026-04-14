@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grande - Login</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/auth.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Logo and Header -->
+        <div class="auth-header">
+            <div class="auth-logo">
+                <img src="/static/image.png" alt="Grande" onerror="this.onerror=null; this.src='/static/images/logo.svg';">
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your Grande account</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="auth-form" novalidate>
+            <!-- Email Field -->
+            <div class="form-group">
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    class="form-control" 
+                    placeholder="Email Address" 
+                    required 
+                    autocomplete="email"
+                    aria-describedby="emailHelp"
+                >
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    class="form-control" 
+                    placeholder="Password" 
+                    required 
+                    autocomplete="current-password"
+                    aria-describedby="passwordHelp"
+                >
+                <button type="button" class="password-toggle" title="Show password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+
+            <!-- Remember Me and Forgot Password -->
+            <div class="form-options" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="remember" name="remember" style="margin: 0;">
+                    <span>Remember me</span>
+                </label>
+                <a href="/forgot-password" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                    Forgot password?
+                </a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" data-original-text="Sign In">
+                <div class="loading-spinner"></div>
+                <span>Sign In</span>
+            </button>
+        </form>
+
+        <!-- Switch to Register -->
+        <div class="auth-switch">
+            Don't have an account? <a href="register.html">Create one here</a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/shared-auth.js"></script>
+    <script>
+      // Ensure window.AuthManager points to the shared AuthManager class
+      if (!window.AuthManager && typeof AuthManager !== 'undefined') {
+        window.AuthManager = AuthManager;
+      }
+    </script>
+    <script src="/static/js/auth-utils.js"></script>
+    <script>
+        // Additional login-specific functionality
+        function showForgotPasswordAlert() {
+            window.location.href = 'forgot-password.html';
+        }
+
+        // Handle potential URL parameters for redirects or messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            const redirect = urlParams.get('redirect');
+            
+            if (message) {
+                authUtils.showAlert(decodeURIComponent(message), 'info');
+            }
+            
+            // Store redirect URL for after successful login
+            if (redirect) {
+                sessionStorage.setItem('authRedirect', decodeURIComponent(redirect));
+            }
+        });
+
+        // Override the default form submission handler to include redirect logic
+        const originalFormHandler = authUtils.handleFormSubmission;
+        authUtils.handleFormSubmission = async function(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitButton = form.querySelector('.btn-submit');
+            const formData = new FormData(form);
+            
+            // Show loading state
+            this.setLoadingState(submitButton, true);
+            
+            // Clear any existing alerts
+            this.clearAlerts();
+            
+            try {
+                // Validate all fields before submission
+                if (!this.validateAllFields(form)) {
+                    this.setLoadingState(submitButton, false);
+                    this.showAlert('Please fix the errors below before submitting.', 'error');
+                    return;
+                }
+                
+                // Convert FormData to JSON
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+                
+                // Make API request
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    this.showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Save auth data if AuthManager is available
+                    if (window.AuthManager) {
+                        window.AuthManager.saveAuthState(result.user, result.token);
+                    }
+                    
+                    // Check for stored redirect URL
+                    const storedRedirect = sessionStorage.getItem('authRedirect');
+                    
+                    setTimeout(() => {
+                        if (storedRedirect) {
+                            sessionStorage.removeItem('authRedirect');
+                            window.location.href = storedRedirect;
+                        } else {
+                            const role = (result.user && result.user.role) || '';
+                            if (role === 'admin') {
+                                window.location.href = '/admin/dashboard';
+                            } else if (role === 'seller') {
+                                window.location.href = '/templates/SellerDashboard/sellerdashboard.html';
+                            } else if (role === 'rider') {
+                                window.location.href = '/templates/RiderDashboard/rider-dashboard.html';
+                            } else {
+                                window.location.href = '/';
+                            }
+                        }
+                    }, 1500);
+                } else {
+                    this.showAlert(result.error || 'Incorrect email or password.', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                this.showAlert('Incorrect email or password.', 'error');
+            } finally {
+                this.setLoadingState(submitButton, false);
+            }
+        };
+
+        // Focus on email field when page loads
+        window.addEventListener('load', () => {
+            const emailField = document.getElementById('email');
+            if (emailField) {
+                emailField.focus();
+            }
+        });
+    </script>
+</body>
+</html>

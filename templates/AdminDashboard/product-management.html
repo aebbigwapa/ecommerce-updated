@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <link rel="stylesheet" href="/static/css/admin-compact.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      #chatCenterModal .modal-dialog.modal-xl { max-width: 1400px !important; width: 92vw !important; margin: 1.75rem auto !important; }
+      @media (min-width: 1500px) { #chatCenterModal .modal-dialog.modal-xl { max-width: 1400px !important; width: 1400px !important; } }
+      @media (min-width: 1200px) and (max-width: 1499px) { #chatCenterModal .modal-dialog.modal-xl { max-width: 1300px !important; width: 92vw !important; } }
+      #chatCenterModal .modal-content { height: 85vh !important; max-height: 85vh !important; min-height: 85vh !important; display: flex !important; flex-direction: column !important; border: none !important; border-radius: 0.5rem !important; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; overflow: hidden !important; position: relative !important; width: 100% !important; max-width: 100% !important; overflow-y: hidden !important; margin: 0 !important; animation: none !important; }
+      #chatCenterModal .modal-header { padding: 1rem 1.5rem 0.5rem !important; border-bottom: 1px solid #dee2e6 !important; border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important; flex-shrink: 0 !important; margin: 0 !important; }
+      #chatCenterModal .modal-title { font-size: 1.25rem !important; font-weight: 500 !important; color: #212529 !important; display: flex !important; align-items: center !important; margin: 0 !important; }
+      #chatCenterModal .modal-title i { color: #0d6efd !important; margin-right: 0.5rem !important; }
+      #chatCenterModal .btn-close { padding: 0.5rem !important; margin: 0 !important; opacity: 0.5 !important; }
+      #chatCenterModal .btn-close:hover { opacity: 1 !important; }
+      #chatCenterModal .modal-body { padding: 0 !important; margin: 0 !important; flex: 1 !important; min-height: 0 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; max-height: none !important; overflow-y: hidden !important; }
+      #chatCenterModal .chat-container { height: 100% !important; flex: 1 !important; min-height: 0 !important; display: flex !important; flex-direction: row !important; overflow: hidden !important; }
+      #chatCenterModal .chat-window { flex: 1 !important; display: flex !important; flex-direction: column !important; min-height: 0 !important; overflow: hidden !important; }
+      #chatCenterModal .chat-messages { flex: 1 !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: hidden !important; }
+      #chatCenterModal .chat-input-area { flex-shrink: 0 !important; margin: 0 !important; padding: 1.75rem !important; border-top: 1px solid #e9ecef !important; background: #fff !important; box-shadow: 0 -4px 12px rgba(0,0,0,.04) !important; }
+      #chatCenterModal .chat-input-area[style*="display: block"] { display: block !important; }
+      #chatCenterModal .chat-input-container { display: flex !important; visibility: visible !important; }
+      #chatCenterModal #chatMessageInput { display: block !important; visibility: visible !important; }
+      #chatCenterModal #sendMessageBtn { display: flex !important; visibility: visible !important; }
+      #chatCenterModal .chat-sidebar { width: 420px !important; min-width: 420px !important; flex-shrink: 0 !important; }
+      @media (max-width: 1200px) { #chatCenterModal .modal-dialog.modal-xl { width: 95vw !important; max-width: 95vw !important; } }
+      @media (max-width: 768px) { #chatCenterModal .modal-dialog.modal-xl { width: 100vw !important; max-width: 100vw !important; margin: 0 !important; height: 100vh !important; } #chatCenterModal .modal-content { height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; } #chatCenterModal .chat-sidebar { width: 320px !important; min-width: 320px !important; } }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="fas fa-crown"></i>
+                    <span class="brand-text">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+    <a href="/admin/dashboard" class="nav-item">
+        <i class="fas fa-chart-line"></i>
+        <span class="nav-text">Dashboard</span>
+    </a>
+    <a href="/admin/pending-users" class="nav-item">
+        <i class="fas fa-user-clock"></i>
+        <span class="nav-text">Pending Registrations</span>
+        <span class="nav-badge" id="pendingUsersBadge" style="display:none;">0</span>
+    </a>
+    <a href="/admin/order-management" class="nav-item">
+        <i class="fas fa-box"></i>
+        <span class="nav-text">Order Management</span>
+    </a>
+    <a href="/admin/delivery-management" class="nav-item">
+        <i class="fas fa-truck"></i>
+        <span class="nav-text">Delivery Management</span>
+        <span class="nav-badge" id="activeDeliveriesBadge">0</span>
+    </a>
+    <a href="/admin/reports" class="nav-item">
+        <i class="fas fa-file-alt"></i>
+        <span class="nav-text">Reports</span>
+    </a>
+    <a href="/admin/settings" class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span class="nav-text">Settings</span>
+    </a>
+    <a href="/admin/flash-sales" class="nav-item">
+        <i class="fas fa-bolt"></i>
+        <span class="nav-text">Flash Sales</span>
+        <span class="nav-badge" id="flashSalesBadge" style="display:none;">0</span>
+    </a>
+    <a href="/admin/products" class="nav-item">
+        <i class="fas fa-tags"></i>
+        <span class="nav-text">Products</span>
+        <span class="nav-badge" id="productsBadge" style="display:none;">0</span>
+    </a>
+    <a href="/admin/seller-products" class="nav-item">
+        <i class="fas fa-store"></i>
+        <span class="nav-text">Seller Products & Sales</span>
+    </a>
+    <a href="/admin/product-management" class="nav-item active">
+        <i class="fas fa-edit"></i>
+        <span class="nav-text">Product Management</span>
+    </a>
+    <a href="/admin/rider-management" class="nav-item">
+        <i class="fas fa-motorcycle"></i>
+        <span class="nav-text">Rider Management</span>
+    </a>
+</nav>
+
+            <div class="sidebar-footer">
+                <a href="#logout" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="productSearch" placeholder="Search products...">
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="topbar-action">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="topbar-action" id="chatCenterBtn" title="Messages">
+                        <i class="fas fa-comments"></i>
+                        <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <h1 class="page-title">Product Management</h1>
+                    <p class="page-subtitle">View, edit, hide/unhide, and delete products from all sellers</p>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <h2 class="card-title">All Products</h2>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label for="statusFilter" style="font-weight: 500; color: var(--text-color); margin-right: 0.5rem;">Filter:</label>
+                            <select id="statusFilter" class="form-select product-status-filter">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Seller</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Total Sold</th>
+                                    <th>Revenue</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                                        <div class="loading-placeholder">Loading products...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer" style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div id="paginationInfo"></div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-secondary" id="prevPage" onclick="changePage(-1)">Previous</button>
+                            <button class="btn-secondary" id="nextPage" onclick="changePage(1)">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Product</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="editProductBody">
+                <form id="editProductForm">
+                    <div style="margin-bottom: 1rem;">
+                        <label>Product Name</label>
+                        <input type="text" id="editProductName" class="form-control" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Description</label>
+                        <textarea id="editProductDescription" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Price</label>
+                        <input type="number" id="editProductPrice" class="form-control" step="0.01" min="0" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Category</label>
+                        <input type="text" id="editProductCategory" class="form-control">
+                    </div>
+                    <input type="hidden" id="editProductId">
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveProductChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Center Modal Placeholder -->
+    <div id="chatCenterPlaceholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/shared-auth.js"></script>
+    <script src="/static/js/chat-center.js"></script>
+    <script src="/static/js/message-manager.js"></script>
+    <script src="/static/js/admin.js"></script>
+    <script src="/static/js/admin-product-management.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const chatBtn = document.getElementById('chatCenterBtn');
+        if (chatBtn) {
+          chatBtn.addEventListener('click', function() {
+            if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+              ChatCenter.open();
+            }
+          });
+        }
+        function updateChatNotificationBadge() {
+          if (!window.ChatCenter) return;
+          const token = window.AuthManager && window.AuthManager.getAuthToken ? window.AuthManager.getAuthToken() : null;
+          if (!token) return;
+          fetch('/api/chats', {
+            headers: { 'Authorization': `Bearer ${token}` },
+            credentials: 'include'
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && data.chats) {
+              const unreadCount = data.chats.reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
+              const notificationDot = document.getElementById('chatNotificationDot');
+              if (notificationDot) {
+                if (unreadCount > 0) {
+                  notificationDot.style.display = 'block';
+                  notificationDot.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                } else {
+                  notificationDot.style.display = 'none';
+                }
+              }
+            }
+          })
+          .catch(err => console.error('Error updating chat notification:', err));
+        }
+        setTimeout(updateChatNotificationBadge, 1000);
+        setInterval(updateChatNotificationBadge, 30000);
+      });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/public-compact.css">
+  <style>
+    .wl-controls{position:sticky; top:72px; z-index:4; background:rgba(255,255,255,.86); backdrop-filter: blur(10px); border:1px solid #eee; padding:10px 12px; border-radius:12px;}
+    .wl-controls .wl-chip{border:1px solid #e9ecef; background:#fff; padding:6px 10px; border-radius:999px; font-size:.85rem; box-shadow:0 2px 6px rgba(0,0,0,.04); transition:all .2s ease}
+    .wl-controls .wl-chip:hover{transform:translateY(-1px)}
+    .wl-controls .wl-chip.active{background:linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%); color:#fff; border-color:transparent}
+    .wishlist-grid{grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:18px; margin-top:10px}
+    .wishlist-card.selecting{outline:2px dashed #ff9ed6; outline-offset:-6px}
+    .wl-img-box{overflow:hidden; min-height:230px; background:#f8f9fa; position:relative}
+    .wl-img-box .wl-img{transition:transform .25s ease; width:100%; height:100%; object-fit:cover}
+    .wishlist-card:hover .wl-img{transform:scale(1.05)}
+    .wl-discount-ribbon{position:absolute; left:0; top:10px; background:linear-gradient(135deg,#ff6b6b,#ff2bac); color:#fff; padding:6px 10px; border-radius:0 12px 12px 0; font-weight:700; font-size:.8rem; z-index:2; box-shadow:0 4px 10px rgba(255,43,172,.25)}
+    .wl-cart-btn{transition:all .15s ease}
+    .wl-cart-btn:hover{background:linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%); color:#fff; border-color:transparent}
+    .wl-bulk{z-index:5}
+    #bulkBar{position:fixed !important; left:50%; transform:translateX(-50%); bottom:16px !important;}
+
+    @media (max-width: 768px){
+      .wl-controls{position:static; top:auto; border: none; background:transparent; padding:0;}
+      #bulkBar{left:12px; right:12px; transform:none}
+    }
+
+    /* All Filters drawer */
+    .filters-overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1050; display:none;}
+    .filters-drawer{position:absolute; right:0; top:0; height:100%; width:360px; max-width:86vw; background:#fff; box-shadow:-8px 0 24px rgba(0,0,0,.2); transform:translateX(100%); transition:transform .25s ease; overflow:auto;}
+    .filters-overlay.show{display:block;}
+    .filters-overlay.show .filters-drawer{transform:translateX(0);}
+    .filters-header{display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid #eee; position:sticky; top:0; background:#fff; z-index:1}
+    .filters-section{padding:14px 16px; border-bottom:1px solid #f2f2f2}
+    .filters-section h6{font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; color:#6c757d; margin:0 0 8px}
+    .filters-footer{position:sticky; bottom:0; background:#fff; border-top:1px solid #eee; padding:12px; display:flex; gap:8px}
+    .form-chip{display:flex; align-items:center; gap:10px}
+    body {
+      background: linear-gradient(135deg, #fafafa 0%, #f5f7fa 100%);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    .wishlist-container {
+      max-width: 1400px;
+      margin: 100px auto 50px;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #2d3436;
+      margin-bottom: 15px;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: #636e72;
+    }
+
+    .wishlist-stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .stat-info h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2d3436;
+      margin: 0;
+    }
+
+    .stat-info p {
+      font-size: 0.9rem;
+      color: #636e72;
+      margin: 0;
+    }
+
+    /* Wishlist grid (card style) */
+    .wishlist-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap:18px; }
+    .wishlist-card { background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,0.08); position:relative; transition:transform .2s ease, box-shadow .2s ease; }
+    .wishlist-card:hover { transform: translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,0.12); }
+    .wl-img-box { position:relative; aspect-ratio: 1/1; background:#f6f7f9; }
+    .wl-img { width:100%; height:100%; object-fit: cover; display:block; }
+    .wl-like { position:absolute; top:8px; right:8px; background:rgba(0,0,0,.6); color:#fff; font-size:.8rem; padding:4px 8px; border-radius:999px; display:flex; align-items:center; gap:6px; }
+    .wl-like i { color:#ff707a; }
+    .wl-hover { position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; opacity:0; transition:opacity .2s ease; }
+    .wishlist-card:hover .wl-hover { opacity:1; }
+    .wl-hover .btn-ghost { background:#fff; border:none; padding:10px 20px; border-radius:999px; font-weight:700; letter-spacing:.3px; color:#2d3436; }
+    .wl-hover .btn-ghost.delete { background:#000; color:#fff; }
+    .wl-body { padding:12px; }
+    .wl-name { font-weight:600; color:#2d3436; line-height:1.3; max-height:2.6em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    .wl-meta { font-size:.8rem; color:#95a5a6; margin-top:4px; }
+    .wl-price-row { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+    .wl-price .now{ color:#ff4d6d; font-weight:700; }
+    .wl-price del{ color:#95a5a6; margin-left:6px; font-size:.9rem; }
+    .wl-cart-btn { width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:1px solid #e9ecef; border-radius:8px; background:#fff; }
+    .wl-badges { display:flex; gap:8px; margin-top:6px; }
+    .wl-badge { font-size:.72rem; background:#f1f3f5; color:#6c757d; padding:2px 8px; border-radius:999px; }
+
+    .wishlist-item {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .wishlist-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(255,43,172,0.2);
+    }
+
+    .product-image-container {
+      position: relative;
+      height: 300px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .wishlist-item:hover .product-image {
+      transform: scale(1.05);
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .remove-btn:hover {
+      background: #ff4757;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .discount-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(255,43,172,0.3);
+    }
+
+    .out-of-stock-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: #ff4757;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-category {
+      color: #FF2BAC;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .product-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3436;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-seller {
+      font-size: 0.9rem;
+      color: #636e72;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .product-price {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .current-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d3436;
+    }
+
+    .original-price {
+      font-size: 1.1rem;
+      color: #95a5a6;
+      text-decoration: line-through;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .view-btn {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%);
+      color: white;
+    }
+
+    .view-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,43,172,0.4);
+      color: white;
+    }
+
+    .add-cart-btn {
+      background: white;
+      color: #2d3436;
+      border: 2px solid #dfe6e9;
+    }
+
+    .add-cart-btn:hover {
+      background: #2d3436;
+      color: white;
+      border-color: #2d3436;
+    }
+
+    .empty-wishlist {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-icon {
+      font-size: 5rem;
+      color: #dfe6e9;
+      margin-bottom: 20px;
+    }
+
+    .empty-wishlist h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #2d3436;
+      margin-bottom: 15px;
+    }
+
+    .empty-wishlist p {
+      color: #636e72;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .browse-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .browse-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255,43,172,0.4);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .wishlist-container {
+        margin-top: 80px;
+      }
+
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .product-image-container {
+        height: 250px;
+      }
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 50px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FF2BAC;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <a href="/" class="brand">
+            <img src="/static/image.png" alt="Grande" class="brand-logo">
+          </a>
+        </a>
+
+        <div class="header-divider d-none d-lg-block">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/Public/market.html">Shop</a>
+            </li>
+          </ul>
+
+
+          <div class="position-relative notification-container">
+            <button class="action-btn notification-btn" id="notificationBtn">
+              <i class="fas fa-bell"></i>
+              <span class="cart-count" id="notificationCount">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="loading-notifications">
+                  <div class="spinner"></div>
+                </div>
+              </div>
+              <div class="notification-see-all" style="display:none; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.05); text-align:center;">
+                <a href="#" style="color:#FF2BAC; text-decoration:none; font-weight:500;">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative message-container">
+            <button class="action-btn message-btn" id="messageBtn" title="Messages">
+              <i class="fas fa-comments"></i>
+              <span class="cart-count" id="messageCount">0</span>
+            </button>
+            <div class="message-dropdown" id="messageDropdown">
+              <div class="message-header">
+                <h6 class="message-title">Messages</h6>
+                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+              </div>
+              <div class="message-list" id="messageList">
+                Messages will be loaded here
+              </div>
+              <div class="message-see-all" style="display:none; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.05); text-align:center;">
+                <a href="#" style="color:#FF2BAC; text-decoration:none; font-weight:500;">See All Messages</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative cart-container">
+            <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+              <i class="fas fa-shopping-bag"></i>
+              <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <div class="cart-dropdown" id="cartDropdown">
+              <div class="cart-dropdown-header">
+                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+              </div>
+              <div class="cart-dropdown-items" id="cartDropdownItems">
+                <div class="loading-cart" id="cartLoading">
+                  <div class="spinner"></div>
+                </div>
+              </div>
+              <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                <div class="cart-total">
+                  <span>Total:</span>
+                  <span id="cartTotal">₱0.00</span>
+                </div>
+                <div class="cart-actions">
+                  <a href="/Public/cart.html" class="btn-view-cart">View Cart</a>
+                  <a href="/Public/checkout.html" class="btn-checkout">Checkout</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="user-section" id="userSection">
+            <div id="authLinks" class="auth-buttons">
+              <a href="/templates/Authenticator/login.html" class="action-btn login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="btn-text">Login</span>
+              </a>
+              <a href="/templates/Authenticator/register.html" class="action-btn register-btn">
+                <i class="fas fa-user-plus"></i>
+                <span class="btn-text">Register</span>
+              </a>
+            </div>
+
+            <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+              <button class="user-profile-btn" id="userProfileBtn" type="button">
+                <div class="user-avatar" id="userAvatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info" id="userInfo">
+                  <span class="user-name" id="userName">User Name</span>
+                  <span class="user-role" id="userRole">Role</span>
+                </div>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+              </button>
+
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <div class="dropdown-header">
+                  <div class="user-avatar-large">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <h6 class="dropdown-user-name" id="dropdownUserName"></h6>
+                    <p class="dropdown-user-email" id="dropdownUserEmail"></p>
+                    <span class="dropdown-user-role" id="dropdownUserRole"></span>
+                  </div>
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <div class="dropdown-section">
+                  <a href="../UserProfile/account.html" class="dropdown-item" id="profileLink">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                  </a>
+                  <a href="../UserProfile/my_orders.html" class="dropdown-item" id="ordersLink">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>My Orders</span>
+                  </a>
+                  <a href="/templates/UserProfile/wishlist.html" class="dropdown-item" id="wishlistLink">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                  </a>
+                  <a href="#" class="dropdown-item" id="settingsLink">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                  </a>
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <div class="dropdown-section">
+                  <a href="#" class="dropdown-item text-danger" id="logoutBtn" onclick="AuthManager.logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dropdown d-inline-block ms-2" id="roleDropdown">
+            <a class="action-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-th-large"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" id="roleDropdownMenu">
+              Content will be populated by JavaScript based on user role
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="wishlist-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>My Wishlist</h1>
+      <p>Your favorite items saved for later</p>
+    </div>
+
+    <!-- Wishlist Stats -->
+    <div class="wishlist-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="stat-info">
+          <h3 id="wishlist-count">0</h3>
+          <p>Saved Items</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="wl-controls d-flex flex-wrap align-items-center gap-2 mb-3">
+      <div class="dropdown">
+        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="fas fa-list-ul me-1"></i> <span id="filterCategoryLabel">Category</span>
+        </button>
+        <ul class="dropdown-menu" id="filterCategoryMenu">
+          <!-- categories populated by JS -->
+        </ul>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="fas fa-filter me-1"></i> <span id="filterStatusLabel">Status</span>
+        </button>
+        <ul class="dropdown-menu" id="filterStatusMenu">
+          <li><a class="dropdown-item wl-status-option" data-status="all" href="#">All</a></li>
+          <li><a class="dropdown-item wl-status-option" data-status="in" href="#">In stock</a></li>
+          <li><a class="dropdown-item wl-status-option" data-status="out" href="#">Out of stock</a></li>
+        </ul>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" id="filterAllBtn"><i class="fas fa-sliders-h me-1"></i> All Filters</button>
+
+      <div class="d-flex flex-wrap gap-2 ms-2">
+        <button class="wl-chip" id="chipPriceCut">Price cut</button>
+        <button class="wl-chip" id="chipLowStock">Low in stock</button>
+        <button class="wl-chip" id="chipBackInStock">Back in stock</button>
+      </div>
+
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <div class="dropdown">
+          <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            Sort By <span id="sortLabel" class="fw-semibold">Recently Added</span>
+          </button>
+          <ul class="dropdown-menu" id="sortMenu">
+            <li><a class="dropdown-item wl-sort" data-sort="recent" href="#">Recently Added</a></li>
+            <li><a class="dropdown-item wl-sort" data-sort="priceLow" href="#">Price: Low to High</a></li>
+            <li><a class="dropdown-item wl-sort" data-sort="priceHigh" href="#">Price: High to Low</a></li>
+          </ul>
+        </div>
+        <button class="btn btn-sm btn-outline-primary" id="selectToggle">Select</button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="loading-spinner">
+      <div class="spinner"></div>
+      <p style="margin-top: 20px; color: #636e72;">Loading your wishlist...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-wishlist" style="display: none;">
+      <div class="empty-icon">
+        <i class="far fa-heart"></i>
+      </div>
+      <h2>Your Wishlist is Empty</h2>
+      <p>Start adding products you love to your wishlist</p>
+      <a href="/templates/Public/market.html" class="browse-btn">
+        <i class="fas fa-shopping-bag"></i> Browse Products
+      </a>
+    </div>
+
+    <!-- Wishlist Grid -->
+    <div id="wishlistGrid" class="wishlist-grid" style="display:none;"></div>
+
+    <!-- Bulk actions -->
+    <div id="bulkBar" class="wl-bulk shadow-sm" style="display:none; position:sticky; bottom:10px;">
+      <div class="bg-white border rounded-3 p-2 d-flex align-items-center gap-2">
+        <div class="form-check ms-2">
+          <input class="form-check-input" type="checkbox" id="selectAll">
+          <label class="form-check-label" for="selectAll">Select all</label>
+        </div>
+        <span class="ms-2 small text-muted" id="selectedCount">0 selected</span>
+        <button class="btn btn-sm btn-danger ms-2" id="bulkDelete"><i class="fas fa-trash-alt me-1"></i>Delete</button>
+        <button class="btn btn-sm btn-primary" id="bulkAddCart"><i class="fas fa-shopping-bag me-1"></i>Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- All Filters Drawer -->
+    <div id="allFiltersOverlay" class="filters-overlay">
+      <div class="filters-drawer">
+        <div class="filters-header">
+          <h5 class="mb-0">All Filters</h5>
+          <button class="btn btn-sm btn-light" id="filtersClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="filters-section">
+          <h6>Top</h6>
+          <div class="d-flex flex-column gap-2">
+            <label class="form-check form-chip"><input class="form-check-input" type="checkbox" id="fltPriceCut"> Price cut</label>
+            <label class="form-check form-chip"><input class="form-check-input" type="checkbox" id="fltLowStock"> Low in stock</label>
+            <label class="form-check form-chip"><input class="form-check-input" type="checkbox" id="fltBackInStock"> Back in stock</label>
+          </div>
+        </div>
+        <div class="filters-section">
+          <h6>Category</h6>
+          <div id="fltCategories" class="d-flex flex-column gap-1"><!-- populated --></div>
+        </div>
+        <div class="filters-section">
+          <h6>Status</h6>
+          <div class="d-flex flex-column gap-2">
+            <label class="form-check form-chip"><input class="form-check-input" type="radio" name="fltStatus" value="all"> Any</label>
+            <label class="form-check form-chip"><input class="form-check-input" type="radio" name="fltStatus" value="in"> In Stock</label>
+            <label class="form-check form-chip"><input class="form-check-input" type="radio" name="fltStatus" value="out"> Out of Stock</label>
+          </div>
+        </div>
+        <div class="filters-footer">
+          <button class="btn btn-outline-secondary flex-fill" id="filtersReset">Reset</button>
+          <button class="btn btn-primary flex-fill" id="filtersApply">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer" style="background: var(--gray-800); color: white; padding: 3rem 0 1rem;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="footer-brand">
+            <h3>Women's Apparel</h3>
+            <p>Elevating your style with premium women's fashion. Discover pieces that celebrate your unique beauty and confidence.</p>
+            <div class="social-links" style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-facebook"></i></a>
+              <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-instagram"></i></a>
+              <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-twitter"></i></a>
+              <a href="#" style="color: white; font-size: 1.25rem;"><i class="fab fa-pinterest"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <div class="footer-links">
+            <h4>Shop</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="#" style="color: #ccc; text-decoration: none;">New Arrivals</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Dresses</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Tops</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Activewear</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Sale</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <div class="footer-links">
+            <h4>Company</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="#" style="color: #ccc; text-decoration: none;">About Us</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Careers</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Press</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Blog</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Sustainability</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <div class="footer-links">
+            <h4>Support</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Help Center</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Size Guide</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Returns</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Shipping</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <div class="footer-links">
+            <h4>Account</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="/Authenticator/login.html" style="color: #ccc; text-decoration: none;">My Account</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Orders</a></li>
+              <li><a href="/templates/UserProfile/wishlist.html" style="color: #ccc; text-decoration: none;">Wishlist</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Rewards</a></li>
+              <li><a href="#" style="color: #ccc; text-decoration: none;">Gift Cards</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom" style="border-top: 1px solid #555; padding-top: 2rem; margin-top: 2rem;">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <p>&copy; 2025 Women's Apparel. All rights reserved.</p>
+          </div>
+          <div class="col-md-6">
+            <div class="payment-methods" style="display: flex; gap: 0.5rem; justify-content: end;">
+              <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=VISA" alt="Visa">
+              <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=MC" alt="Mastercard">
+              <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=AMEX" alt="American Express">
+              <img src="https://via.placeholder.com/40x25/003744/FFFFFF?text=PP" alt="PayPal">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/wishlist.js"></script>
+</body>
+</html>

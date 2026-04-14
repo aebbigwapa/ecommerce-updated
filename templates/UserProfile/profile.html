@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/account.css">
+  <link rel="stylesheet" href="/static/css/userprofile-compact.css">
+  <style>
+    /* User Dropdown Styling - Copied from index.html with !important to override compact styles */
+    .user-dropdown-container {
+      position: relative !important;
+      display: inline-block !important;
+    }
+    
+    .user-profile-btn {
+      background: none !important;
+      border: none !important;
+      color: white !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 6px 12px !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .user-profile-btn:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: white !important;
+    }
+    
+    .user-avatar {
+      width: 32px !important;
+      height: 32px !important;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: white !important;
+      font-size: 0.9rem !important;
+    }
+    
+    .user-info {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    
+    .user-name {
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+      line-height: 1.2 !important;
+    }
+    
+    .user-role {
+      font-size: 0.75rem !important;
+      opacity: 0.8 !important;
+      line-height: 1 !important;
+    }
+    
+    .user-dropdown-menu {
+      position: absolute !important;
+      top: calc(100% + 12px) !important;
+      right: 0 !important;
+      min-width: 280px !important;
+      background: white !important;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: translateY(-10px) !important;
+      transition: all 0.3s ease !important;
+      z-index: 1000 !important;
+    }
+    
+    .user-dropdown-menu.show {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
+    }
+    
+    .dropdown-header {
+      display: flex !important;
+      align-items: center !important;
+      gap: 15px !important;
+      padding: 20px !important;
+      background: linear-gradient(135deg, #fffee3 0%, #ffc6bf 100%) !important;
+      border-radius: 16px 16px 0 0 !important;
+    }
+    
+    .user-avatar-large {
+      width: 48px !important;
+      height: 48px !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: white !important;
+      font-size: 1.2rem !important;
+    }
+    
+    .dropdown-user-name {
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      margin: 0 0 4px 0 !important;
+    }
+    
+    .dropdown-user-email {
+      font-size: 0.85rem !important;
+      color: #666 !important;
+      margin: 0 0 6px 0 !important;
+    }
+    
+    .dropdown-user-role {
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      color: white !important;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+      padding: 2px 8px !important;
+      border-radius: 12px !important;
+    }
+    
+    .dropdown-section {
+      padding: 8px 0 !important;
+    }
+    
+    .dropdown-item {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      padding: 12px 20px !important;
+      color: #333 !important;
+      text-decoration: none !important;
+      transition: all 0.2s ease !important;
+      font-size: 0.9rem !important;
+    }
+    
+    .dropdown-item:hover {
+      background-color: #f8f9fa !important;
+      color: #FF2BAC !important;
+      transform: translateX(4px) !important;
+    }
+    
+    .dropdown-item.text-danger {
+      color: #dc3545 !important;
+    }
+    
+    .dropdown-item.text-danger:hover {
+      background-color: rgba(220, 53, 69, 0.05) !important;
+      color: #dc3545 !important;
+    }
+    
+    .dropdown-divider {
+      height: 1px !important;
+      background-color: rgba(0, 0, 0, 0.05) !important;
+      margin: 8px 0 !important;
+    }
+    
+    /* Profile Photo Upload Styles */
+    .profile-photo-section {
+      background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 32px;
+      border: 1px solid rgba(255,43,172,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .profile-photo-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+    }
+    
+    .profile-photo-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-photo-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+      }
+      
+      .profile-photo-info {
+        text-align: center;
+      }
+    }
+    
+    .profile-photo-avatar {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .profile-photo-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      box-shadow: 0 12px 40px rgba(255,43,172,0.15), 0 4px 12px rgba(0,0,0,0.08);
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .profile-photo-img:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 48px rgba(255,43,172,0.2), 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .profile-photo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 0;
+    }
+    
+    .profile-photo-overlay {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%);
+      color: white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255,43,172,0.3), 0 2px 8px rgba(0,0,0,0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 4px solid white;
+    }
+    
+    .profile-photo-overlay:hover {
+      background: linear-gradient(135deg, #e0259a 0%, #e555b8 100%);
+      transform: scale(1.15) translateY(-1px);
+      box-shadow: 0 8px 25px rgba(255,43,172,0.4), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .profile-photo-info h5 {
+      margin: 0 0 12px 0;
+      color: #1a202c;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.025em;
+    }
+    
+    .profile-photo-info p {
+      margin: 0 0 24px 0;
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    
+    .photo-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .photo-upload-btn {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(255, 43, 172, 0.25);
+      letter-spacing: 0.025em;
+    }
+    
+    .photo-upload-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 43, 172, 0.35), 0 3px 8px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #e0259a 0%, #e555b8 60%, #eb7cc9 100%);
+    }
+    
+    .photo-remove-btn {
+      background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(220, 53, 69, 0.25);
+      letter-spacing: 0.025em;
+    }
+    
+    .photo-remove-btn:hover {
+      background: linear-gradient(135deg, #c82333 0%, #d63031 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.35), 0 3px 8px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 480px) {
+      .photo-buttons {
+        justify-content: center;
+        width: 100%;
+      }
+      
+      .photo-upload-btn,
+      .photo-remove-btn {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+    
+    /* Photo Upload Modal */
+    .photo-upload-modal .modal-content {
+      border-radius: 16px;
+      border: none;
+    }
+    
+    .photo-upload-modal .modal-header {
+      border-bottom: 1px solid #e9ecef;
+      padding: 20px 24px;
+    }
+    
+    .photo-upload-modal .modal-body {
+      padding: 24px;
+    }
+    
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: #fafafa;
+    }
+    
+    .upload-area:hover {
+      border-color: #FF2BAC;
+      background: rgba(255, 43, 172, 0.02);
+    }
+    
+    .upload-area.dragover {
+      border-color: #FF2BAC;
+      background: rgba(255, 43, 172, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 16px;
+    }
+    
+    .upload-area.dragover .upload-icon {
+      color: #FF2BAC;
+    }
+    
+    .image-preview-container {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .crop-container {
+      position: relative;
+      max-width: 400px;
+      max-height: 400px;
+      margin: 20px auto;
+    }
+    
+    .crop-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* Update existing avatar styles to show profile photos */
+    .user-avatar img,
+    .user-avatar-large img {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+    
+    /* Fix sidebar positioning */
+    .account-page.spacious .account-sidebar {
+      position: static !important;
+      top: auto !important;
+    }
+    
+    /* Enhanced Info Tiles */
+    .info-tile {
+      background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+      border: 1px solid rgba(255,43,172,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .info-tile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .info-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 4px 16px rgba(255,43,172,0.1);
+      border-color: rgba(255,43,172,0.12);
+    }
+    
+    .info-tile:hover::before {
+      opacity: 1;
+    }
+    
+    .info-tile .label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    
+    .info-tile .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a202c;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/static/image.png" alt="Grande" class="brand-logo">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Public/market.html">Shop</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#categories">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#sale">Sale</a></li>
+          </ul>
+
+          <div class="position-relative notification-container">
+            <button class="action-btn notification-btn" id="notificationBtn">
+              <i class="fas fa-bell"></i>
+              <span class="cart-count" id="notificationCount">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty"><i class="fas fa-bell"></i><p>No notifications</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative message-container">
+            <button class="action-btn message-btn" id="messageBtn" title="Messages">
+              <i class="fas fa-comments"></i>
+              <span class="cart-count" id="messageCount">0</span>
+            </button>
+            <div class="message-dropdown" id="messageDropdown">
+              <div class="message-header">
+                <h6 class="message-title">Messages</h6>
+                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+              </div>
+              <div class="message-list" id="messageList"></div>
+            </div>
+          </div>
+
+          <div class="position-relative cart-container">
+            <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+              <i class="fas fa-shopping-bag"></i>
+              <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <div class="cart-dropdown" id="cartDropdown">
+              <div class="cart-dropdown-header">
+                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+              </div>
+              <div class="cart-dropdown-items" id="cartDropdownItems">
+                <div class="cart-empty-message">
+                  <i class="fas fa-shopping-bag"></i>
+                  <p>Your cart is empty</p>
+                </div>
+              </div>
+              <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                <div class="cart-total"><span>Total:</span><span id="cartTotal">₱0.00</span></div>
+                <div class="cart-actions">
+                  <a href="/Public/cart.html" class="btn-view-cart">View Cart</a>
+                  <a href="/Public/checkout.html" class="btn-checkout">Checkout</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="user-section">
+            <div id="authLinks" class="auth-buttons">
+              <a href="../Authenticator/login.html" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="btn-text">Login</span>
+              </a>
+              <a href="../Authenticator/register.html" class="register-btn">
+                <i class="fas fa-user-plus"></i>
+                <span class="btn-text">Register</span>
+              </a>
+            </div>
+            
+            <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+              <button class="user-profile-btn" id="userProfileBtn" type="button">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info">
+                  <span class="user-name" id="userName">User Name</span>
+                  <span class="user-role" id="userRole">Role</span>
+                </div>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+              </button>
+              
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <div class="dropdown-header">
+                  <div class="user-avatar-large">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <h6 class="dropdown-user-name" id="dropdownUserName">User Name</h6>
+                    <p class="dropdown-user-email" id="dropdownUserEmail">user@email.com</p>
+                    <span class="dropdown-user-role" id="dropdownUserRole">Role</span>
+                  </div>
+                </div>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-section">
+                  <a href="/templates/UserProfile/profile.html" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                  </a>
+                  <a href="/templates/UserProfile/my_orders.html" class="dropdown-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>My Orders</span>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                  </a>
+                </div>
+                
+                <div id="roleDivider" class="dropdown-divider" style="display: none;"></div>
+                
+                <div id="roleDashboardSection" class="dropdown-section"></div>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-section">
+                  <a href="#" class="dropdown-item text-danger" onclick="AuthManager.logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="account-page spacious full">
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="account-card">
+            <div class="row g-4">
+              <aside class="col-12 col-md-4 col-lg-3 account-sidebar" style="align-self: flex-start;">
+                <div class="sidebar-header mb-4">
+                  <h5 class="mb-1">My Account</h5>
+                  <small class="text-muted">Manage your profile</small>
+                </div>
+                <nav class="account-nav">
+                  <div class="nav-section">My Profile</div>
+                  <a class="nav-link active" href="/templates/UserProfile/profile.html"><i class="fas fa-id-badge"></i> Profile</a>
+                  <a class="nav-link" href="/templates/UserProfile/edit_profile.html"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                  <div class="nav-section">Account</div>
+                  <a class="nav-link" href="/templates/UserProfile/addresses.html"><i class="fas fa-location-dot"></i> Addresses</a>
+                  <a class="nav-link" href="/templates/UserProfile/change_password.html"><i class="fas fa-key"></i> Change Password</a>
+                  <div class="nav-section">Orders & Alerts</div>
+                  <a class="nav-link" href="/templates/UserProfile/my_orders.html"><i class="fas fa-box"></i> My Orders</a>
+                  <a class="nav-link" href="/templates/UserProfile/notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+                </nav>
+              </aside>
+
+              <section class="col-12 col-md-8 col-lg-9 account-content">
+                <div class="section active">
+                  <div class="section-header" style="margin-bottom: 2rem;">
+                    <h4 style="font-size: 2rem; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem; letter-spacing: -0.025em;">Profile</h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem; color: #64748b; font-weight: 400;">Your personal information</p>
+                  </div>
+                  
+                  <!-- Profile Photo Section -->
+                  <div class="profile-photo-section">
+                    <div class="profile-photo-container">
+                      <div class="profile-photo-avatar">
+                        <div class="profile-photo-img" id="profilePhotoDisplay">
+                          <i class="fas fa-user" id="defaultIcon"></i>
+                          <img id="profilePhotoImg" style="display: none;" alt="Profile Photo">
+                        </div>
+                        <div class="profile-photo-overlay" onclick="openPhotoUpload()">
+                          <i class="fas fa-camera" style="font-size: 0.9rem;"></i>
+                        </div>
+                      </div>
+                      <div class="profile-photo-info">
+                        <h5>Profile Photo</h5>
+                        <p>Add a profile photo to help others recognize you. Your photo will be visible to other users on the platform.</p>
+                        <div class="photo-buttons">
+                          <button type="button" class="photo-upload-btn" onclick="openPhotoUpload()">
+                            <i class="fas fa-upload"></i>Upload Photo
+                          </button>
+                          <button type="button" class="photo-remove-btn" onclick="removePhoto()" id="removePhotoBtn" style="display: none;">
+                            <i class="fas fa-trash"></i>Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-4">
+                    <div class="col-sm-6">
+                      <div class="info-tile">
+                        <div class="label">Name</div>
+                        <div class="value" id="ovName">-</div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="info-tile">
+                        <div class="label">Email</div>
+                        <div class="value" id="ovEmail">-</div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="info-tile">
+                        <div class="label">Phone</div>
+                        <div class="value" id="ovPhone">-</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Photo Upload Modal -->
+  <div class="modal fade photo-upload-modal" id="photoUploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-camera me-2" style="color: #FF2BAC;"></i>
+            Upload Profile Photo
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Upload Area -->
+          <div class="upload-area" id="uploadArea" onclick="document.getElementById('photoInput').click()">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h6>Drag and drop your photo here</h6>
+            <p class="text-muted mb-0">or <strong style="color: #FF2BAC;">click to browse</strong></p>
+            <small class="text-muted mt-2 d-block">Supports: JPG, PNG, GIF (max 5MB)</small>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" style="display: none;">
+          
+          <!-- Image Preview and Crop -->
+          <div id="imagePreviewSection" style="display: none;">
+            <div class="text-center mb-3">
+              <h6>Adjust your photo</h6>
+              <p class="text-muted mb-0">Drag to reposition your photo within the circle</p>
+            </div>
+            <div class="crop-container" id="cropContainer">
+              <img id="cropImage" style="display: none;">
+            </div>
+            <div class="text-center mt-3">
+              <button type="button" class="btn btn-outline-secondary me-2" onclick="resetUpload()">
+                <i class="fas fa-undo me-2"></i>Choose Different Photo
+              </button>
+              <button type="button" class="btn btn-primary" style="background: #FF2BAC; border-color: #FF2BAC;" onclick="savePhoto()">
+                <i class="fas fa-check me-2"></i>Save Photo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script>
+    // Force initialize authentication UI
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.AuthManager && AuthManager.isLoggedIn()) {
+          const user = AuthManager.getAuthUser();
+          console.log('Updating user dropdown with:', user);
+          
+          // Update using both IDs and classes as fallback
+          const updateElement = (selectors, value) => {
+            selectors.forEach(sel => {
+              const el = document.querySelector(sel);
+              if (el) el.textContent = value;
+            });
+          };
+          
+          // Update name
+          const name = user.name || (user.email ? user.email.split('@')[0] : 'User');
+          updateElement(['#userName', '#dropdownUserName', '.user-name', '.dropdown-user-name'], name);
+          
+          // Update email
+          updateElement(['#dropdownUserEmail', '.dropdown-user-email'], user.email || 'user@email.com');
+          
+          // Update role
+          const role = user.role || 'Customer';
+          updateElement(['#userRole', '#dropdownUserRole', '.user-role', '.dropdown-user-role'], role);
+          
+          // Show dropdown, hide auth links
+          const authLinks = document.getElementById('authLinks');
+          const userDropdown = document.getElementById('userDropdownContainer');
+          if (authLinks) authLinks.style.display = 'none';
+          if (userDropdown) userDropdown.style.display = 'block';
+          
+          console.log('✅ User dropdown updated successfully');
+        }
+      }, 300);
+    });
+    
+    // Profile Photo Management
+    let currentImageFile = null;
+    let cropperInstance = null;
+    
+    // Open photo upload modal
+    function openPhotoUpload() {
+      const modal = new bootstrap.Modal(document.getElementById('photoUploadModal'));
+      modal.show();
+      resetUpload();
+    }
+    
+    // Reset upload interface
+    function resetUpload() {
+      document.getElementById('uploadArea').style.display = 'block';
+      document.getElementById('imagePreviewSection').style.display = 'none';
+      document.getElementById('photoInput').value = '';
+      currentImageFile = null;
+      
+      if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+      }
+    }
+    
+    // Handle file input change
+    document.addEventListener('DOMContentLoaded', function() {
+      const photoInput = document.getElementById('photoInput');
+      const uploadArea = document.getElementById('uploadArea');
+      
+      // File input change event
+      if (photoInput) {
+        photoInput.addEventListener('change', handleFileSelect);
+      }
+      
+      // Drag and drop functionality
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          uploadArea.classList.remove('dragover');
+          
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            handleFile(files[0]);
+          }
+        });
+      }
+    });
+    
+    // Handle file selection
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    }
+    
+    // Handle file processing
+    function handleFile(file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file.', 'error');
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('Image size should be less than 5MB.', 'error');
+        return;
+      }
+      
+      currentImageFile = file;
+      
+      // Create file reader
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        displayImageForCrop(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    // Display image in crop interface
+    function displayImageForCrop(imageSrc) {
+      document.getElementById('uploadArea').style.display = 'none';
+      document.getElementById('imagePreviewSection').style.display = 'block';
+      
+      const cropImage = document.getElementById('cropImage');
+      cropImage.src = imageSrc;
+      cropImage.style.display = 'block';
+      
+      // Initialize simple crop preview (without external library)
+      initializeSimpleCrop();
+    }
+    
+    // Initialize simple crop functionality
+    function initializeSimpleCrop() {
+      // For now, we'll use a simple preview without complex cropping
+      // In a full implementation, you would integrate Cropper.js or similar library
+      const cropImage = document.getElementById('cropImage');
+      
+      // Add some basic styling for the crop preview
+      cropImage.style.maxWidth = '300px';
+      cropImage.style.maxHeight = '300px';
+      cropImage.style.borderRadius = '8px';
+      cropImage.style.objectFit = 'cover';
+    }
+    
+    // Save the photo
+    function savePhoto() {
+      if (!currentImageFile) {
+        showNotification('No image selected.', 'error');
+        return;
+      }
+      
+      // Create canvas for processing
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const cropImage = document.getElementById('cropImage');
+      
+      // Set canvas dimensions for a square crop
+      const size = 300;
+      canvas.width = size;
+      canvas.height = size;
+      
+      // Create image object
+      const img = new Image();
+      img.onload = function() {
+        // Calculate crop dimensions to maintain aspect ratio
+        const minDim = Math.min(img.width, img.height);
+        const startX = (img.width - minDim) / 2;
+        const startY = (img.height - minDim) / 2;
+        
+        // Draw cropped image
+        ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+        
+        // Convert to data URL
+        const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Save using ProfilePhotoManager (and fallback to localStorage)
+        try { ProfilePhotoManager.saveProfilePhoto(photoDataUrl); } catch (e) {}
+        try { localStorage.setItem('profilePhoto', photoDataUrl); } catch (e) {}
+        updateProfilePhotoUI();
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('photoUploadModal'));
+        if (modal) modal.hide();
+        
+        showNotification('Profile photo updated successfully!', 'success');
+      };
+      
+      img.src = cropImage.src;
+    }
+    
+    // Remove profile photo
+    function removePhoto() {
+      if (confirm('Are you sure you want to remove your profile photo?')) {
+        // Remove using ProfilePhotoManager
+        try { ProfilePhotoManager.removeProfilePhoto(); } catch (e) {}
+        try { localStorage.removeItem('profilePhoto'); } catch (e) {}
+        updateProfilePhotoUI();
+        showNotification('Profile photo removed successfully!', 'success');
+      }
+    }
+
+      try {
+        if (window.ProfilePhotoManager && typeof ProfilePhotoManager.getProfilePhoto === 'function') {
+          const v = ProfilePhotoManager.getProfilePhoto();
+          if (v) return v;
+        }
+      } catch (e) {}
+      try { return localStorage.getItem('profilePhoto'); } catch (e) { return null; }
+    }
+
+    function getUserDisplayText() {
+      const nameEl = document.getElementById('userName');
+      const emailEl = document.getElementById('dropdownUserEmail');
+      const name = nameEl && nameEl.textContent ? nameEl.textContent.trim() : '';
+      const email = emailEl && emailEl.textContent ? emailEl.textContent.trim() : '';
+      return name || email || 'User';
+    }
+
+    function computeInitials(text) {
+      const t = (text || '').trim();
+      if (!t) return 'U';
+      if (t.includes('@')) {
+        return t[0].toUpperCase();
+      }
+      const parts = t.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function updateHeaderAvatars(photo) {
+      const containers = document.querySelectorAll('.user-avatar, .user-avatar-large');
+      containers.forEach(c => {
+        // Hide existing icons
+        c.querySelectorAll('i').forEach(i => { i.style.display = 'none'; });
+        // Remove existing initials spans if any
+        c.querySelectorAll('.avatar-initials').forEach(s => s.remove());
+        // Handle image
+        const existingImg = c.querySelector('img');
+        if (photo) {
+          let img = existingImg;
+          if (!img) {
+            img = document.createElement('img');
+            c.appendChild(img);
+          }
+          img.src = photo;
+          img.style.display = 'block';
+        } else {
+          if (existingImg) existingImg.remove();
+          const initials = computeInitials(getUserDisplayText());
+          const span = document.createElement('span');
+          span.className = 'avatar-initials';
+          span.textContent = initials;
+          c.appendChild(span);
+        }
+      });
+    }
+
+    function updateProfilePhotoUI() {
+      const photo = getStoredProfilePhoto();
+      const defaultIcon = document.getElementById('defaultIcon');
+      const img = document.getElementById('profilePhotoImg');
+      const removeBtn = document.getElementById('removePhotoBtn');
+      if (photo) {
+        img.src = photo;
+        img.style.display = 'block';
+        if (defaultIcon) defaultIcon.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
+      } else {
+        img.removeAttribute('src');
+        img.style.display = 'none';
+        if (defaultIcon) defaultIcon.style.display = '';
+        if (removeBtn) removeBtn.style.display = 'none';
+      }
+      updateHeaderAvatars(photo);
+    }
+
+    function bindAriaExpanded(dropdownSelector, buttonSelector) {
+      const dd = document.querySelector(dropdownSelector);
+      const btn = document.querySelector(buttonSelector);
+      if (!dd || !btn) return;
+      const update = () => {
+        const shown = dd.classList.contains('show');
+        btn.setAttribute('aria-expanded', String(shown));
+      };
+      const obs = new MutationObserver(update);
+      obs.observe(dd, { attributes: true, attributeFilter: ['class'] });
+      update();
+    }
+
+
+    // Show notification (simple implementation)
+    function showNotification(message, type = 'info') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+      notification.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 350px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      `;
+      
+      notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 3000);
+    }
+    
+  </script>
+  <script src="/static/js/account.js" defer></script>
+</body>
+</html>

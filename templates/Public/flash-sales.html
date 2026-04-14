@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Flash Sales - Women's Apparel</title>
+  <meta name="description" content="Explore all limited-time Flash Sales. Save big on top products before the deals expire.">
+  <link rel="canonical" href="/Public/flash-sales.html">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .page-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin: 1rem 0 1rem; }
+    .page-title { margin: 0; font-family: 'Playfair Display', serif; }
+    .controls { display:flex; gap:.5rem; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:12px; padding:6px; }
+    .controls .form-select, .controls .form-control { height: 36px; padding: 6px 10px; font-size: .9rem; }
+    .flash-grid { display:grid; grid-template-columns: repeat(1, 1fr); gap: 16px; }
+    @media (min-width:576px){ .flash-grid{ grid-template-columns: repeat(2, 1fr);} }
+    @media (min-width:992px){ .flash-grid{ grid-template-columns: repeat(4, 1fr);} }
+    .flash-card { border:1px solid var(--border-color); border-radius:14px; background:var(--container-bg); overflow:hidden; display:flex; flex-direction:column; position:relative; transition: box-shadow .2s ease, transform .2s ease; }
+    .flash-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,.08); transform: translateY(-2px); }
+    .discount-badge { position:absolute; top:10px; left:10px; background:linear-gradient(135deg,#ff4d4f,#dc3545); color:#fff; font-weight:700; font-size:.8rem; padding:4px 8px; border-radius:999px; z-index:2; box-shadow: 0 4px 10px rgba(220,53,69,.25); }
+    .flash-card .img { width:100%; aspect-ratio: 1/1; background:#fafafa; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .flash-card .img img { width:100%; height:100%; object-fit:cover; transition: transform .3s ease; }
+    .flash-card:hover .img img { transform: scale(1.04); }
+    .flash-card .body { padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .product-title { font-weight:600; font-size:.95rem; line-height:1.3; min-height: 2.6em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .price-row { display:flex; align-items:center; gap:8px; }
+    .price-now { font-weight:800; color: var(--primary-color); }
+    .price-original { color:#888; text-decoration:line-through; font-size:.9rem; }
+    .card-actions { display:flex; gap:.5rem; }
+    .card-actions .btn { border-radius:10px; padding:8px 12px; font-size:.85rem; display:inline-flex; align-items:center; gap:8px; }
+    .btn-primary-cta { background: var(--brand-grad); color:#fff; border:none; box-shadow: var(--brand-shadow); }
+    .btn-primary-cta:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(255,43,172,.35), 0 8px 22px rgba(27,14,36,.2); color:#fff; }
+    .btn-outline-cta { background: transparent; color: var(--primary-dark); border: 2px solid var(--primary-dark); }
+    .btn-outline-cta:hover { background: var(--primary-dark); color:#fff; transform: translateY(-2px); }
+    .btn-xs { padding:6px 10px; border-radius:10px; font-size:.82rem; }
+    @media (max-width: 576px){ .card-actions { flex-direction:column; } .card-actions .btn { width:100%; justify-content:center; } }
+    .pagination { display:flex; gap:6px; justify-content:center; margin: 18px 0; }
+    .page-btn { border:1px solid var(--border-color); background:#fff; padding:6px 10px; border-radius:8px; }
+    .page-btn.active { background: var(--primary-dark); color:#fff; border-color: var(--primary-dark); }
+    .empty { text-align:center; color:#666; padding: 24px 0; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/"><img src="/static/image.png" alt="Grande" class="brand-logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Public/market.html">Shop</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/Public/flash-sales.html">Sale</a></li>
+          </ul>
+
+          <div class="position-relative notification-container">
+            <button class="action-btn notification-btn" id="notificationBtn"><i class="fas fa-bell"></i><span class="cart-count" id="notificationCount">0</span></button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList"></div>
+              <div class="notification-see-all" style="display:none; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.05); text-align:center;">
+                <a href="#" style="color:#FF2BAC; text-decoration:none; font-weight:500;">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative cart-container">
+            <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+              <i class="fas fa-shopping-bag"></i><span class="cart-count" id="cartCount">0</span>
+            </a>
+            <div class="cart-dropdown" id="cartDropdown">
+              <div class="cart-dropdown-header"><h5 class="cart-dropdown-title">Shopping Cart</h5></div>
+              <div class="cart-dropdown-items" id="cartDropdownItems"><div class="cart-empty-message"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p><a href="/Public/market.html" class="btn btn-start-shopping" style="margin-top:8px;">Start Shopping</a></div></div>
+              <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display:none;">
+                <div class="cart-total"><span>Total:</span><span id="cartTotal">₱0.00</span></div>
+                <div class="cart-actions"><a href="/Public/cart.html" class="btn-view-cart">View Cart</a><a href="/Public/checkout.html" class="btn-checkout">Checkout</a></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="user-section" id="userSection">
+            <div id="authLinks" class="auth-buttons">
+              <a href="/Authenticator/login.html" class="action-btn login-btn"><i class="fas fa-sign-in-alt"></i><span class="btn-text">Login</span></a>
+              <a href="/Authenticator/register.html" class="action-btn register-btn"><i class="fas fa-user-plus"></i><span class="btn-text">Register</span></a>
+            </div>
+            <div id="userDropdownContainer" class="user-dropdown-container" style="display:none;">
+              <button class="user-profile-btn" id="userProfileBtn" type="button">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info"><span class="user-name" id="userName">User Name</span><span class="user-role" id="userRole">Role</span></div>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <div class="dropdown-header">
+                  <div class="user-avatar-large"><i class="fas fa-user"></i></div>
+                  <div class="user-details"><h6 class="dropdown-user-name" id="dropdownUserName"></h6><p class="dropdown-user-email" id="dropdownUserEmail"></p><span class="dropdown-user-role" id="dropdownUserRole"></span></div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-section">
+                  <a href="../UserProfile/account.html" class="dropdown-item"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+                  <a href="../UserProfile/my_orders.html" class="dropdown-item"><i class="fas fa-shopping-bag"></i><span>My Orders</span></a>
+                  <a href="/templates/UserProfile/wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i><span>Wishlist</span></a>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-section"><a href="#" class="dropdown-item text-danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="market-header" style="padding-top: 18px; padding-bottom: 0;">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Flash Sales</li>
+        </ol>
+      </nav>
+      <div class="page-header">
+        <h2 class="page-title">All Flash Sales</h2>
+        <div class="controls">
+          <div class="me-2 text-muted small d-none d-md-block">
+            Ends in <span id="flashCountdownFS" style="font-weight:700;color:var(--primary-color);">--:--:--</span>
+          </div>
+          <input id="searchInput" class="form-control" type="search" placeholder="Search deals..." style="width:220px;">
+          <select id="categorySelect" class="form-select" title="Category">
+            <option value="">All Categories</option>
+          </select>
+          <input id="minPrice" class="form-control" type="number" min="0" step="1" placeholder="Min ₱" style="width:110px;">
+          <input id="maxPrice" class="form-control" type="number" min="0" step="1" placeholder="Max ₱" style="width:110px;">
+          <button id="applyFilters" class="btn btn-outline-cta btn-xs" type="button">Filter</button>
+          <select id="sortSelect" class="form-select" title="Sort">
+            <option value="relevance">Sort: Relevance</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="discount-high">Discount: High to Low</option>
+            <option value="newest">Newest</option>
+          </select>
+          <select id="perPageSelect" class="form-select" title="Per page">
+            <option value="12">12</option>
+            <option value="24" selected>24</option>
+            <option value="48">48</option>
+          </select>
+          <span id="resultsCount" class="text-muted small ms-2"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="flash-grid" id="flashAllGrid">
+      <div class="empty" id="flashAllEmpty" style="display:none;">No flash deals right now.</div>
+    </div>
+    <div class="pagination" id="flashPagination"></div>
+  </div>
+
+  <footer class="main-footer" style="background: var(--gray-800); color: white; padding: 3rem 0 1rem; margin-top: 30px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="footer-brand">
+            <h3>Women's Apparel</h3>
+            <p>Elevating your style with premium women's fashion. Discover pieces that celebrate your unique beauty and confidence.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom" style="border-top: 1px solid #555; padding-top: 2rem; margin-top: 2rem;">
+        <div class="row align-items-center">
+          <div class="col-md-6"><p>&copy; 2025 Women's Apparel. All rights reserved.</p></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+
+  <script>
+  // Helpers (from index)
+  function computePrices(p){
+    let minOriginal = Infinity, minDiscount = Infinity;
+    const stock = p.size_color_stock || {};
+    Object.values(stock).forEach(colors => {
+      Object.values(colors).forEach(v => {
+        const op = parseFloat(v.price||0);
+        const dp = v.discount_price != null ? parseFloat(v.discount_price) : null;
+        if (op>0) minOriginal = Math.min(minOriginal, op);
+        if (dp!=null && dp>0) minDiscount = Math.min(minDiscount, dp);
+      });
+    });
+    if (!isFinite(minOriginal)) minOriginal = p.price || 0;
+    if (!isFinite(minDiscount)) minDiscount = null;
+    return { minOriginal, minDiscount };
+  }
+  function productCardHTML(p){
+    const {minOriginal, minDiscount} = computePrices(p);
+    const priceHtml = (minDiscount && minDiscount < minOriginal)
+      ? `<span class="price-now">₱${minDiscount.toFixed(2)}</span><span class="price-original">₱${minOriginal.toFixed(2)}</span>`
+      : `<span class="price-now">₱${Number(minOriginal||p.price||0).toFixed(2)}</span>`;
+    const img = p.image_url || p.image || '/static/image.png';
+    const name = (p.name||'Item').replace(/\\\"/g,'&quot;');
+    const discountPct = (minDiscount && minOriginal && minDiscount < minOriginal) ? Math.round((1 - (minDiscount/minOriginal)) * 100) : null;
+    return `
+      <div class="flash-card" data-id="${p.id}">
+        ${discountPct ? `<div class=\"discount-badge\">-${discountPct}%</div>` : ''}
+        <a class="img" href="/templates/Public/product.html?id=${p.id}">
+          <img src="${img}" alt="${name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400/f0f0f0/666?text=IMG'" />
+        </a>
+        <div class="body">
+          <div class="product-title">${name}</div>
+          <div class="price-row">${priceHtml}</div>
+          <div class="card-actions">
+            <a class="btn btn-outline-cta btn-xs" href="/templates/Public/product.html?id=${p.id}"><i class=\"fas fa-eye\"></i> View</a>
+            <button class="btn btn-primary-cta btn-xs" onclick="quickAddToCart(${p.id}, this)"><i class=\"fas fa-cart-plus\"></i> Add to Cart</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Pagination & filter state
+  let currentPage = 1;
+  let perPage = 24;
+  let totalPages = 1;
+  let currentSort = 'relevance';
+  let currentSearch = '';
+  let currentCategory = '';
+  let currentMinPrice = '';
+  let currentMaxPrice = '';
+
+  function getQueryParams(){
+    const p = new URLSearchParams(window.location.search);
+    return {
+      page: Number(p.get('page'))||1,
+      sort: p.get('sort')||'relevance',
+      q: p.get('q')||'',
+      category: p.get('category')||'',
+      min: p.get('min')||'',
+      max: p.get('max')||'',
+      per_page: Number(p.get('per_page'))||24
+    };
+  }
+  function setQueryParams(obj){
+    const p = new URLSearchParams(window.location.search);
+    if (obj.page!=null) p.set('page', obj.page);
+    if (obj.sort!=null) p.set('sort', obj.sort);
+    if (obj.q!=null) { if (obj.q) p.set('q', obj.q); else p.delete('q'); }
+    if (obj.category!=null) { if (obj.category) p.set('category', obj.category); else p.delete('category'); }
+    if (obj.min!=null) { if (obj.min !== '') p.set('min', obj.min); else p.delete('min'); }
+    if (obj.max!=null) { if (obj.max !== '') p.set('max', obj.max); else p.delete('max'); }
+    if (obj.per_page!=null) { if (obj.per_page) p.set('per_page', obj.per_page); else p.delete('per_page'); }
+    history.replaceState(null, '', `${location.pathname}?${p.toString()}`);
+  }
+
+  async function loadFlashAll(page=1){
+    const grid = document.getElementById('flashAllGrid');
+    const empty = document.getElementById('flashAllEmpty');
+    const pager = document.getElementById('flashPagination');
+    if (grid) grid.innerHTML = Array.from({length:8}).map(()=>`
+      <div class="flash-card">
+        <div class="img" style="background:#f3f3f3;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:linear-gradient(90deg,#f3f3f3 0%,#eee 50%,#f3f3f3 100%);background-size:200% 100%;animation:shimmer 1.2s infinite;"></div>
+        </div>
+        <div class="body">
+          <div style="height:18px;width:70%;background:#eee;border-radius:6px;margin-bottom:8px;"></div>
+          <div style="height:16px;width:40%;background:#eee;border-radius:6px;"></div>
+        </div>
+      </div>`).join('');
+    try{
+      const qp = new URLSearchParams();
+      qp.set('per_page', perPage);
+      qp.set('page', page);
+      if (currentSort && currentSort !== 'relevance') qp.set('sort', currentSort);
+      if (currentSearch) qp.set('search', currentSearch);
+      if (currentCategory) qp.set('category', currentCategory);
+      if (currentMinPrice !== '') qp.set('min_price', currentMinPrice);
+      if (currentMaxPrice !== '') qp.set('max_price', currentMaxPrice);
+      const res = await fetch(`/api/products/flash-sale?${qp.toString()}`);
+      const data = await res.json();
+      let products = (data && (data.products || data.items || data.data)) || [];
+      // Populate categories (unique) if dropdown is default
+      try {
+        const catSelect = document.getElementById('categorySelect');
+        if (catSelect && catSelect.options.length <= 1){
+          const cats = Array.from(new Set(products.map(p => (p.category||'').trim()).filter(Boolean))).sort();
+          cats.forEach(c => { const opt=document.createElement('option'); opt.value=c; opt.textContent=c; catSelect.appendChild(opt); });
+          if (currentCategory) catSelect.value = currentCategory;
+        }
+      } catch(_){ }
+      // Client-side filtering as fallback
+      if (currentCategory){ products = products.filter(p => (p.category||'').toLowerCase() === currentCategory.toLowerCase()); }
+      if (currentMinPrice !== '' || currentMaxPrice !== ''){
+        const minV = currentMinPrice!=='' ? Number(currentMinPrice) : -Infinity;
+        const maxV = currentMaxPrice!=='' ? Number(currentMaxPrice) : Infinity;
+        products = products.filter(p => { const {minOriginal,minDiscount}=computePrices(p); const eff= (minDiscount && minDiscount<minOriginal)?minDiscount:minOriginal; return eff>=minV && eff<=maxV; });
+      }
+      // Client-side fallback sorting
+      if (currentSort === 'price-low' || currentSort === 'price-high' || currentSort === 'discount-high'){
+        products = products.slice().sort((a,b)=>{
+          const A = computePrices(a); const B = computePrices(b);
+          if (currentSort==='price-low') return (A.minDiscount||A.minOriginal) - (B.minDiscount||B.minOriginal);
+          if (currentSort==='price-high') return (B.minDiscount||B.minOriginal) - (A.minDiscount||A.minOriginal);
+          const discA = A.minOriginal && A.minDiscount && A.minDiscount < A.minOriginal ? (1 - A.minDiscount/A.minOriginal) : 0;
+          const discB = B.minOriginal && B.minDiscount && B.minDiscount < B.minOriginal ? (1 - B.minDiscount/B.minOriginal) : 0;
+          return discB - discA;
+        });
+      }
+      if (currentSearch){
+        const q = currentSearch.toLowerCase();
+        products = products.filter(p => (p.name||'').toLowerCase().includes(q));
+      }
+      const countEl = document.getElementById('resultsCount');
+      if (countEl) countEl.textContent = `${products.length} deal${products.length===1?'':'s'}`;
+      if (!products.length){
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">
+          ${currentSearch ? 'No deals match your search.' : 'No flash deals right now.'}
+        </div>`;
+      } else {
+        grid.innerHTML = products.map(productCardHTML).join('');
+      }
+      if (empty) empty.style.display = 'none';
+
+      // Determine total pages if available
+      const total = data.total || data.count || (data.meta && data.meta.total) || null;
+      const pp = data.per_page || perPage;
+      totalPages = total ? Math.max(1, Math.ceil(total / pp)) : (products.length < perPage ? page : page+1); // fallback guess
+      currentPage = page;
+      renderPagination();
+      trackEvent('flash_sales_loaded', { page, count: products.length, sort: currentSort });
+    }catch(e){
+      if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#c00;">Failed to load flash sales.</div>';
+      if (empty) empty.style.display = 'none';
+    }
+  }
+
+  function renderPagination(){
+    const pager = document.getElementById('flashPagination');
+    if (!pager) return;
+    if (totalPages <= 1){ pager.innerHTML = ''; return; }
+    let html = '';
+    html += `<button class="page-btn" ${currentPage<=1?'disabled':''} data-page="prev"><i class="fas fa-chevron-left"></i></button>`;
+    // show first
+    html += `<button class="page-btn ${currentPage===1?'active':''}" data-page="1">1</button>`;
+    // around current
+    const start = Math.max(2, currentPage-1);
+    const end = Math.min(totalPages-1, currentPage+1);
+    if (start > 2) html += '<span class="page-ellipsis">•••</span>';
+    for (let i=start;i<=end;i++){
+      if (i>1 && i<totalPages) html += `<button class="page-btn ${currentPage===i?'active':''}" data-page="${i}">${i}</button>`;
+    }
+    if (end < totalPages-1) html += '<span class="page-ellipsis">•••</span>';
+    if (totalPages>1) html += `<button class="page-btn ${currentPage===totalPages?'active':''}" data-page="${totalPages}">${totalPages}</button>`;
+    html += `<button class="page-btn" ${currentPage>=totalPages?'disabled':''} data-page="next"><i class="fas fa-chevron-right"></i></button>`;
+    pager.innerHTML = html;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { startCountdownFS();
+    const { page, sort, q, category, min, max, per_page } = getQueryParams();
+    currentPage = page; currentSort = sort; currentSearch = q; currentCategory = category; currentMinPrice = min; currentMaxPrice = max; perPage = per_page || 24;
+    const ss = document.getElementById('sortSelect'); if (ss) ss.value = currentSort;
+    const si = document.getElementById('searchInput'); if (si) si.value = currentSearch;
+    const cs = document.getElementById('categorySelect'); if (cs && currentCategory) cs.value = currentCategory;
+    const minEl = document.getElementById('minPrice'); if (minEl && currentMinPrice!=='') minEl.value = currentMinPrice;
+    const maxEl = document.getElementById('maxPrice'); if (maxEl && currentMaxPrice!=='') maxEl.value = currentMaxPrice;
+    const ppEl = document.getElementById('perPageSelect'); if (ppEl) ppEl.value = String(perPage);
+    loadFlashAll(currentPage);
+    const pager = document.getElementById('flashPagination');
+    if (pager){
+      pager.addEventListener('click', (e) => {
+        const btn = e.target.closest('.page-btn');
+        if (!btn || btn.disabled) return;
+        const val = btn.dataset.page;
+        if (val === 'prev' && currentPage>1) { currentPage--; setQueryParams({page: currentPage}); loadFlashAll(currentPage); }
+        else if (val === 'next' && currentPage<totalPages) { currentPage++; setQueryParams({page: currentPage}); loadFlashAll(currentPage); }
+        else if (!isNaN(Number(val))) { currentPage = Number(val); setQueryParams({page: currentPage}); loadFlashAll(currentPage); }
+      });
+    }
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect){ sortSelect.addEventListener('change', ()=>{ currentSort = sortSelect.value; setQueryParams({sort: currentSort, page: 1}); loadFlashAll(1); }); }
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput){ searchInput.addEventListener('input', debounce(()=>{ currentSearch = searchInput.value.trim(); setQueryParams({q: currentSearch, page: 1}); loadFlashAll(1); }, 350)); }
+    const catSelect = document.getElementById('categorySelect');
+    if (catSelect){ catSelect.addEventListener('change', ()=>{ currentCategory = catSelect.value; setQueryParams({category: currentCategory, page: 1}); loadFlashAll(1); }); }
+    const applyBtn = document.getElementById('applyFilters');
+    if (applyBtn){ applyBtn.addEventListener('click', ()=>{ const minV=document.getElementById('minPrice').value; const maxV=document.getElementById('maxPrice').value; currentMinPrice=minV; currentMaxPrice=maxV; setQueryParams({min: minV, max: maxV, page: 1}); loadFlashAll(1); }); }
+    const perSel = document.getElementById('perPageSelect');
+    if (perSel){ perSel.addEventListener('change', ()=>{ perPage = Number(perSel.value)||24; setQueryParams({per_page: perPage, page: 1}); loadFlashAll(1); }); }
+  });
+
+  // Utilities
+  function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
+  function trackEvent(name, payload){ try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({event:name, ...payload}); } catch(_) { console.log('[track]', name, payload); } }
+  // Lightweight toast notification
+  function showToast(message, type='success'){
+    try {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.top = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '9999';
+      toast.style.padding = '10px 14px';
+      toast.style.borderRadius = '10px';
+      toast.style.color = '#fff';
+      toast.style.fontWeight = '600';
+      toast.style.boxShadow = '0 10px 20px rgba(0,0,0,0.15)';
+      toast.style.background = type==='success' ? 'linear-gradient(135deg,#22c55e,#16a34a)' : (type==='error' ? 'linear-gradient(135deg,#ef4444,#dc2626)' : 'linear-gradient(135deg,#3b82f6,#2563eb)');
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(()=>{ toast.style.opacity='0'; toast.style.transform='translateY(-6px)'; }, 1800);
+      setTimeout(()=>{ toast.remove(); }, 2300);
+    } catch(_) {}
+  }
+  // Countdown (6-hour blocks)
+  function nextSixHourBoundary(now=new Date()){
+    const h = now.getHours();
+    const nextBlock = Math.ceil((h+now.getMinutes()/60+now.getSeconds()/3600)/6)*6;
+    const end = new Date(now); end.setMinutes(0,0,0); end.setHours(nextBlock % 24);
+    if (nextBlock >= 24 && end <= now) end.setDate(end.getDate()+1);
+    return end;
+  }
+  function formatTime(ms){ const t=Math.max(0,Math.floor(ms/1000)); const hh=String(Math.floor(t/3600)).padStart(2,'0'); const mm=String(Math.floor((t%3600)/60)).padStart(2,'0'); const ss=String(t%60).padStart(2,'0'); return `${hh}:${mm}:${ss}`; }
+  function startCountdownFS(){
+    const el = document.getElementById('flashCountdownFS'); if (!el) return;
+    let end = nextSixHourBoundary();
+    (function tick(){ const now=new Date(); let ms=end-now; if (ms<=0){ end=nextSixHourBoundary(now); ms=end-now; loadFlashAll(1); }
+      el.textContent = formatTime(ms); requestAnimationFrame(()=>setTimeout(tick,250)); })();
+  }
+
+  async function quickAddToCart(productId, btn){
+    try {
+      const token = (window.AuthManager && AuthManager.getAuthToken && AuthManager.getAuthToken());
+      if (!token) { window.location.href = '/templates/Authenticator/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search); return; }
+      // fetch product to pick a valid variant
+      // Loading state on button
+      try { if (btn){ btn.dataset.orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class=\'fas fa-spinner fa-spin\'></i> Adding...'; } } catch(_){}
+      const res = await fetch(`/api/products/${productId}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) { return window.location.href = `/templates/Public/product.html?id=${productId}`; }
+      const p = data.product || {};
+      const scs = p.size_color_stock || {};
+      let chosen = null;
+      for (const [size, colors] of Object.entries(scs)) {
+        for (const [colorHex, v] of Object.entries(colors)) {
+          if ((v.stock||0) > 0) { chosen = {size, color: colorHex}; break; }
+        }
+        if (chosen) break;
+      }
+      if (!chosen) { return window.location.href = `/templates/Public/product.html?id=${productId}`; }
+      const resp = await fetch('/api/cart', { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ product_id: productId, size: chosen.size, color: chosen.color, quantity: 1 }) });
+      const jd = await resp.json().catch(()=>({}));
+      if (resp.ok && jd.success) { 
+        trackEvent('add_to_cart', { product_id: productId, source: 'flash_sales' }); 
+        try { document.getElementById('cartCount').textContent = jd.count || ''; } catch(_){} 
+        try { const name = (p && p.name) ? p.name : 'Item'; showToast(`${name} added to cart`, 'success'); } catch(_) { showToast('Added to cart', 'success'); }
+        try { if (btn){ btn.innerHTML = '<i class=\'fas fa-check\'></i> Added'; setTimeout(()=>{ btn.disabled=false; btn.innerHTML = btn.dataset.orig || '<i class=\'fas fa-cart-plus\'></i> Add to Cart'; }, 1200); } } catch(_){ }
+      } else { 
+        window.location.href = `/templates/Public/product.html?id=${productId}`; 
+      }
+    } catch(_) { window.location.href = `/templates/Public/product.html?id=${productId}`; }
+    finally { try { if (btn && !btn.disabled){ btn.disabled=false; btn.innerHTML = btn.dataset.orig || btn.innerHTML; } } catch(_){} }
+  }
+
+  // Simple logout handler hookup if AuthManager exists
+  document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn){ logoutBtn.addEventListener('click', (e) => { e.preventDefault(); if (window.AuthManager && AuthManager.logout) AuthManager.logout(); else { localStorage.clear(); sessionStorage.clear(); window.location.href = '/Authenticator/login.html'; } }); }
+  });
+  </script>
+</body>
+</html>

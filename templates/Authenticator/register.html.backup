@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grande - Create Account</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/auth.css">
+    <style>
+        /* Responsive grid for address and name fields */
+        @media (max-width: 768px) {
+            .address-grid,
+            form[id="registerForm"] > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* Select field styling */
+        .address-section select.form-control {
+            padding-left: 2.75rem;
+            padding-right: 2.5rem;
+            appearance: none;
+            background-color: white !important;
+            color: #1a202c !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 12px;
+        }
+        
+        .address-section select.form-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: rgba(0, 0, 0, 0.05) !important;
+            color: #9ca3af !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        }
+        
+        select.form-control option {
+            background-color: white !important;
+            color: #1a202c !important;
+            padding: 0.5rem;
+        }
+        
+        select.form-control option[value=""] {
+            color: #6b7280 !important;
+        }
+        
+        .address-section .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 43, 172, 0.1); 
+        }
+
+        /* Role selection styling */
+        .form-group label:has(input[type="radio"][name="role"]:checked) {
+            border-color: var(--primary-color) !important;
+            background-color: rgba(255, 43, 172, 0.05);
+        }
+
+        .form-group label:hover {
+            border-color: var(--accent-color);
+        }
+    </style>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Logo and Header -->
+        <div class="auth-header">
+            <div class="auth-logo">
+                <img src="/static/image.png" alt="Grande Logo" onerror="this.onerror=null; this.src='/static/images/logo.svg';">
+            </div>
+            <h1 class="auth-title">Join Grande</h1>
+            <p class="auth-subtitle">Create your account and start shopping</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registerForm" class="auth-form" novalidate enctype="multipart/form-data">
+            <!-- Name Fields - Grid Layout -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- First Name -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input 
+                        type="text" 
+                        id="firstName" 
+                        name="firstName"
+                        class="form-control" 
+                        placeholder="First Name" 
+                        required 
+                        autocomplete="given-name"
+                    >
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input 
+                        type="text" 
+                        id="lastName" 
+                        name="lastName"
+                        class="form-control" 
+                        placeholder="Last Name" 
+                        required 
+                        autocomplete="family-name"
+                    >
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+            </div>
+
+            <!-- Middle Name and Suffix (Optional) -->
+            <div class="address-grid" style="display: grid; grid-template-columns: 1fr 200px; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input 
+                        type="text" 
+                        id="middleName" 
+                        name="middleName"
+                        class="form-control" 
+                        placeholder="Middle Name (Optional)" 
+                        autocomplete="additional-name"
+                    >
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <select id="suffix" name="suffix" class="form-control">
+                        <option value="">Suffix (Optional)</option>
+                        <option value="Jr.">Jr.</option>
+                        <option value="Sr.">Sr.</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV">IV</option>
+                        <option value="V">V</option>
+                    </select>
+                    <i class="fas fa-signature input-icon"></i>
+                </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    class="form-control" 
+                    placeholder="Email Address" 
+                    required 
+                    autocomplete="email"
+                    aria-describedby="emailHelp"
+                >
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: var(--text-color);">I want to join as:</label>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.2s;">
+                        <input type="radio" name="role" value="buyer" checked style="width: 18px; height: 18px; cursor: pointer;">
+                        <span><i class="fas fa-shopping-cart" style="color: #10b981; margin-right: 0.5rem;"></i><strong>Buyer</strong> - Shop for products and get them delivered</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.2s;">
+                        <input type="radio" name="role" value="seller" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span><i class="fas fa-store" style="color: #f59e0b; margin-right: 0.5rem;"></i><strong>Seller</strong> - Sell products and manage your shop</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.2s;">
+                        <input type="radio" name="role" value="rider" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span><i class="fas fa-motorcycle" style="color: #3b82f6; margin-right: 0.5rem;"></i><strong>Rider</strong> - Deliver orders and earn money</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Seller Specific Fields (hidden by default) -->
+            <div id="sellerFields" class="role-specific-fields" style="display: none;">
+                <div class="form-group" style="padding: 1rem 0; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.1rem;">
+                        <i class="fas fa-store" style="margin-right: 0.5rem;"></i>Seller Registration
+                    </h4>
+                    
+                    <!-- Step Indicator -->
+                    <div class="step-indicator" style="display: flex; justify-content: space-between; margin-bottom: 2rem; position: relative;">
+                        <div class="step" style="flex: 1; text-align: center; position: relative;">
+                            <div class="step-number" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold;">1</div>
+                            <div class="step-title" style="font-size: 0.9rem; font-weight: 500;">Personal Information</div>
+                        </div>
+                        <div class="step" style="flex: 1; text-align: center; position: relative;">
+                            <div class="step-number" style="width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; color: #6b7280; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold;">2</div>
+                            <div class="step-title" style="font-size: 0.9rem; font-weight: 500;">Business Information</div>
+                        </div>
+                        <div class="step" style="flex: 1; text-align: center; position: relative;">
+                            <div class="step-number" style="width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; color: #6b7280; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold;">3</div>
+                            <div class="step-title" style="font-size: 0.9rem; font-weight: 500;">Business Address</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Personal Information -->
+                    <div id="sellerStep1" class="seller-step" style="display: block;">
+                        <h5 style="color: var(--primary-color); margin-bottom: 1rem;">Step 1: Personal Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="sellerPersonalEmail">Personal Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="sellerPersonalEmail" name="sellerPersonalEmail" placeholder="e.g., personal@email.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Business Information -->
+                    <div id="sellerStep2" class="seller-step" style="display: none;">
+                        <h5 style="color: var(--primary-color); margin-bottom: 1rem;">Step 2: Business Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessName">Shop Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="businessName" name="businessName" placeholder="e.g., My Fashion Boutique">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessType">Type of Business</label>
+                                <input type="text" class="form-control" id="businessType" name="businessType" placeholder="e.g., Online Boutique, Handmade Crafts">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessRegNumber">Business Registration Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="businessRegNumber" name="businessRegNumber" placeholder="e.g., 1234567890">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="taxId">Tax ID (Optional)</label>
+                                <input type="text" class="form-control" id="taxId" name="taxId" placeholder="e.g., EIN, VAT ID">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="businessDescription">Short Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="businessDescription" name="businessDescription" rows="3" placeholder="Tell us about your business"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessEmail">Business Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="businessEmail" name="businessEmail" placeholder="info@myboutique.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessPhone">Business Phone <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="businessPhone" name="businessPhone" placeholder="e.g., +63 912 345 6789">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="website">Website/Social Media (Optional)</label>
+                                <input type="url" class="form-control" id="website" name="website" placeholder="https://instagram.com/myboutique">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="yearsInBusiness">Years in Business</label>
+                                <input type="number" class="form-control" id="yearsInBusiness" name="yearsInBusiness" min="0" placeholder="e.g., 5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Business Address -->
+                    <div id="sellerStep3" class="seller-step" style="display: none;">
+                        <h5 style="color: var(--primary-color); margin-bottom: 1rem;">Step 3: Business Address</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="businessAddress">Business Address <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="businessAddress" name="businessAddress" rows="3" placeholder="Enter your complete business address"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessCity">City <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="businessCity" name="businessCity" placeholder="e.g., Quezon City">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessProvince">Province <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="businessProvince" name="businessProvince" placeholder="e.g., Metro Manila">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessPostalCode">Postal Code</label>
+                                <input type="text" class="form-control" id="businessPostalCode" name="businessPostalCode" placeholder="e.g., 1100">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="businessCountry">Country <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="businessCountry" name="businessCountry" placeholder="e.g., Philippines" value="Philippines">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="seller-navigation" style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                        <button type="button" id="sellerPrevBtn" class="btn btn-outline-secondary" onclick="prevSellerStep()" style="display: none; padding: 0.75rem 1.5rem; font-weight: 500; border-radius: 8px;">
+                            <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i> Previous
+                        </button>
+                        <div style="flex: 1;"></div>
+                        <button type="button" id="sellerNextBtn" class="btn btn-primary" onclick="nextSellerStep()" style="padding: 0.75rem 1.5rem; font-weight: 500; border-radius: 8px; background: var(--primary-color); border: none;">
+                            Next Step <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                        </button>
+                        <button type="button" id="sellerCompleteBtn" class="btn btn-success" onclick="completeSellerSteps()" style="display: none; padding: 0.75rem 1.5rem; font-weight: 500; border-radius: 8px;">
+                            <i class="fas fa-check" style="margin-right: 0.5rem;"></i> Complete Registration
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rider Specific Fields (hidden by default) -->
+            <div id="riderFields" class="role-specific-fields" style="display: none;">
+                <div class="form-group" style="padding: 1rem 0; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.1rem;">
+                        <i class="fas fa-motorcycle" style="margin-right: 0.5rem;"></i>Rider Information
+                    </h4>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="vehicleType">Vehicle Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="vehicleType" name="vehicleType">
+                                <option value="">Select Vehicle Type</option>
+                                <option value="Motorcycle">Motorcycle</option>
+                                <option value="Car">Car</option>
+                                <option value="Bicycle">Bicycle</option>
+                                <option value="Van">Van</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="licenseNumber">Driver's License Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="licenseNumber" name="licenseNumber" placeholder="e.g., A123-456-789">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="licenseExpiry">License Expiry Date</label>
+                            <input type="date" class="form-control" id="licenseExpiry" name="licenseExpiry">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="vehicleMakeModel">Vehicle Make and Model</label>
+                            <input type="text" class="form-control" id="vehicleMakeModel" name="vehicleMakeModel" placeholder="e.g., Honda Click 150i">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="vehiclePlateNumber">Vehicle Plate Number</label>
+                            <input type="text" class="form-control" id="vehiclePlateNumber" name="vehiclePlateNumber" placeholder="e.g., ABC-1234">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="baseLocation">Preferred Delivery Area/Base Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="baseLocation" name="baseLocation" placeholder="e.g., Quezon City">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="coverageArea">Coverage Area (optional)</label>
+                            <input type="text" class="form-control" id="coverageArea" name="coverageArea" placeholder="e.g., QC, Pasig, Caloocan">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="experienceDescription">Delivery Experience <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="experienceDescription" name="experienceDescription" rows="3" placeholder="Tell us about your delivery experience, areas you cover, previous jobs, etc."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="availability">Preferred Availability</label>
+                            <textarea class="form-control" id="availability" name="availability" rows="2" placeholder="e.g., Weekdays evenings, Weekends full-day"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="form-group" style="padding: 1rem 0;">
+                <label style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: var(--text-color);">Gender</label>
+                <div style="display: flex; gap: 2rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                        <input type="radio" name="gender" value="male" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span><i class="fas fa-mars" style="color: #3b82f6; margin-right: 0.25rem;"></i>Male</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                        <input type="radio" name="gender" value="female" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span><i class="fas fa-venus" style="color: #ec4899; margin-right: 0.25rem;"></i>Female</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    class="form-control" 
+                    placeholder="Password" 
+                    required 
+                    autocomplete="new-password"
+                    aria-describedby="passwordHelp"
+                >
+                <button type="button" class="password-toggle" title="Show password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+
+            <!-- Password Strength Indicator -->
+            <div class="password-strength">
+                <div class="strength-label">Password Strength</div>
+                <div class="strength-bar">
+                    <div class="strength-fill"></div>
+                </div>
+                <div class="strength-requirements">
+                    <div class="requirement">
+                        <i class="fas fa-times"></i>
+                        <span>At least 8 characters</span>
+                    </div>
+                    <div class="requirement">
+                        <i class="fas fa-times"></i>
+                        <span>One uppercase letter</span>
+                    </div>
+                    <div class="requirement">
+                        <i class="fas fa-times"></i>
+                        <span>One lowercase letter</span>
+                    </div>
+                    <div class="requirement">
+                        <i class="fas fa-times"></i>
+                        <span>One number</span>
+                    </div>
+                    <div class="requirement">
+                        <i class="fas fa-times"></i>
+                        <span>One special character</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword"
+                    class="form-control" 
+                    placeholder="Confirm Password" 
+                    required 
+                    autocomplete="new-password"
+                    aria-describedby="confirmPasswordHelp"
+                >
+                <button type="button" class="password-toggle" title="Show password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input 
+                        type="text" 
+                        id="postalCode" 
+                        name="postalCode"
+                        class="form-control" 
+                        placeholder="Postal Code (e.g., 1000)" 
+                        required
+                        pattern="[0-9]{4}"
+                        maxlength="4"
+                    >
+                    <i class="fas fa-envelope input-icon"></i>
+                </div>
+            </div>
+
+            <!-- ID Upload Section (Front/Back) -->
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.08) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 1.5rem; border: 2px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0 0 0.5rem 0; color: var(--text-color); display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-id-card" style="color: #10b981; font-size: 1.2rem;"></i>
+                    <span>Valid ID Upload</span>
+                </h3>
+                <p style="font-size: 0.875rem; color: #6b7280; margin: 0 0 1.25rem 0; line-height: 1.5;">Upload the front and back of your government-issued ID <strong>(Required)</strong></p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="idFront">Front side <span class="text-danger">*</span></label>
+                        <input type="file" id="idFront" name="id_front" accept="image/*,.pdf" class="form-control" required>
+                        <small class="text-muted">JPG, PNG, or PDF up to 5MB</small>
+                        <div id="idFrontName" class="mt-1 text-success" style="display:none; font-size: 0.9rem;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idBack">Back side <span class="text-danger">*</span></label>
+                        <input type="file" id="idBack" name="id_back" accept="image/*,.pdf" class="form-control" required>
+                        <small class="text-muted">JPG, PNG, or PDF up to 5MB</small>
+                        <div id="idBackName" class="mt-1 text-success" style="display:none; font-size: 0.9rem;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="form-options" style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; line-height: 1.4;">
+                    <input type="checkbox" id="terms" name="terms" required style="margin-top: 0.2rem; margin-bottom: 0;">
+                    <span>I agree to the <a href="#" style="color: var(--primary-color); text-decoration: none; font-weight: 600;" onclick="showTermsAlert(); return false;">Terms of Service</a> and <a href="#" style="color: var(--primary-color); text-decoration: none; font-weight: 600;" onclick="showPrivacyAlert(); return false;">Privacy Policy</a></span>
+                </label>
+            </div>
+
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" data-original-text="Create Account">
+                <div class="loading-spinner"></div>
+                <span>Create Account</span>
+            </button>
+        </form>
+
+        <!-- Switch to Login -->
+        <div class="auth-switch">
+            Already have an account? <a href="login.html">Sign in here</a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/auth-utils.js"></script>
+    <script>
+        // Additional registration-specific functionality
+        function showTermsAlert() {
+            authUtils.showAlert('Terms of Service will be available soon. By creating an account, you agree to use our service responsibly.', 'info');
+        }
+
+        function showPrivacyAlert() {
+            authUtils.showAlert('Privacy Policy will be available soon. We are committed to protecting your personal information.', 'info');
+        }
+
+        // Enhanced form validation for registration
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
+            const termsCheckbox = document.getElementById('terms');
+            
+            // Add terms validation to the form validation
+            const originalValidateAllFields = authUtils.validateAllFields;
+            authUtils.validateAllFields = function(form) {
+                let allValid = originalValidateAllFields.call(this, form);
+                
+                // Check terms acceptance
+                if (!termsCheckbox.checked) {
+                    authUtils.showAlert('Please accept the Terms of Service and Privacy Policy to continue.', 'error');
+                    allValid = false;
+                }
+                
+                return allValid;
+            };
+            
+            // Real-time terms validation
+            termsCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Remove any existing error about terms
+                    const alerts = document.querySelectorAll('.alert-error');
+                    alerts.forEach(alert => {
+                        if (alert.textContent.includes('Terms of Service')) {
+                            alert.remove();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Handle potential URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            const email = urlParams.get('email');
+            
+            if (message) {
+                authUtils.showAlert(decodeURIComponent(message), 'info');
+            }
+            
+            // Pre-fill email if provided
+            if (email) {
+                const emailField = document.getElementById('email');
+                if (emailField) {
+                    emailField.value = decodeURIComponent(email);
+                }
+            }
+
+            // Set birthday max to today to prevent future dates
+            const birthdayInput = document.getElementById('birthday');
+            if (birthdayInput) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                birthdayInput.setAttribute('max', `${yyyy}-${mm}-${dd}`);
+            }
+        });
+
+        // Focus on first name field when page loads
+        window.addEventListener('load', () => {
+            const firstNameField = document.getElementById('firstName');
+            if (firstNameField) {
+                firstNameField.focus();
+            }
+        });
+
+        // ID Upload Handlers (Front/Back)
+        function validateAndShow(inputEl, nameElId) {
+            const file = inputEl.files && inputEl.files[0];
+            if (!file) { document.getElementById(nameElId).style.display='none'; return; }
+            if (file.size > 5 * 1024 * 1024) { authUtils.showAlert('File size must be less than 5MB', 'error'); inputEl.value=''; return; }
+            const validTypes = ['image/jpeg','image/jpg','image/png','application/pdf'];
+            if (!validTypes.includes(file.type)) { authUtils.showAlert('Please upload JPG, PNG, or PDF', 'error'); inputEl.value=''; return; }
+            const nameEl = document.getElementById(nameElId);
+            nameEl.textContent = file.name;
+            nameEl.style.display = 'block';
+        }
+        document.getElementById('idFront')?.addEventListener('change', function(){ validateAndShow(this, 'idFrontName'); });
+        document.getElementById('idBack')?.addEventListener('change', function(){ validateAndShow(this, 'idBackName'); });
+
+        // PSGC API Configuration
+        const PSGC_API = {
+            regions: 'https://psgc.gitlab.io/api/regions/',
+            provincesByRegion: (code) => `https://psgc.gitlab.io/api/regions/${code}/provinces/`,
+            citiesByProvince: (code) => `https://psgc.gitlab.io/api/provinces/${code}/cities-municipalities/`,
+            barangaysByCity: (code) => `https://psgc.gitlab.io/api/cities-municipalities/${code}/barangays/`
+        };
+
+        // Get dropdown elements
+        const regionSelect = document.getElementById('region');
+        const provinceSelect = document.getElementById('province');
+        const citySelect = document.getElementById('city');
+        const barangaySelect = document.getElementById('barangay');
+
+        // Load regions on page load
+        async function loadRegions() {
+            try {
+                const response = await fetch(PSGC_API.regions);
+                const regions = await response.json();
+                
+                regionSelect.innerHTML = '<option value="">Select Region</option>';
+                regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.code;
+                    option.textContent = region.name;
+                    option.dataset.name = region.name;
+                    regionSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading regions:', error);
+                authUtils.showAlert('Failed to load regions. Please refresh the page.', 'error');
+            }
+        }
+
+        // Load provinces when region changes
+        async function loadProvinces(regionCode) {
+            try {
+                provinceSelect.disabled = true;
+                citySelect.disabled = true;
+                barangaySelect.disabled = true;
+                
+                provinceSelect.innerHTML = '<option value="">Loading...</option>';
+                citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                
+                const response = await fetch(PSGC_API.provincesByRegion(regionCode));
+                const provinces = await response.json();
+                
+                provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                provinces.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.code;
+                    option.textContent = province.name;
+                    option.dataset.name = province.name;
+                    provinceSelect.appendChild(option);
+                });
+                
+                provinceSelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading provinces:', error);
+                authUtils.showAlert('Failed to load provinces.', 'error');
+            }
+        }
+
+        // Load cities when province changes
+        async function loadCities(provinceCode) {
+            try {
+                citySelect.disabled = true;
+                barangaySelect.disabled = true;
+                
+                citySelect.innerHTML = '<option value="">Loading...</option>';
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                
+                const response = await fetch(PSGC_API.citiesByProvince(provinceCode));
+                const cities = await response.json();
+                
+                citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.code;
+                    option.textContent = city.name;
+                    option.dataset.name = city.name;
+                    citySelect.appendChild(option);
+                });
+                
+                citySelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading cities:', error);
+                authUtils.showAlert('Failed to load cities.', 'error');
+            }
+        }
+
+        // Load barangays when city changes
+        async function loadBarangays(cityCode) {
+            try {
+                barangaySelect.disabled = true;
+                barangaySelect.innerHTML = '<option value="">Loading...</option>';
+                
+                const response = await fetch(PSGC_API.barangaysByCity(cityCode));
+                const barangays = await response.json();
+                
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                barangays.forEach(barangay => {
+                    const option = document.createElement('option');
+                    option.value = barangay.code;
+                    option.textContent = barangay.name;
+                    option.dataset.name = barangay.name;
+                    barangaySelect.appendChild(option);
+                });
+                
+                barangaySelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading barangays:', error);
+                authUtils.showAlert('Failed to load barangays.', 'error');
+            }
+        }
+
+        // Event listeners for cascading dropdowns
+        regionSelect.addEventListener('change', function() {
+            if (this.value) {
+                loadProvinces(this.value);
+            } else {
+                provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                provinceSelect.disabled = true;
+                citySelect.disabled = true;
+                barangaySelect.disabled = true;
+            }
+        });
+
+        provinceSelect.addEventListener('change', function() {
+            if (this.value) {
+                loadCities(this.value);
+            } else {
+                citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                citySelect.disabled = true;
+                barangaySelect.disabled = true;
+            }
+        });
+
+        citySelect.addEventListener('change', function() {
+            if (this.value) {
+                loadBarangays(this.value);
+            } else {
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                barangaySelect.disabled = true;
+            }
+        });
+
+        // Load regions when page is ready
+        loadRegions();
+
+        // Handle role selection to show/hide specific fields
+        const roleRadios = document.querySelectorAll('input[name="role"]');
+        const sellerFields = document.getElementById('sellerFields');
+        const riderFields = document.getElementById('riderFields');
+
+        function toggleRoleFields() {
+            const selectedRole = document.querySelector('input[name="role"]:checked').value;
+            
+            // Hide all role-specific fields first
+            sellerFields.style.display = 'none';
+            riderFields.style.display = 'none';
+            
+            // Show relevant fields based on selected role
+            if (selectedRole === 'seller') {
+                sellerFields.style.display = 'block';
+            } else if (selectedRole === 'rider') {
+                riderFields.style.display = 'block';
+            }
+            // Buyer shows no additional fields
+        }
+
+        // Add event listeners to role radio buttons
+        roleRadios.forEach(radio => {
+            radio.addEventListener('change', toggleRoleFields);
+        });
+
+        // Initialize field visibility on page load
+        toggleRoleFields();
+
+        // Seller step navigation functions
+        let currentSellerStep = 1;
+        
+        function updateSellerStepIndicator(stepNumber) {
+            const steps = document.querySelectorAll('.step');
+            
+            steps.forEach((step, index) => {
+                const stepNum = index + 1;
+                const stepNumberEl = step.querySelector('.step-number');
+                
+                if (stepNum < stepNumber) {
+                    // Completed steps
+                    stepNumberEl.style.background = '#10b981';
+                    stepNumberEl.style.color = 'white';
+                } else if (stepNum === stepNumber) {
+                    // Current step
+                    stepNumberEl.style.background = 'var(--primary-color)';
+                    stepNumberEl.style.color = 'white';
+                } else {
+                    // Future steps
+                    stepNumberEl.style.background = '#e5e7eb';
+                    stepNumberEl.style.color = '#6b7280';
+                }
+            });
+        }
+
+        function showSellerStep(stepNumber) {
+            // Hide all seller steps
+            document.querySelectorAll('.seller-step').forEach(step => {
+                step.style.display = 'none';
+            });
+            
+            // Show current step
+            document.getElementById(`sellerStep${stepNumber}`).style.display = 'block';
+            
+            // Update step indicator
+            updateSellerStepIndicator(stepNumber);
+            
+            // Update buttons
+            updateSellerButtons(stepNumber);
+            
+            currentSellerStep = stepNumber;
+        }
+
+        function updateSellerButtons(stepNumber) {
+            const prevBtn = document.getElementById('sellerPrevBtn');
+            const nextBtn = document.getElementById('sellerNextBtn');
+            const completeBtn = document.getElementById('sellerCompleteBtn');
+            
+            // Show/hide previous button
+            prevBtn.style.display = stepNumber === 1 ? 'none' : 'flex';
+            
+            // Show/hide next vs complete button
+            if (stepNumber === 3) {
+                nextBtn.style.display = 'none';
+                completeBtn.style.display = 'flex';
+            } else {
+                nextBtn.style.display = 'flex';
+                completeBtn.style.display = 'none';
+            }
+        }
+
+        function nextSellerStep() {
+            if (currentSellerStep < 3) {
+                showSellerStep(currentSellerStep + 1);
+            }
+        }
+
+        function prevSellerStep() {
+            if (currentSellerStep > 1) {
+                showSellerStep(currentSellerStep - 1);
+            }
+        }
+
+        function completeSellerSteps() {
+            // Show all steps as completed
+            updateSellerStepIndicator(4);
+            
+            // Hide navigation buttons
+            document.querySelector('.seller-navigation').style.display = 'none';
+            
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.className = 'alert alert-success';
+            successMessage.style.cssText = 'margin-top: 1rem; padding: 1rem; background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; color: #065f46;';
+            successMessage.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i> Seller registration completed! You can now submit the main registration form.';
+            
+            // Insert success message
+            const sellerFields = document.getElementById('sellerFields');
+            sellerFields.appendChild(successMessage);
+        }
+
+        // Override form submission to include readable names
+        const registerForm = document.getElementById('registerForm');
+        registerForm.addEventListener('submit', function(e) {
+            // Add hidden fields with readable names from select dropdowns
+            const addHiddenField = (name, value) => {
+                let field = document.querySelector(`input[name="${name}"]`);
+                if (!field) {
+                    field = document.createElement('input');
+                    field.type = 'hidden';
+                    field.name = name;
+                    registerForm.appendChild(field);
+                }
+                field.value = value;
+            };
+            
+            // Get readable names from selected options
+            const regionOption = regionSelect.options[regionSelect.selectedIndex];
+            const provinceOption = provinceSelect.options[provinceSelect.selectedIndex];
+            const cityOption = citySelect.options[citySelect.selectedIndex];
+            const barangayOption = barangaySelect.options[barangaySelect.selectedIndex];
+            
+            if (regionOption && regionOption.dataset.name) {
+                addHiddenField('region', regionOption.dataset.name);
+            }
+            if (provinceOption && provinceOption.dataset.name) {
+                addHiddenField('province', provinceOption.dataset.name);
+            }
+            if (cityOption && cityOption.dataset.name) {
+                addHiddenField('city', cityOption.dataset.name);
+            }
+            if (barangayOption && barangayOption.dataset.name) {
+                addHiddenField('barangay', barangayOption.dataset.name);
+            }
+        }, true); // Use capture phase to run before auth-utils handler
+
+        // Enhanced password strength checking specifically for registration
+        const passwordField = document.getElementById('password');
+        if (passwordField) {
+            passwordField.addEventListener('input', function() {
+                // Show/hide password strength indicator
+                const strengthIndicator = document.querySelector('.password-strength');
+                if (this.value) {
+                    strengthIndicator.style.display = 'block';
+                } else {
+                    strengthIndicator.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

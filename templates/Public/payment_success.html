@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Payment Successful - Women's Apparel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/user-dropdown-public.css">
+  <style>
+    /* Using consistent theme variables from main styles */
+    body.success-body {
+      background: linear-gradient(135deg, var(--background-light) 0%, var(--accent-cream) 50%, #FFFFFF 100%);
+      min-height: 100vh;
+      padding-top: 0;
+    }
+
+    /* Success page content styling */
+    .success-main {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .success-card {
+      background: var(--container-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 700px;
+      width: 100%;
+      animation: fadeInUp 0.8s ease;
+      margin: 2rem auto;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--brand-grad);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+      animation: pulse 2s infinite;
+      box-shadow: var(--brand-shadow);
+    }
+
+    .success-icon i {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .success-title {
+      font-size: 2.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .success-message {
+      font-size: 1.1rem;
+      color: var(--text-color);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .order-details {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin: 2rem 0;
+      text-align: left;
+      border: 1px solid #e9ecef;
+    }
+
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+      padding: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #495057;
+    }
+
+    .order-detail-row:last-child {
+      margin-bottom: 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      border-top: 1px solid var(--gray-200);
+      padding-top: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      border-radius: 25px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      text-decoration: none;
+      display: inline-block;
+      margin: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--brand-grad);
+      color: white;
+      border: none;
+      box-shadow: var(--brand-shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(255, 43, 172, 0.4), 0 10px 30px rgba(27, 14, 36, 0.3);
+      color: white;
+    }
+
+    .btn-outline-secondary {
+      color: var(--gray-600);
+      border-color: var(--gray-600);
+    }
+
+    .btn-outline-secondary:hover {
+      background: var(--gray-600);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .confirmation-number {
+      background: var(--brand-grad);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin: 1rem 0;
+      box-shadow: var(--brand-shadow);
+    }
+
+    .next-steps {
+      background: #f0f8ff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      text-align: left;
+      border: 1px solid #cce5ff;
+    }
+
+    .next-steps h6 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+    }
+
+    .next-steps ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .next-steps li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .next-steps li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--success-green);
+      font-weight: bold;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .success-card {
+        padding: 2rem;
+        margin: 1rem;
+      }
+      
+      .success-title {
+        font-size: 2rem;
+      }
+      
+      .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+      }
+    }
+</style>
+<style>
+  .notification-see-all, .message-see-all { display:none; }
+  .notification-container:hover .notification-see-all,
+  .message-container:hover .message-see-all { display:block; }
+</style>
+</head>
+<body class="success-body">
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                   <a href="/" class="brand">
+                <img src="/static/image.png" alt="Grande" class="brand-logo">
+                </a>
+                </a>
+                
+                <div class="header-divider d-none d-lg-block">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Public/market.html">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#categories">Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Public/flash-sales.html">Sale</a>
+                        </li>
+                    </ul>
+
+                    <div class="position-relative notification-container">
+                        <button class="action-btn notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="cart-count" id="notificationCount" style="display: none;">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h5 class="notification-title">Notifications</h5>
+                                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="loading-notifications">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="notification-see-all">
+                                <a href="notifications.html">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative message-container">
+                        <button class="action-btn message-btn" id="messageBtn" title="Messages">
+                            <i class="fas fa-comments"></i>
+                        </button>
+                        
+                        <div class="message-dropdown" id="messageDropdown">
+                            <div class="message-header">
+                                <h6 class="message-title">Messages</h6>
+                                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+                            </div>
+                            <div class="message-list" id="messageList">
+                                 Messages will be loaded here 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative cart-container">
+                        <a href="cart.html" class="action-btn cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                        <div class="cart-dropdown" id="cartDropdown">
+                            <div class="cart-dropdown-header">
+                                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+                            </div>
+                            <div class="cart-dropdown-items" id="cartDropdownItems">
+                                <div class="loading-cart" id="cartLoading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span id="cartTotal">₱0.00</span>
+                                </div>
+                                <div class="cart-actions">
+                                    <a href="cart.html" class="btn-view-cart">View Cart</a>
+                                    <a href="checkout.html" class="btn-checkout">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-section" id="userSection">
+                        <!-- Not logged in state -->
+                        <div id="authLinks" class="auth-buttons">
+                            <a href="../Authenticator/login.html" class="action-btn login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span class="btn-text">Login</span>
+                            </a>
+                            <a href="../Authenticator/register.html" class="action-btn register-btn">
+                                <i class="fas fa-user-plus"></i>
+                                <span class="btn-text">Register</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Logged in state -->
+                        <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+                            <button class="user-profile-btn" id="userProfileBtn" type="button">
+                                <div class="user-avatar" id="userAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info" id="userInfo">
+                                    <span class="user-name" id="userName">User Name</span>
+                                    <span class="user-role" id="userRole">Role</span>
+                                </div>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            
+                            <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-avatar-large">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="dropdown-user-name" id="dropdownUserName">User Name</h6>
+                                        <p class="dropdown-user-email" id="dropdownUserEmail">user@email.com</p>
+                                        <span class="dropdown-user-role" id="dropdownUserRole">Role</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="/account" class="dropdown-item" id="profileLink">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                    <a href="../UserProfile/my_orders.html" class="dropdown-item" id="ordersLink">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item" id="wishlistLink">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Wishlist</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item" id="settingsLink">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <!-- Role-specific dashboard links will be inserted here by JavaScript -->
+                                <div class="dropdown-section" id="roleDashboardSection">
+                                    <!-- Dynamic content based on user role -->
+                                </div>
+                                
+                                <div class="dropdown-divider" id="roleDivider" style="display: none;"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="#" class="dropdown-item text-danger" id="logoutBtn" onclick="AuthManager.logout(); return false;">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+ 
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="success-main">
+      <div class="container">
+      <div class="success-card">
+        <div class="success-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        
+        <h1 class="success-title">Order Placed Successfully!</h1>
+        <p class="success-message" id="successMsg">
+          Thank you for your purchase! Your order has been received.
+        </p>
+        
+        <div class="confirmation-number" id="confirmationNumber">
+          Order #ORDER-2025-001
+        </div>
+        
+        <!-- Replace the hardcoded order details section with this dynamic version -->
+<div class="order-details">
+  <div class="order-detail-row">
+    <span>Order Date:</span>
+    <span id="orderDate"></span>
+  </div>
+  <div class="order-detail-row">
+    <span>Payment Method:</span>
+    <span id="paymentMethod"></span>
+  </div>
+  
+  <!-- Add this new section for items -->
+  <div id="orderItems">
+    <!-- Items will be populated dynamically -->
+  </div>
+  
+  <div class="order-detail-row">
+    <span>Subtotal:</span>
+    <span id="orderSubtotal">₱0.00</span>
+  </div>
+  <div class="order-detail-row">
+    <span>Shipping:</span>
+    <span id="orderShipping">₱0.00</span>
+  </div>
+  <div class="order-detail-row">
+    <span>Total Amount:</span>
+    <span id="orderTotal">₱0.00</span>
+  </div>
+</div>
+        
+        <div class="next-steps">
+          <h6><i class="fas fa-info-circle me-2"></i>What happens next?</h6>
+          <ul>
+            <li>You'll receive an order confirmation email within 5 minutes</li>
+            <li>Your order will be processed within 1-2 business days</li>
+            <li>We'll send you tracking information once shipped</li>
+            <li>Estimated delivery: 3-7 business days</li>
+          </ul>
+        </div>
+        
+        <div class="d-flex flex-column flex-md-row justify-content-center">
+          <a href="#" id="viewOrderDetailsBtn" class="btn btn-primary">
+            <i class="fas fa-file-invoice me-2"></i>View Order Details
+          </a>
+          <a href="market.html" class="btn btn-outline-secondary">
+            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+          </a>
+        </div>
+        
+        <div class="mt-4">
+          <small class="text-muted">
+            Need help? Contact us at <strong>support@womensapparel.com</strong> or call <strong>(+63) 123-456-7890</strong>
+          </small>
+        </div>
+      </div>
+    </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script>
+    // Initialize page with order data
+    document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Get order number from URL first (Xendit redirect), then sessionStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlOrderNumber = urlParams.get('order_number') || urlParams.get('external_id');
+        
+        // Get order data from session storage
+        const orderData = JSON.parse(sessionStorage.getItem('orderData') || '{}');
+        console.log('Retrieved order data from sessionStorage:', orderData);
+        console.log('Order number from URL:', urlOrderNumber);
+
+        // Get order number - prioritize URL parameter (for Xendit redirects)
+        const orderNumber = urlOrderNumber || orderData.order_number || orderData.order_id || 'N/A';
+        console.log('Final order number:', orderNumber);
+        
+        // Setup View Order Details button with click handler
+        const viewOrderDetailsBtn = document.getElementById('viewOrderDetailsBtn');
+        if (viewOrderDetailsBtn) {
+            if (orderNumber !== 'N/A') {
+                // Set href and click handler
+                viewOrderDetailsBtn.href = `/Public/order_summary.html?order_number=${orderNumber}`;
+                viewOrderDetailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Navigating to:', `/Public/order_summary.html?order_number=${orderNumber}`);
+                    window.location.href = `/Public/order_summary.html?order_number=${orderNumber}`;
+                });
+            } else {
+                // If no order number, disable the button
+                viewOrderDetailsBtn.style.opacity = '0.5';
+                viewOrderDetailsBtn.style.cursor = 'not-allowed';
+                viewOrderDetailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Order details not available. Please check your email for order confirmation.');
+                });
+            }
+        }
+
+        // Update confirmation number
+        document.getElementById('confirmationNumber').textContent = `Order #${orderNumber}`;
+
+        // Update order date
+        const orderDate = orderData.order_date 
+            ? new Date(orderData.order_date).toLocaleDateString()
+            : new Date().toLocaleDateString();
+        document.getElementById('orderDate').textContent = orderDate;
+
+        // Update payment method
+        const paymentMethodMap = {
+            'GCASH': 'GCash',
+            'PH_GCASH': 'GCash',
+            'CARD': 'Credit Card',
+            'COD': 'Cash on Delivery'
+        };
+        const payLabel = paymentMethodMap[orderData.payment_method] || 'GCash';
+        document.getElementById('paymentMethod').textContent = payLabel;
+
+        // Tailor message: if COD, awaiting seller confirmation and cancellable until confirmed
+        if ((orderData.payment_method || '').toUpperCase() === 'COD') {
+            const msg = document.getElementById('successMsg');
+            msg.textContent = 'Your COD order has been placed and is awaiting seller confirmation. You can cancel it in My Orders until the seller confirms.';
+        }
+
+        // If orderData is empty but we have order_number from URL, fetch from backend
+        if (orderNumber !== 'N/A' && (!orderData.items || orderData.items.length === 0)) {
+            console.log('OrderData empty, fetching from backend...');
+            // For now, just show basic info - full implementation would fetch from /api/orders endpoint
+            // This handles the Xendit redirect case where sessionStorage is cleared
+        }
+
+        // Populate order items
+        const orderItemsContainer = document.getElementById('orderItems');
+        let subtotal = 0;
+
+        if (orderData.items && orderData.items.length > 0) {
+            orderData.items.forEach(item => {
+                const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+                subtotal += itemTotal;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-detail-row';
+                itemElement.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>${item.name || 'Product'}</strong><br>
+                            <small class="text-muted">
+                                Size: ${item.size || '-'} | 
+                                Color: ${item.color || '-'} | 
+                                Qty: ${item.quantity || 1}
+                            </small>
+                        </div>
+                        <span>₱${itemTotal.toFixed(2)}</span>
+                    </div>
+                `;
+                orderItemsContainer.appendChild(itemElement);
+            });
+        }
+
+        // Calculate totals - use actual shipping fee from order or default to 50
+        const shipping = parseFloat(orderData.shipping_fee || 50);
+        const total = subtotal + shipping;
+
+        // Update total amounts
+        document.getElementById('orderSubtotal').textContent = `₱${subtotal.toFixed(2)}`;
+        document.getElementById('orderShipping').textContent = `₱${shipping.toFixed(2)}`;
+        document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
+
+        // Clear session storage after successful display
+        setTimeout(() => {
+            sessionStorage.removeItem('orderData');
+            localStorage.removeItem('cart');
+        }, 2000);
+
+        // Trigger confetti effect
+        createConfetti();
+
+    } catch (error) {
+        console.error('Error displaying order details:', error);
+        document.querySelector('.success-message').textContent = 
+            'There was an error displaying your order details. Please check your email for confirmation.';
+    }
+});
+    
+    // Simple confetti effect
+    function createConfetti() {
+      const colors = ['#FF2BAC', '#FF6BCE', '#FF9ED6', '#1B0E24'];
+      const confettiCount = 50;
+      
+      for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.style.position = 'fixed';
+          confetti.style.width = '8px';
+          confetti.style.height = '8px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.top = '-10px';
+          confetti.style.borderRadius = '50%';
+          confetti.style.zIndex = '9999';
+          confetti.style.pointerEvents = 'none';
+          
+          document.body.appendChild(confetti);
+          
+          const animation = confetti.animate([
+            { transform: 'translateY(-10px) rotate(0deg)', opacity: 1 },
+            { transform: `translateY(${window.innerHeight + 10}px) rotate(720deg)`, opacity: 0 }
+          ], {
+            duration: 3000 + Math.random() * 2000,
+            easing: 'cubic-bezier(0.5, 0, 0.5, 1)'
+          });
+          
+          animation.onfinish = () => {
+            if (confetti.parentNode) {
+              confetti.parentNode.removeChild(confetti);
+            }
+          };
+        }, i * 50);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Awaiting Pickup - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED SIDEBAR STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 20px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .logout-btn {
+      color: #ff6b6b;
+    }
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* ======================================== */
+    /* Fix stats cards alignment for awaiting pickup page - Complete solution from inventory.html */
+    .row.g-3.mb-4 {
+      gap: 1rem !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+    }
+    
+    .row.g-3 > div[class*="col-"] {
+      display: flex !important;
+      align-items: stretch !important;
+      flex: 1 !important;
+    }
+    
+    .row.g-3 .stat-card {
+      height: 100% !important;
+      min-height: 90px !important;
+      display: flex !important;
+      align-items: center !important;
+      flex: 1 !important;
+      width: 100% !important;
+      padding: 1rem !important;
+    }
+    
+    .stat-card .stat-details {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    
+    .stat-card .stat-icon {
+      flex-shrink: 0 !important;
+      margin-right: 0.75rem !important;
+    }
+    
+    /* Force equal width columns */
+    .row.g-3.mb-4 > .col-xxl-3,
+    .row.g-3.mb-4 > .col-lg-3,
+    .row.g-3.mb-4 > .col-md-3 {
+      flex: 1 !important;
+      max-width: none !important;
+    }
+    
+    /* Mobile responsive adjustment */
+    @media (max-width: 576px) {
+      .row.g-3.mb-4 {
+        gap: 0.5rem !important;
+      }
+      
+      .row.g-3.mb-4 > .col-sm-6,
+      .row.g-3.mb-4 > .col-6 {
+        flex: 0 0 calc(50% - 0.25rem) !important;
+        max-width: calc(50% - 0.25rem) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Seller Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+      <div class="sidebar-nav">
+        <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="sellerdashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Products</div>
+        <div>
+          <a href="add_product.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span class="nav-text">Add Product</span>
+          </a>
+        </div>
+        <div>
+          <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i>
+            <span class="nav-text">Manage Inventory</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Orders</div>
+        <div>
+          <a href="orders_clean_new.html" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span class="nav-text">View Orders</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div> 
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="delivery-tracking.html" class="nav-item">
+            <i class="fas fa-truck"></i>
+            <span class="nav-text">Delivery Tracking</span>
+            <span class="nav-badge" id="deliveryBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="awaiting-pickup.html" class="nav-item active">
+            <i class="fas fa-clock"></i>
+            <span class="nav-text">Awaiting Pickup</span>
+            <span class="nav-badge" id="awaitingBadge">0</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Reports</div>
+        <div>
+          <a href="analytics.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">Analytics</span>
+          </a>
+        </div>
+      </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">Awaiting Rider Assignment</h1>
+          <p class="page-subtitle">Orders that are ready for pickup but haven't been assigned to a rider yet.</p>
+        </div>
+      
+      <!-- Awaiting Pickup Content -->
+      <div class="content-section active">
+        <!-- Status Summary -->
+        <div class="row g-3 mb-4">
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Ready for Pickup</p>
+                <h3 class="stat-value" id="statReady">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #dc3545, #fd7e14);">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Urgent (>2 days)</p>
+                <h3 class="stat-value" id="statUrgent">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-peso-sign"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Total Value</p>
+                <h3 class="stat-value" id="statValue">₱0.00</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Avg Wait Time</p>
+                <h3 class="stat-value" id="statWaitTime">0h</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert for urgent orders -->
+        <div class="alert alert-warning d-none" id="urgentAlert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Attention:</strong> You have orders waiting for pickup for more than 2 days. Consider contacting customer service to ensure timely delivery.
+        </div>
+
+        <!-- Orders Ready for Pickup -->
+        <div class="data-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-box me-2"></i>Orders Ready for Pickup
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-warning" id="totalCount">0 orders</span>
+              <button class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover modern-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Address</th>
+                  <th>Total</th>
+                  <th>Order Date</th>
+                  <th>Waiting Time</th>
+                  <th>Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table rows will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderModalTitle">Order Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="orderModalBody">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="contactCustomerBtn">
+            <i class="fas fa-phone me-2"></i>Contact Customer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+  </script>
+    <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-page-init.js"></script>
+  <script>
+    // Awaiting Pickup Page JavaScript
+    let awaitingOrders = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('⏰ Awaiting Pickup Page Loading...');
+      
+      // Wait for authentication to be ready
+      setTimeout(() => {
+        loadAwaitingOrders();
+      }, 500);
+      
+      // Search functionality (only if search input exists on this page)
+      const searchEl = document.getElementById('searchInput');
+      if (searchEl) {
+        searchEl.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          filterOrders(searchTerm);
+        });
+      }
+      
+      // Refresh button
+      document.getElementById('refreshBtn').addEventListener('click', loadAwaitingOrders);
+      
+      // Auto-refresh every minute
+      setInterval(loadAwaitingOrders, 60000);
+    });
+
+    async function loadAwaitingOrders() {
+      try {
+        // Get authentication token
+        let token = null;
+        if (typeof AuthManager !== 'undefined') {
+          token = AuthManager.getAuthToken();
+        } else {
+          const tokenKeys = ['auth_token', 'jwt_token', 'token'];
+          for (const key of tokenKeys) {
+            token = localStorage.getItem(key);
+            if (token) break;
+          }
+        }
+        
+        if (!token) {
+          console.error('❌ No authentication token found');
+          window.location.href = '../Authenticator/login.html';
+          return;
+        }
+
+        console.log('📡 Fetching awaiting pickup orders...');
+        const response = await fetch('/api/seller/deliveries?status=pending', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('📋 Response status:', response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Awaiting orders loaded:', data);
+          
+          awaitingOrders = (data.deliveries || [])
+            .filter(order => order.delivery_status === 'pending')
+            .map(order => {
+              const orderDate = new Date(order.created_at);
+              const waitingHours = Math.floor((new Date() - orderDate) / (1000 * 60 * 60));
+              
+              return {
+                id: order.id,
+                order_number: order.order_number,
+                customer_name: order.customer_name || 'Unknown Customer',
+                customer_phone: order.customer_phone || 'N/A',
+                delivery_address: order.delivery_address || 'Unknown Address',
+                total_amount: order.total_amount || 0,
+                order_date: order.created_at || new Date().toISOString(),
+                waiting_hours: waitingHours,
+                is_urgent: waitingHours > 48, // More than 2 days
+                priority: waitingHours > 48 ? 'urgent' : waitingHours > 24 ? 'high' : 'normal'
+              };
+            });
+          
+          console.log('🎯 Processed awaiting orders:', awaitingOrders.length);
+          updateStats();
+          renderTable();
+        } else {
+          console.error('❌ Failed to load awaiting orders:', response.status);
+          awaitingOrders = [];
+          updateStats();
+          renderTable();
+          showToast('Failed to load awaiting orders', 'error');
+        }
+      } catch (error) {
+        console.error('❌ Error loading awaiting orders:', error);
+        awaitingOrders = [];
+        updateStats();
+        renderTable();
+        showToast('Network error. Please check your connection.', 'error');
+      }
+    }
+
+    function updateStats() {
+      const totalValue = awaitingOrders.reduce((sum, order) => sum + order.total_amount, 0);
+      const urgentCount = awaitingOrders.filter(order => order.is_urgent).length;
+      const avgWaitTime = awaitingOrders.length > 0 
+        ? Math.floor(awaitingOrders.reduce((sum, order) => sum + order.waiting_hours, 0) / awaitingOrders.length)
+        : 0;
+
+      document.getElementById('statReady').textContent = awaitingOrders.length;
+      document.getElementById('statUrgent').textContent = urgentCount;
+      document.getElementById('statValue').textContent = `₱${totalValue.toFixed(2)}`;
+      document.getElementById('statWaitTime').textContent = `${avgWaitTime}h`;
+
+      // Show urgent alert if needed
+      const urgentAlert = document.getElementById('urgentAlert');
+      if (urgentCount > 0) {
+        urgentAlert.classList.remove('d-none');
+      } else {
+        urgentAlert.classList.add('d-none');
+      }
+    }
+
+    function filterOrders(searchTerm = '') {
+      // Simple search functionality
+      const filtered = awaitingOrders.filter(order => 
+        order.order_number.toLowerCase().includes(searchTerm) ||
+        order.customer_name.toLowerCase().includes(searchTerm)
+      );
+      renderTable(filtered);
+    }
+
+    function renderTable(ordersToRender = awaitingOrders) {
+      const tbody = document.querySelector('#ordersTable tbody');
+      document.getElementById('totalCount').textContent = `${ordersToRender.length} orders`;
+      
+      if (ordersToRender.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+              <p class="text-muted mb-0">Great! No orders waiting for pickup</p>
+              <small class="text-muted">All orders have been assigned to riders</small>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = ordersToRender.map(order => {
+        const priorityClass = getPriorityClass(order.priority);
+        const waitingDisplay = formatWaitingTime(order.waiting_hours);
+        
+        return `
+          <tr ${order.is_urgent ? 'class="table-warning"' : ''}>
+            <td>
+              <strong>#${order.order_number}</strong>
+              ${order.is_urgent ? '<i class="fas fa-exclamation-triangle text-danger ms-2" title="Urgent"></i>' : ''}
+            </td>
+            <td>
+              <div>${order.customer_name}</div>
+              <small class="text-muted">${order.customer_phone}</small>
+            </td>
+            <td>
+              <div class="small">${order.delivery_address.substring(0, 40)}...</div>
+            </td>
+            <td>
+              <strong class="text-success">₱${order.total_amount.toFixed(2)}</strong>
+            </td>
+            <td>
+              <div>${formatDate(order.order_date)}</div>
+              <small class="text-muted">${formatTime(order.order_date)}</small>
+            </td>
+            <td>
+              <span class="badge bg-${getPriorityColor(order.priority)}">${waitingDisplay}</span>
+            </td>
+            <td>
+              <span class="badge bg-${priorityClass}">${order.priority.toUpperCase()}</span>
+            </td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm" onclick="viewOrderDetails(${order.id})">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-outline-success btn-sm ms-1" onclick="contactCustomer('${order.customer_phone}', '${order.customer_name}')">
+                <i class="fas fa-phone"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function getPriorityClass(priority) {
+      const classes = {
+        'urgent': 'danger',
+        'high': 'warning',
+        'normal': 'secondary'
+      };
+      return classes[priority] || 'secondary';
+    }
+
+    function getPriorityColor(priority) {
+      const colors = {
+        'urgent': 'danger',
+        'high': 'warning',
+        'normal': 'info'
+      };
+      return colors[priority] || 'info';
+    }
+
+    function formatWaitingTime(hours) {
+      if (hours < 1) return 'Less than 1h';
+      if (hours < 24) return `${hours}h`;
+      const days = Math.floor(hours / 24);
+      const remainingHours = hours % 24;
+      return `${days}d ${remainingHours}h`;
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function formatTime(dateString) {
+      return new Date(dateString).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function viewOrderDetails(orderId) {
+      const order = awaitingOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const modal = new bootstrap.Modal(document.getElementById('orderModal'));
+      document.getElementById('orderModalTitle').textContent = `Order Details - #${order.order_number}`;
+      
+      document.getElementById('orderModalBody').innerHTML = `
+        <div class="row g-3">
+          <div class="col-md-6">
+            <strong>Order Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Order #:</strong> ${order.order_number}</div>
+              <div><strong>Total:</strong> ₱${order.total_amount.toFixed(2)}</div>
+              <div><strong>Order Date:</strong> ${formatDate(order.order_date)}</div>
+              <div><strong>Waiting:</strong> <span class="badge bg-${getPriorityColor(order.priority)}">${formatWaitingTime(order.waiting_hours)}</span></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <strong>Customer Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Name:</strong> ${order.customer_name}</div>
+              <div><strong>Phone:</strong> ${order.customer_phone}</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <strong>Delivery Address:</strong><br>
+            <div class="mt-2">
+              <div class="p-2 bg-light rounded">${order.delivery_address}</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <strong>Status:</strong><br>
+            <div class="mt-2">
+              <span class="badge bg-warning fs-6">
+                <i class="fas fa-clock me-1"></i>Awaiting Rider Assignment
+              </span>
+              ${order.is_urgent ? '<span class="badge bg-danger fs-6 ms-2"><i class="fas fa-exclamation-triangle me-1"></i>URGENT</span>' : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Set up contact button
+      const contactBtn = document.getElementById('contactCustomerBtn');
+      contactBtn.onclick = () => contactCustomer(order.customer_phone, order.customer_name);
+      
+      modal.show();
+    }
+
+    function contactCustomer(customerPhone, customerName) {
+      if (customerPhone && customerPhone !== 'N/A') {
+        window.open(`tel:${customerPhone}`, '_self');
+      } else {
+        showToast('Customer phone number not available', 'warning');
+      }
+    }
+
+    function showToast(message, type = 'info') {
+      const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+      };
+      
+      const toast = document.createElement('div');
+      toast.style = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        z-index: 9999;
+        font-size: 14px;
+      `;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    }
+    
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <script src="/static/js/chat-center.js" defer></script>
+  
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

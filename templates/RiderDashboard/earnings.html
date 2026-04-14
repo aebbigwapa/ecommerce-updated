@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earnings - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/rider-dashboard.css">
+  <link rel="stylesheet" href="/static/css/rider-compact.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* Collapsible Sidebar Styles */
+    .admin-sidebar { width: 260px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-sidebar.collapsed { width: 75px; }
+    .sidebar-header { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .admin-sidebar:not(.collapsed) .sidebar-header { display: none; }
+    .admin-sidebar.collapsed .sidebar-header { display: flex; justify-content: center; padding: 12px 0; position: sticky; top: 0; z-index: 10; }
+    .sidebar-brand { display: none !important; }
+    .sidebar-toggle { display: flex; align-items: center; justify-content: center; background: rgba(255, 107, 206, 0.12); border: 1px solid rgba(255, 107, 206, 0.2); color: #eee4f4; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15); }
+    .sidebar-toggle:hover { background: rgba(255, 107, 206, 0.25); border-color: rgba(255, 107, 206, 0.4); transform: scale(1.08) translateY(-1px); box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3); }
+    .sidebar-toggle:active { transform: scale(0.98); }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+    .nav-section.first-section { position: relative; }
+    .admin-sidebar .nav-section.first-section .nav-section-title { display: flex !important; align-items: center !important; gap: 12px !important; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span { display: none; }
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title { justify-content: center !important; padding: 12px 0 !important; margin: 0 0 6px 0 !important; }
+    .sidebar-toggle-inline { display: none; }
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline { display: flex; width: 38px; height: 38px; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-toggle-inline { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 0; min-height: 0; }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 107, 206, 0.3); border-radius: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 206, 0.5); }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto; flex-shrink: 0; }
+    .admin-sidebar.collapsed .sidebar-footer { padding: 16px 0; width: 100%; }
+    .admin-sidebar.collapsed .sidebar-footer .nav-item { display: flex; justify-content: center; align-items: center; width: 100%; gap: 0; }
+    .admin-sidebar .nav-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+    .admin-sidebar .nav-item i { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-width: 24px; width: 24px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .admin-sidebar .nav-item .nav-text { transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; overflow: hidden; }
+    .admin-sidebar.collapsed .nav-text, .admin-sidebar.collapsed .nav-badge { opacity: 0; width: 0; margin: 0; padding: 0; pointer-events: none; display: none; }
+    .admin-sidebar.collapsed .nav-section-title { opacity: 0; width: 0; height: 0; overflow: hidden; padding: 0; margin: 0; display: none; }
+    .admin-sidebar.collapsed .nav-item { display: flex; justify-content: center; align-items: center; padding: 14px 0; margin: 4px 0; width: 100%; gap: 0; }
+    .admin-sidebar.collapsed .nav-item i { margin: 0; padding: 0; min-width: 24px; width: 24px; }
+    .admin-sidebar.collapsed .nav-section { padding: 0; width: 100%; }
+    .admin-sidebar.collapsed .nav-divider { margin: 0.75rem 16px; }
+    .admin-sidebar.collapsed .nav-item:hover { transform: scale(1.08); background: rgba(255, 107, 206, 0.15); }
+    .admin-sidebar.collapsed .nav-item.active { transform: none; }
+    .admin-sidebar.collapsed .nav-item.active:hover { transform: scale(1.05); }
+    .admin-main { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    /* Self-Contained Rider Dashboard Styles */
+    .admin-container { display: flex; height: 100vh; overflow: hidden; }
+    .admin-sidebar { background: var(--secondary-color); color: #eee4f4; display: flex; flex-direction: column; position: relative; z-index: 100; }
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .admin-topbar { background: var(--container-bg); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+    .admin-content { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--background-light); }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-family: "Poppins", sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.4rem; }
+    .page-subtitle { color: var(--gray-600); font-size: 0.9rem; }
+    @media (max-width: 1024px) { .mobile-toggle { display: block; } }
+
+    /* Sidebar Navigation Styling */
+    .nav-section { padding: 0 12px; margin-bottom: 1rem; }
+    .nav-section-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #eee4f4; text-decoration: none; border-radius: 10px; margin: 4px 0; font-size: 0.95rem; }
+    .nav-item:hover { background: rgba(255, 107, 206, 0.1); color: white; }
+    .nav-item.active { background: linear-gradient(135deg, #ff6bce, #b829d6); color: white; box-shadow: 0 4px 12px rgba(255, 107, 206, 0.3); }
+    .nav-badge { margin-left: auto; background: #ff6bce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .nav-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 1rem 12px; }
+    .logout-btn { color: #ff6b6b !important; }
+    .logout-btn:hover { background: rgba(255, 107, 107, 0.1) !important; color: #ff5252 !important; }
+
+    /* Topbar & User Profile */
+    .search-box { display: flex; align-items: center; gap: 10px; background: var(--background-light); padding: 10px 16px; border-radius: 25px; min-width: 300px; }
+    .search-box i { color: var(--gray-500); }
+    .search-box input { border: none; background: none; outline: none; flex: 1; font-size: 0.95rem; color: var(--text-color); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; position: relative; }
+    .topbar-action { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .topbar-action:hover { background: var(--background-light); color: var(--primary-color); }
+    .notification-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #ff6bce; border-radius: 50%; border: 2px solid white; }
+    .user-profile { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; background: var(--background-light); border-radius: 25px; cursor: pointer; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6bce, #b829d6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-color); }
+    .user-role { font-size: 0.75rem; color: var(--gray-600); }
+    
+    /* Notification Dropdown Styling */
+    .notification-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .notification-container:hover .notification-dropdown {
+      display: block;
+    }
+    
+    .notification-dropdown {
+      position: absolute;
+      top: calc(100% + 15px);
+      right: 0;
+      width: 360px;
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      padding: 0;
+      display: none;
+      z-index: 1000;
+      border: 1px solid #e9ecef;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .notification-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 20px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 1px solid #e9ecef;
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+    }
+    
+    .notification-header {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe0e6 100%);
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0;
+    }
+    
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #ff6bce;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .mark-all-read:hover {
+      background-color: rgba(255, 107, 206, 0.1);
+    }
+    
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .notification-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-item.unread {
+      background-color: #fff8f8;
+      border-left: 3px solid #ff6bce;
+      position: relative;
+    }
+    
+    .notification-item.unread::after {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ff6bce;
+      border-radius: 50%;
+    }
+    
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff6bce, #b829d6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .notification-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-right: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-message {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #2d3748;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .notification-item.unread .notification-message {
+      font-weight: 600;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    
+    .notification-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .notification-empty i {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+    
+    .notification-empty p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    
+    .notification-see-all {
+      padding: 15px 20px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+    }
+    
+    .notification-see-all a {
+      color: #ff6bce;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    
+    .notification-see-all a:hover {
+      color: #b829d6;
+    }
+    
+    /* Message Dropdown Styling */
+    .message-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Chat Center Button - Match notification button style */
+    .topbar-action#chatCenterBtn {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transition: all 0.25s ease !important;
+      cursor: pointer !important;
+      font-family: inherit !important;
+      height: auto !important;
+      min-width: unset !important;
+      width: auto !important;
+      appearance: none !important;
+      transform: none !important;
+      line-height: normal !important;
+      margin: 0 !important;
+    }
+    
+    .topbar-action#chatCenterBtn:hover {
+      color: var(--primary-color) !important;
+      border-color: rgba(255,107,206,0.4) !important;
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important;
+      background: var(--container-bg) !important;
+    }
+    
+    .topbar-action#chatCenterBtn i {
+      font-size: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    .topbar-action#chatCenterBtn span:not(.notification-dot) {
+      font-size: 0.9rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    /* Notification dot for chat button */
+    #chatNotificationDot {
+      position: absolute !important;
+      top: 6px !important;
+      right: 6px !important;
+      width: 8px !important;
+      height: 8px !important;
+      background: #dc3545 !important;
+      border-radius: 50% !important;
+      border: 2px solid var(--container-bg) !important;
+    }
+    
+    /* Ensure proper alignment with notification button */
+    .topbar-right {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    
+    .topbar-action#chatCenterBtn,
+    .topbar-action#notificationBtn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle !important;
+    }
+    
+    /* Chat Center Modal Overrides - Ensure proper display */
+    #chatCenterModal {
+      z-index: 3000 !important;
+    }
+    
+    #chatCenterModal .modal-dialog {
+      max-width: 1200px !important;
+      margin: 1.75rem auto !important;
+    }
+    
+    #chatCenterModal .modal-content {
+      border-radius: 16px !important;
+      border: none !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    #chatCenterModal .chat-container {
+      display: flex !important;
+      height: 600px !important;
+      min-height: 600px !important;
+    }
+    
+    #chatCenterModal .chat-sidebar {
+      width: 420px !important;
+      min-width: 420px !important;
+    }
+    
+    #chatCenterModal .chat-window {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Content Cards */
+    .stat-card { background: var(--container-bg); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
+    .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; flex-shrink: 0; }
+    .stat-details { flex: 1; }
+    .stat-label { color: var(--gray-600); font-size: 0.85rem; margin: 0 0 6px 0; font-weight: 500; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--text-color); margin: 0; }
+    .stat-change { font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: #10b981; }
+    .data-card { background: var(--container-bg); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 1.5rem; }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+    .card-title { font-family: "Poppins", sans-serif; font-size: 1.25rem; font-weight: 600; color: var(--text-color); margin: 0; display: flex; align-items: center; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Rider Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <i class="fas fa-bicycle"></i>
+          <span class="brand-text">Rider Panel</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="rider-dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="available-deliveries.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span class="nav-text">Available Orders</span>
+            <span class="nav-badge" id="availableBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="my-deliveries.html" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span class="nav-text">My Deliveries</span>
+            <span class="nav-badge" id="activeBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="delivery-history.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span class="nav-text">Delivery History</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Performance</div>
+        <div>
+          <a href="earnings.html" class="nav-item active">
+            <i class="fas fa-wallet"></i>
+            <span class="nav-text">Earnings</span>
+          </a>
+        </div>
+        <div>
+        </div>
+      </div>
+
+
+      </div>
+      <div class="sidebar-footer">
+        <a href="../Authenticator/login.html" class="nav-item logout-btn" onclick="AuthManager.logout(); return false;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search transactions...">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="position-relative notification-container">
+            <button class="topbar-action" id="notificationBtn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-dot"></span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty">
+                  <i class="fas fa-bell"></i>
+                  <p>No notifications</p>
+                </div>
+              </div>
+              <div class="notification-see-all">
+                <a href="/templates/UserProfile/notifications.html">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">Earnings Dashboard</h1>
+          <p class="page-subtitle">Track your income, payments, and financial performance.</p>
+        </div>
+      
+      <!-- Earnings Content -->
+      <div class="content-section active">
+        <!-- Earnings Summary -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-calendar-day"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Today's Earnings</p>
+                <h3 class="stat-value" id="statToday">₱0.00</h3>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>+12% vs yesterday</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #6610f2);">
+                <i class="fas fa-calendar-week"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">This Week</p>
+                <h3 class="stat-value" id="statWeek">₱0.00</h3>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>+8% vs last week</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">This Month</p>
+                <h3 class="stat-value" id="statMonth">₱0.00</h3>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>+15% vs last month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #e83e8c, #fd7e14);">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">All Time</p>
+                <h3 class="stat-value" id="statTotal">₱0.00</h3>
+                <div class="stat-change positive">
+                  <i class="fas fa-trophy"></i>
+                  <span>Total earned</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-8">
+            <div class="data-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="fas fa-chart-area me-2"></i>Earnings Trend
+                </h2>
+                <div class="chart-controls">
+                  <button class="btn btn-sm btn-outline-primary active" data-period="7">7 Days</button>
+                  <button class="btn btn-sm btn-outline-primary" data-period="30">30 Days</button>
+                  <button class="btn btn-sm btn-outline-primary" data-period="90">90 Days</button>
+                </div>
+              </div>
+              <div class="p-3">
+                <div class="chart-container">
+                  <canvas id="earningsChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="data-card h-100">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="fas fa-chart-pie me-2"></i>Earnings Breakdown
+                </h2>
+              </div>
+              <div class="p-3">
+                <canvas id="breakdownChart"></canvas>
+                <div class="mt-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><i class="fas fa-circle text-success"></i> Base Fee</span>
+                    <strong id="baseFeeAmount">₱0.00</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><i class="fas fa-circle text-info"></i> Distance Bonus</span>
+                    <strong id="distanceBonusAmount">₱0.00</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><i class="fas fa-circle text-warning"></i> Tips</span>
+                    <strong id="tipsAmount">₱0.00</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-circle text-primary"></i> Peak Hour Bonus</span>
+                    <strong id="peakBonusAmount">₱0.00</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="data-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-credit-card me-2"></i>Payment History
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+              <select class="form-select form-select-sm" style="width: 150px;" id="paymentStatusFilter">
+                <option value="all">All Payments</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+              </select>
+              <button class="btn btn-outline-primary btn-sm" id="refreshPayments">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover modern-table" id="paymentsTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Deliveries</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Payment rows will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script - runs immediately -->
+  <script>
+    (function() {
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initToggle);
+      } else {
+        initToggle();
+      }
+      
+      function initToggle() {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+        const mobileToggle = document.getElementById('mobileToggle');
+        
+        if (!sidebar) {
+          console.warn('Sidebar element not found');
+          return;
+        }
+        
+        // Check localStorage for saved state, default to collapsed
+        const savedState = localStorage.getItem('riderSidebarCollapsed');
+        const isCollapsed = savedState === null ? true : savedState === 'true';
+        
+        // Apply initial state
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+        }
+        
+        // Toggle function
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('riderSidebarCollapsed', sidebar.classList.contains('collapsed'));
+          console.log('Sidebar toggled:', sidebar.classList.contains('collapsed') ? 'collapsed' : 'expanded');
+        }
+        
+        // Desktop toggle (top button when collapsed)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggle listener attached');
+        }
+        
+        // Inline toggle (beside Main when expanded)
+        if (sidebarToggleInline) {
+          sidebarToggleInline.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggleInline listener attached');
+        }
+        
+        // Mobile toggle
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+          });
+          console.log('✅ mobileToggle listener attached');
+        }
+        
+        console.log('✅ Sidebar toggle initialized');
+      }
+    })();
+  </script>
+  
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/rider-dashboard.js"></script>
+  <script>
+    // Earnings Page JavaScript
+    let earningsData = {};
+    let earningsChart, breakdownChart;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('💰 Earnings Page Loading...');
+      
+      // Initialize authentication
+      if (!AuthManager.isAuthenticated()) {
+        window.location.href = '../Authenticator/login.html';
+        return;
+      }
+
+      // Initialize UI
+      DashboardUtils.initializeNavigation('earnings.html');
+      
+      loadEarningsData();
+      initializeCharts();
+      
+      // Event listeners
+      document.querySelectorAll('.chart-controls .btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.chart-controls .btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          updateEarningsChart(parseInt(this.dataset.period));
+        });
+      });
+      
+      document.getElementById('paymentStatusFilter').addEventListener('change', filterPayments);
+      document.getElementById('refreshPayments').addEventListener('click', loadPaymentHistory);
+      
+      // Auto-refresh every 5 minutes
+      setInterval(loadEarningsData, 300000);
+    });
+
+    async function loadEarningsData() {
+      try {
+        console.log('📡 Fetching earnings data from /api/rider/earnings...');
+        
+        const data = await DashboardUtils.makeApiCall('/api/rider/earnings');
+        
+        if (data && data.success) {
+          console.log('✅ Earnings data loaded:', data);
+          
+          // Process earnings data from API response (adjusted for actual backend response format)
+          earningsData = {
+            today: data.today || 0,
+            week: data.week || 0,
+            month: data.month || 0,
+            total: data.total || 0,
+            breakdown: {
+              base_fee: data.breakdown?.base_fee || 0,
+              distance_bonus: data.breakdown?.distance_bonus || 0,
+              tips: data.breakdown?.tips || 0,
+              peak_bonus: data.breakdown?.peak_bonus || 0
+            },
+            daily_trend: data.daily_trend || []
+          };
+          
+          console.log('🎯 Processed earnings:', earningsData);
+          updateEarningsStats();
+          updateCharts();
+          loadPaymentHistory();
+        } else {
+          throw new Error(data?.message || 'Failed to load earnings data');
+        }
+      } catch (error) {
+        console.error('Error loading earnings data:', error);
+        DashboardUtils.showErrorToast(`Failed to load earnings: ${error.message}`);
+        loadEmptyEarnings();
+      }
+    }
+
+    function loadEmptyEarnings() {
+      earningsData = {
+        today: 0,
+        week: 0,
+        month: 0,
+        total: 0,
+        breakdown: {
+          base_fee: 0,
+          distance_bonus: 0,
+          tips: 0,
+          peak_bonus: 0
+        },
+        daily_trend: []
+      };
+      updateEarningsStats();
+      updateCharts();
+      loadEmptyPaymentHistory();
+    }
+
+    function updateEarningsStats() {
+      document.getElementById('statToday').textContent = `₱${earningsData.today.toFixed(2)}`;
+      document.getElementById('statWeek').textContent = `₱${earningsData.week.toFixed(2)}`;
+      document.getElementById('statMonth').textContent = `₱${earningsData.month.toFixed(2)}`;
+      document.getElementById('statTotal').textContent = `₱${earningsData.total.toFixed(2)}`;
+
+      // Update breakdown amounts
+      const breakdown = earningsData.breakdown || {};
+      document.getElementById('baseFeeAmount').textContent = `₱${(breakdown.base_fee || 0).toFixed(2)}`;
+      document.getElementById('distanceBonusAmount').textContent = `₱${(breakdown.distance_bonus || 0).toFixed(2)}`;
+      document.getElementById('tipsAmount').textContent = `₱${(breakdown.tips || 0).toFixed(2)}`;
+      document.getElementById('peakBonusAmount').textContent = `₱${(breakdown.peak_bonus || 0).toFixed(2)}`;
+    }
+
+    function initializeCharts() {
+      // Earnings Trend Chart
+      const earningsCtx = document.getElementById('earningsChart').getContext('2d');
+      earningsChart = new Chart(earningsCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Daily Earnings',
+            data: [],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '₱' + value.toFixed(0);
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Breakdown Pie Chart
+      const breakdownCtx = document.getElementById('breakdownChart').getContext('2d');
+      breakdownChart = new Chart(breakdownCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Base Fee', 'Distance Bonus', 'Tips', 'Peak Bonus'],
+          datasets: [{
+            data: [0, 0, 0, 0],
+            backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    function updateCharts() {
+      // Update earnings trend
+      const dailyTrend = earningsData.daily_trend || [];
+      earningsChart.data.labels = dailyTrend.map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      earningsChart.data.datasets[0].data = dailyTrend.map(d => d.amount);
+      earningsChart.update();
+
+      // Update breakdown chart
+      const breakdown = earningsData.breakdown || {};
+      breakdownChart.data.datasets[0].data = [
+        breakdown.base_fee || 0,
+        breakdown.distance_bonus || 0,
+        breakdown.tips || 0,
+        breakdown.peak_bonus || 0
+      ];
+      breakdownChart.update();
+    }
+
+    function updateEarningsChart(days) {
+      // This would typically fetch data for the specified period
+      riderDashboard.showToast(`Loading ${days}-day earnings data...`, 'info');
+    }
+
+    async function loadPaymentHistory() {
+      try {
+        const data = await DashboardUtils.makeApiCall('/api/rider/payments');
+        
+        if (data && data.success) {
+          renderPaymentHistory(data.payments || []);
+        } else {
+          console.error('Failed to load payment history');
+          renderPaymentHistory([]);
+        }
+      } catch (error) {
+        console.error('Error loading payment history:', error);
+        renderPaymentHistory([]);
+      }
+    }
+    
+    function loadEmptyPaymentHistory() {
+      renderPaymentHistory([]);
+    }
+
+    function renderPaymentHistory(payments) {
+      const tbody = document.querySelector('#paymentsTable tbody');
+      
+      if (payments.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <i class="fas fa-credit-card fa-2x text-muted mb-2"></i>
+              <p class="text-muted mb-0">No payment history found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = payments.map(payment => {
+        const statusClass = getPaymentStatusClass(payment.status);
+        const statusIcon = getPaymentStatusIcon(payment.status);
+        
+        return `
+          <tr>
+            <td>
+              <div>${formatDate(payment.date)}</div>
+              <small class="text-muted">${formatTime(payment.date)}</small>
+            </td>
+            <td>${payment.description}</td>
+            <td>
+              <span class="badge bg-secondary">${payment.deliveries_count} orders</span>
+            </td>
+            <td>
+              <strong class="text-success">₱${payment.amount.toFixed(2)}</strong>
+            </td>
+            <td>
+              <span class="badge bg-${statusClass}">
+                <i class="fas fa-${statusIcon} me-1"></i>${payment.status}
+              </span>
+            </td>
+            <td>${payment.payment_method}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function getPaymentStatusClass(status) {
+      const classes = {
+        'completed': 'success',
+        'pending': 'warning',
+        'failed': 'danger'
+      };
+      return classes[status] || 'secondary';
+    }
+
+    function getPaymentStatusIcon(status) {
+      const icons = {
+        'completed': 'check-circle',
+        'pending': 'clock',
+        'failed': 'times-circle'
+      };
+      return icons[status] || 'info-circle';
+    }
+
+    function filterPayments() {
+      // This would filter the payments based on status
+      riderDashboard.showToast('Filtering payments...', 'info');
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function formatTime(dateString) {
+      return new Date(dateString).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  </script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

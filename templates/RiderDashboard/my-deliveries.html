@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Deliveries - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/rider-dashboard.css">
+  <link rel="stylesheet" href="/static/css/rider-compact.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    /* Self-Contained Rider Dashboard Styles */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .admin-sidebar {
+      width: 260px;
+      background: var(--secondary-color);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar Header - Hide when expanded, show when collapsed */
+    .sidebar-header {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+    
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    /* Hide brand completely */
+    .sidebar-brand { display: none !important; }
+
+    /* Toggle button styles */
+    .sidebar-toggle,
+    .sidebar-toggle-inline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+      flex-shrink: 0;
+    }
+    
+    .sidebar-toggle:hover,
+    .sidebar-toggle-inline:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    
+    .sidebar-toggle:active,
+    .sidebar-toggle-inline:active {
+      transform: scale(0.98);
+    }
+    
+    .sidebar-toggle i,
+    .sidebar-toggle-inline i {
+      font-size: 1.15rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-toggle:hover i,
+    .sidebar-toggle-inline:hover i {
+      transform: rotate(90deg);
+    }
+    
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+    
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      padding: 8px 12px;
+    }
+    
+    /* Show inline toggle when expanded */
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex !important;
+    }
+    
+    /* Hide inline toggle when collapsed */
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none !important;
+    }
+    
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none;
+    }
+    
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 !important;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .nav-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.5);
+      padding: 0 16px;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 1rem 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      color: #eee4f4;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      margin: 3px 10px;
+      border-radius: 8px;
+    }
+
+    .nav-item i {
+      font-size: 1.1rem;
+      min-width: 24px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-text {
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Collapsed state - hide text and badges */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-badge {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+      padding: 0;
+      pointer-events: none;
+      display: none;
+    }
+
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+      display: none;
+    }
+    
+    /* Collapsed state - center icons perfectly */
+    .admin-sidebar.collapsed .nav-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px 0;
+      margin: 4px 0;
+      width: 100%;
+      gap: 0;
+    }
+
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      padding: 0;
+      min-width: 24px;
+      width: 24px;
+    }
+
+    .admin-sidebar.collapsed .nav-section {
+      padding: 0;
+      width: 100%;
+    }
+    
+    /* Collapsed state - minimal dividers */
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 0.75rem 16px;
+    }
+    
+    /* Hover effects in collapsed state */
+    .admin-sidebar.collapsed .nav-item:hover {
+      transform: scale(1.08);
+      background: rgba(255, 107, 206, 0.15);
+    }
+
+    .admin-sidebar.collapsed .nav-item.active {
+      transform: none;
+    }
+
+    .admin-sidebar.collapsed .nav-item.active:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 107, 206, 0.1);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: var(--brand-grad);
+      color: white;
+      box-shadow: var(--brand-shadow);
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Sidebar Navigation Scrollbar */
+    .sidebar-nav::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Sidebar Footer */
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-footer {
+      padding: 16px 0;
+      width: 100%;
+    }
+
+    .admin-sidebar.collapsed .sidebar-footer .nav-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      gap: 0;
+    }
+
+    /* Sidebar Navigation Styling */
+    .nav-section { padding: 0 12px; margin-bottom: 1rem; }
+    .nav-section-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #eee4f4; text-decoration: none; border-radius: 10px; margin: 4px 0; font-size: 0.95rem; }
+    .nav-item:hover { background: rgba(255, 107, 206, 0.1); color: white; }
+    .nav-item.active { background: linear-gradient(135deg, #ff6bce, #b829d6); color: white; box-shadow: 0 4px 12px rgba(255, 107, 206, 0.3); }
+    .nav-badge { margin-left: auto; background: #ff6bce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .nav-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 1rem 12px; }
+    .logout-btn { color: #ff6b6b !important; }
+    .logout-btn:hover { background: rgba(255, 107, 107, 0.1) !important; color: #ff5252 !important; }
+
+    /* Topbar & User Profile */
+    .search-box { display: flex; align-items: center; gap: 10px; background: var(--background-light); padding: 10px 16px; border-radius: 25px; min-width: 300px; }
+    .search-box i { color: var(--gray-500); }
+    .search-box input { border: none; background: none; outline: none; flex: 1; font-size: 0.95rem; color: var(--text-color); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; position: relative; }
+    .topbar-action { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .topbar-action:hover { background: var(--background-light); color: var(--primary-color); }
+    .notification-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #ff6bce; border-radius: 50%; border: 2px solid white; }
+    
+    /* Notification Dropdown Styling */
+    .notification-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .notification-container:hover .notification-dropdown {
+      display: block;
+    }
+    
+    .notification-dropdown {
+      position: absolute;
+      top: calc(100% + 15px);
+      right: 0;
+      width: 360px;
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      padding: 0;
+      display: none;
+      z-index: 1000;
+      border: 1px solid #e9ecef;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .notification-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 20px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 1px solid #e9ecef;
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+    }
+    
+    .notification-header {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe0e6 100%);
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0;
+    }
+    
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #ff6bce;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .mark-all-read:hover {
+      background-color: rgba(255, 107, 206, 0.1);
+    }
+    
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .notification-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-item.unread {
+      background-color: #fff8f8;
+      border-left: 3px solid #ff6bce;
+      position: relative;
+    }
+    
+    .notification-item.unread::after {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ff6bce;
+      border-radius: 50%;
+    }
+    
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff6bce, #b829d6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .notification-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-right: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-message {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #2d3748;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .notification-item.unread .notification-message {
+      font-weight: 600;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    
+    .notification-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .notification-empty i {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+    
+    .notification-empty p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    
+    .notification-see-all {
+      padding: 15px 20px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+    }
+    
+    .notification-see-all a {
+      color: #ff6bce;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    
+    .notification-see-all a:hover {
+      color: #b829d6;
+    }
+    
+    /* Message Dropdown Styling */
+    .message-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Chat Center Button - Match notification button style */
+    .topbar-action#chatCenterBtn {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--text-color) !important;
+      background: var(--container-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+      transition: all 0.25s ease !important;
+      cursor: pointer !important;
+      font-family: inherit !important;
+      height: auto !important;
+      min-width: unset !important;
+      width: auto !important;
+      appearance: none !important;
+      transform: none !important;
+      line-height: normal !important;
+      margin: 0 !important;
+    }
+    
+    .topbar-action#chatCenterBtn:hover {
+      color: var(--primary-color) !important;
+      border-color: rgba(255,107,206,0.4) !important;
+      box-shadow: 0 4px 14px rgba(255,107,206,0.15) !important;
+      background: var(--container-bg) !important;
+    }
+    
+    .topbar-action#chatCenterBtn i {
+      font-size: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    .topbar-action#chatCenterBtn span:not(.notification-dot) {
+      font-size: 0.9rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    
+    /* Notification dot for chat button */
+    #chatNotificationDot {
+      position: absolute !important;
+      top: 6px !important;
+      right: 6px !important;
+      width: 8px !important;
+      height: 8px !important;
+      background: #dc3545 !important;
+      border-radius: 50% !important;
+      border: 2px solid var(--container-bg) !important;
+    }
+    
+    /* Ensure proper alignment with notification button */
+    .topbar-right {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    
+    .topbar-action#chatCenterBtn,
+    .topbar-action#notificationBtn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle !important;
+    }
+    
+    /* Chat Center Modal Overrides - Ensure proper display */
+    #chatCenterModal {
+      z-index: 3000 !important;
+    }
+    
+    #chatCenterModal .modal-dialog {
+      max-width: 1200px !important;
+      margin: 1.75rem auto !important;
+    }
+    
+    #chatCenterModal .modal-content {
+      border-radius: 16px !important;
+      border: none !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    #chatCenterModal .chat-container {
+      display: flex !important;
+      height: 600px !important;
+      min-height: 600px !important;
+    }
+    
+    #chatCenterModal .chat-sidebar {
+      width: 420px !important;
+      min-width: 420px !important;
+    }
+    
+    #chatCenterModal .chat-window {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-profile { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; background: var(--background-light); border-radius: 25px; cursor: pointer; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6bce, #b829d6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-color); }
+    .user-role { font-size: 0.75rem; color: var(--gray-600); }
+
+    /* Stats Card Alignment Fix */
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--container-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      height: 100%;
+      min-height: 110px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .row.g-4 .col-lg-3.col-md-6 {
+      display: flex;
+    }
+    
+    .row.g-4 .col-lg-3.col-md-6 .stat-card {
+      flex: 1;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .stat-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      margin: 0 0 4px 0;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    /* Content Cards */
+    .data-card { background: var(--container-bg); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 1.5rem; }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+    .card-title { font-family: "Poppins", sans-serif; font-size: 1.25rem; font-weight: 600; color: var(--text-color); margin: 0; display: flex; align-items: center; }
+    
+    .admin-sidebar.collapsed .sidebar-footer .nav-item {
+      justify-content: center;
+    }
+
+    .logout-btn {
+      color: #ff6b6b;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Main Content Area - Smooth transition */
+    .admin-main {
+      flex: 1;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--background-light);
+      padding: 10px 16px;
+      border-radius: 25px;
+      min-width: 300px;
+    }
+
+    .search-box i {
+      color: var(--gray-500);
+    }
+
+    .search-box input {
+      border: none;
+      background: none;
+      outline: none;
+      flex: 1;
+      font-size: 0.95rem;
+      color: var(--text-color);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-action {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .topbar-action:hover {
+      background: var(--background-light);
+      color: var(--primary-color);
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px 6px 6px;
+      background: var(--background-light);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .user-profile:hover {
+      box-shadow: var(--hover-shadow);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--brand-grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-color);
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--gray-600);
+    }
+
+    /* Content Area */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    @media (min-width: 992px) {
+      .admin-content {
+        padding: 1.2rem;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .admin-content {
+        padding: 1.5rem;
+      }
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+
+    @media (min-width: 768px) {
+      .page-title {
+        font-size: 1.4rem;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .page-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 1rem;
+    }
+
+    /* Delivery specific styles */
+    .map-container {
+      height: 400px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    
+    .delivery-card.selected {
+      border: 2px solid #007bff;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    /* Card View Layout - 2 Cards Per Row */
+    #cardView .delivery-card-wrapper {
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      #cardView {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      #cardView {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+    
+    .map-toggle-btn {
+      position: relative;
+      z-index: 10;
+    }
+    
+    /* Table view styles */
+    #deliveryTable thead th {
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-bottom: 2px solid #dee2e6;
+      background: var(--background-light) !important;
+    }
+    
+    #deliveryTable tbody tr {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    #deliveryTable tbody tr:hover {
+      background-color: rgba(0, 123, 255, 0.05);
+      transform: scale(1.005);
+    }
+    
+    #deliveryTable tbody tr.selected {
+      background-color: rgba(0, 123, 255, 0.1);
+      border-left: 3px solid #007bff;
+    }
+    
+    .table-customer-info {
+      line-height: 1.4;
+    }
+    
+    .table-address {
+      font-size: 0.85rem;
+      line-height: 1.3;
+      max-width: 250px;
+    }
+    
+    .table-address small {
+      display: block;
+      color: var(--gray-600);
+    }
+  </style>
+</head>
+<body class="rider-page">
+  <!-- Rider Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="rider-dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="available-deliveries.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span class="nav-text">Available Orders</span>
+            <span class="nav-badge" id="availableBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="my-deliveries.html" class="nav-item active">
+            <i class="fas fa-route"></i>
+            <span class="nav-text">My Deliveries</span>
+            <span class="nav-badge" id="activeBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="delivery-history.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span class="nav-text">Delivery History</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Performance</div>
+        <div>
+          <a href="earnings.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span class="nav-text">Earnings</span>
+          </a>
+        </div>
+        <div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+
+      </div>
+      </div>
+      <div class="sidebar-footer">
+        <a href="../Authenticator/login.html" class="nav-item logout-btn" onclick="AuthManager.logout(); return false;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search orders, customers...">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="position-relative notification-container">
+            <button class="topbar-action" id="notificationBtn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-dot"></span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h5 class="notification-title">Notifications</h5>
+                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty">
+                  <i class="fas fa-bell"></i>
+                  <p>No notifications</p>
+                </div>
+              </div>
+              <div class="notification-see-all">
+                <a href="/templates/UserProfile/notifications.html">See All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">My Deliveries</h1>
+          <p class="page-subtitle">Manage your active deliveries and track progress.</p>
+        </div>
+      
+      <!-- My Deliveries Content -->
+      <div class="content-section active">
+        <!-- Status Summary -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #6610f2);">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Pending Pickup</p>
+                <h3 class="stat-value" id="statPendingPickup">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-truck"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">In Transit</p>
+                <h3 class="stat-value" id="statInTransit">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Near Destination</p>
+                <h3 class="stat-value" id="statNearDestination">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Total Earnings</p>
+                <h3 class="stat-value" id="statTotalEarnings">₱0.00</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search, Filter & Sort Controls -->
+        <div class="data-card mb-4">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-search me-2"></i>Search & Filter
+            </h2>
+          </div>
+          <div class="p-3">
+            <!-- Search Bar -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold mb-2">Search</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-search"></i></span>
+                  <input type="text" class="form-control form-control-lg" id="deliverySearchInput" placeholder="Search by Order ID, Buyer Name, or Address..." style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                  <button class="btn btn-outline-secondary" type="button" id="clearSearchBtn" style="display: none;">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold mb-2">Sort By</label>
+                <select class="form-select form-select-lg" id="sortSelect" style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="fee-high">Highest Fee</option>
+                  <option value="fee-low">Lowest Fee</option>
+                  <option value="distance">By Distance</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold mb-2">Items Per Page</label>
+                <select class="form-select form-select-lg" id="itemsPerPageSelect" style="font-size: 0.95rem; padding: 0.65rem 0.75rem;">
+                  <option value="10">10 per page</option>
+                  <option value="20" selected>20 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                  <option value="all">Show All</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="d-flex justify-content-end align-items-center mb-3">
+              <span class="text-muted me-2 small">View:</span>
+              <div class="btn-group" role="group" id="viewToggle">
+                <button type="button" class="btn btn-outline-primary btn-sm active" data-view="card">
+                  <i class="fas fa-th-large me-1"></i>Cards
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-view="table">
+                  <i class="fas fa-table me-1"></i>Table
+                </button>
+              </div>
+            </div>
+            
+            <!-- Status Filter Tabs -->
+            <ul class="nav nav-pills" id="statusTabs">
+              <li class="nav-item">
+                <button class="nav-link active" id="all-tab" data-status="all">
+                  All <span class="badge bg-secondary ms-2" id="allCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="assigned-tab" data-status="assigned">
+                  Assigned <span class="badge bg-info ms-2" id="assignedCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="picked_up-tab" data-status="picked_up">
+                  Picked Up <span class="badge bg-warning ms-2" id="pickedUpCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="in_transit-tab" data-status="in_transit">
+                  In Transit <span class="badge bg-primary ms-2" id="inTransitCount">0</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Map View -->
+        <div class="data-card mb-4" id="mapSection">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-map-marked-alt me-2"></i>Delivery Map
+            </h2>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm map-toggle-btn" id="toggleMapBtn">
+                <i class="fas fa-eye me-1"></i>Show Map
+              </button>
+              <button class="btn btn-outline-info btn-sm" id="showRouteBtn" style="display: none;">
+                <i class="fas fa-route me-1"></i>Show Route
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" id="hideRouteBtn" style="display: none;">
+                <i class="fas fa-eye-slash me-1"></i>Hide Route
+              </button>
+            </div>
+          </div>
+          <div class="map-container" id="mapContainer" style="display: none;">
+            <div id="map" style="width: 100%; height: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="d-flex justify-content-between align-items-center mb-3" id="resultsSummary" style="display: none !important;">
+          <div>
+            <span class="text-muted">Showing <strong id="showingStart">0</strong>-<strong id="showingEnd">0</strong> of <strong id="totalResults">0</strong> deliveries</span>
+          </div>
+        </div>
+
+        <!-- Card View -->
+        <div id="cardView">
+          <!-- Cards will be loaded here dynamically (2 per row on desktop) -->
+        </div>
+
+        <!-- Table View -->
+        <div id="tableView" style="display: none;">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" id="deliveryTable">
+              <thead class="table-light sticky-top">
+                <tr>
+                  <th style="width: 120px;">Order #</th>
+                  <th>Customer</th>
+                  <th>Pickup / Delivery</th>
+                  <th style="width: 80px;" class="text-center">Distance</th>
+                  <th style="width: 100px;" class="text-center">Fee</th>
+                  <th style="width: 130px;" class="text-center">Status</th>
+                  <th style="width: 240px;" class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="deliveryTableBody">
+                <!-- Table rows will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-center mt-4" id="paginationControls" style="display: none !important;">
+          <nav>
+            <ul class="pagination" id="paginationList">
+              <!-- Pagination buttons will be generated here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delivery Action Modal -->
+  <div class="modal fade" id="actionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="actionModalTitle">Update Delivery Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="actionModalBody">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-footer" id="actionModalFooter">
+          <!-- Action buttons will be added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery Proof Upload Modal -->
+  <div class="modal fade" id="proofUploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-camera me-2"></i>Delivery Proof - <span id="proofOrderNumber"></span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="proofDeliveryInfo" class="mb-4">
+            <!-- Delivery info will be populated here -->
+          </div>
+          
+          <div class="row g-4">
+            <!-- Photo Upload Section -->
+            <div class="col-md-6">
+              <div class="proof-section">
+                <h6><i class="fas fa-camera me-1"></i>Delivery Photo</h6>
+                <p class="small text-muted">Take a photo of the delivered package or delivery location</p>
+                
+                <div class="photo-upload-area" id="photoUploadArea">
+                  <div class="upload-placeholder text-center py-4" id="photoPlaceholder">
+                    <i class="fas fa-camera fa-3x text-muted mb-2"></i>
+                    <p class="text-muted">Click to take photo or select image</p>
+                    <button class="btn btn-outline-primary btn-sm" type="button" onclick="triggerPhotoUpload()">
+                      <i class="fas fa-camera me-1"></i>Take Photo
+                    </button>
+                  </div>
+                  <img id="photoPreview" style="display: none; max-width: 100%; border-radius: 8px;" />
+                </div>
+                
+                <input type="file" id="photoInput" accept="image/*" capture="camera" style="display: none;" />
+                
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-outline-secondary" onclick="retakePhoto()" id="retakePhotoBtn" style="display: none;">
+                    <i class="fas fa-redo me-1"></i>Retake Photo
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Signature Section -->
+            <div class="col-md-6">
+              <div class="proof-section">
+                <h6><i class="fas fa-signature me-1"></i>Customer Signature</h6>
+                <p class="small text-muted">Get customer signature for delivery confirmation</p>
+                
+                <div class="signature-area">
+                  <canvas id="signatureCanvas" width="300" height="150" style="border: 2px dashed #dee2e6; border-radius: 8px; cursor: crosshair; width: 100%; height: 150px;"></canvas>
+                </div>
+                
+                <div class="mt-2 d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-secondary" onclick="clearSignature()">
+                    <i class="fas fa-eraser me-1"></i>Clear
+                  </button>
+                  <button class="btn btn-sm btn-outline-info" onclick="toggleSignatureMode()" id="signatureModeBtn">
+                    <i class="fas fa-pen me-1"></i>Draw Mode
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Additional Notes -->
+          <div class="mt-4">
+            <h6><i class="fas fa-sticky-note me-1"></i>Delivery Notes</h6>
+            <textarea class="form-control" id="deliveryNotes" rows="3" placeholder="Any additional notes about the delivery..."></textarea>
+          </div>
+          
+          <!-- Customer Contact Verification -->
+          <div class="mt-4">
+            <h6><i class="fas fa-user-check me-1"></i>Customer Verification</h6>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="customerPresentCheck">
+              <label class="form-check-label" for="customerPresentCheck">
+                Customer was present to receive delivery
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="idVerifiedCheck">
+              <label class="form-check-label" for="idVerifiedCheck">
+                Customer identity verified
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancel
+          </button>
+          <button type="button" class="btn btn-warning" onclick="markAsDelivered()">
+            <i class="fas fa-check me-1"></i>Mark as Delivered
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script - runs immediately -->
+  <script>
+    (function() {
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initToggle);
+      } else {
+        initToggle();
+      }
+      
+      function initToggle() {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+        const mobileToggle = document.getElementById('mobileToggle');
+        
+        if (!sidebar) {
+          console.warn('Sidebar element not found');
+          return;
+        }
+        
+        // Check localStorage for saved state, default to collapsed
+        const savedState = localStorage.getItem('riderSidebarCollapsed');
+        const isCollapsed = savedState === null ? true : savedState === 'true';
+        
+        // Apply initial state
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+        }
+        
+        // Toggle function
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('riderSidebarCollapsed', sidebar.classList.contains('collapsed'));
+          console.log('Sidebar toggled:', sidebar.classList.contains('collapsed') ? 'collapsed' : 'expanded');
+        }
+        
+        // Desktop toggle (top button when collapsed)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggle listener attached');
+        }
+        
+        // Inline toggle (beside Main when expanded)
+        if (sidebarToggleInline) {
+          sidebarToggleInline.addEventListener('click', toggleSidebar);
+          console.log('✅ sidebarToggleInline listener attached');
+        }
+        
+        // Mobile toggle
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+          });
+          console.log('✅ mobileToggle listener attached');
+        }
+        
+        console.log('✅ Sidebar toggle initialized');
+      }
+    })();
+  </script>
+  
+  <script src="/static/js/auth-manager.js"></script>
+  <script src="/static/js/rider-message-manager.js"></script>
+  <script src="/static/js/chat-center.js"></script>
+  <script src="/static/js/rider-dashboard.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/rider-map.js"></script>
+  <script src="/static/js/my-deliveries.js"></script>
+  <script>
+    // Initialize global riderMap instance
+    if (typeof RiderMap !== 'undefined') {
+      window.riderMap = new RiderMap();
+      console.log('✅ RiderMap instance initialized');
+    }
+    
+    // Monitor chat window for label preservation (Rider side)
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        const chatLabelObserver = new MutationObserver(() => {
+          const chatNameEl = document.querySelector('.chat-details .chat-name');
+          if (chatNameEl && chatNameEl.textContent && !chatNameEl.querySelector('.badge')) {
+            // Check if this is a buyer or seller chat by looking for icons or checking context
+            const statusEl = document.querySelector('.chat-details .chat-status');
+            if (statusEl) {
+              const isBuyerChat = statusEl.innerHTML.includes('fa-box') || 
+                                statusEl.textContent.includes('Order') ||
+                                window.currentChatType === 'buyer';
+              const isSellerChat = statusEl.innerHTML.includes('fa-store') || 
+                                 statusEl.textContent.includes('Seller') ||
+                                 window.currentChatType === 'seller';
+              
+              if (isBuyerChat) {
+                const buyerBadge = '<span class="badge bg-primary me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">BUYER</span>';
+                chatNameEl.innerHTML = buyerBadge + chatNameEl.textContent;
+              } else if (isSellerChat) {
+                const sellerBadge = '<span class="badge bg-warning text-dark me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">SELLER</span>';
+                chatNameEl.innerHTML = sellerBadge + chatNameEl.textContent;
+              }
+            }
+          }
+        });
+
+        // Start observing when chat modal is opened
+        const chatWindow = document.querySelector('.chat-window-header');
+        if (chatWindow) {
+          chatLabelObserver.observe(chatWindow, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+      }, 1000);
+    });
+  </script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

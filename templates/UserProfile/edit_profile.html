@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/account.css">
+  <link rel="stylesheet" href="/static/css/userprofile-compact.css">
+  <style>
+    /* User Dropdown Styling - Copied from index.html with !important to override compact styles */
+    .user-dropdown-container { position: relative !important; display: inline-block !important; }
+    .user-profile-btn { background: none !important; border: none !important; color: white !important; display: flex !important; align-items: center !important; gap: 8px !important; padding: 6px 12px !important; border-radius: 8px !important; cursor: pointer !important; transition: all 0.3s ease !important; }
+    .user-profile-btn:hover { background: rgba(255, 255, 255, 0.1) !important; color: white !important; }
+    .user-avatar { width: 32px !important; height: 32px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 0.9rem !important; }
+    .user-info { display: flex !important; flex-direction: column !important; align-items: flex-start !important; }
+    .user-name { font-size: 0.9rem !important; font-weight: 600 !important; line-height: 1.2 !important; }
+    .user-role { font-size: 0.75rem !important; opacity: 0.8 !important; line-height: 1 !important; }
+    .user-dropdown-menu { position: absolute !important; top: calc(100% + 12px) !important; right: 0 !important; min-width: 280px !important; background: white !important; border-radius: 16px !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important; opacity: 0 !important; visibility: hidden !important; transform: translateY(-10px) !important; transition: all 0.3s ease !important; z-index: 1000 !important; }
+    .user-dropdown-menu.show { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; }
+    .dropdown-header { display: flex !important; align-items: center !important; gap: 15px !important; padding: 20px !important; background: linear-gradient(135deg, #fffee3 0%, #ffc6bf 100%) !important; border-radius: 16px 16px 0 0 !important; }
+    .user-avatar-large { width: 48px !important; height: 48px !important; border-radius: 12px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 1.2rem !important; }
+    .dropdown-user-name { font-size: 1.1rem !important; font-weight: 600 !important; margin: 0 0 4px 0 !important; }
+    .dropdown-user-email { font-size: 0.85rem !important; color: #666 !important; margin: 0 0 6px 0 !important; }
+    .dropdown-user-role { font-size: 0.75rem !important; font-weight: 600 !important; text-transform: uppercase !important; color: white !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; padding: 2px 8px !important; border-radius: 12px !important; }
+    .dropdown-section { padding: 8px 0 !important; }
+    .dropdown-item { display: flex !important; align-items: center !important; gap: 12px !important; padding: 12px 20px !important; color: #333 !important; text-decoration: none !important; transition: all 0.2s ease !important; font-size: 0.9rem !important; }
+    .dropdown-item:hover { background-color: #f8f9fa !important; color: #FF2BAC !important; transform: translateX(4px) !important; }
+    .dropdown-item.text-danger { color: #dc3545 !important; }
+    .dropdown-item.text-danger:hover { background-color: rgba(220, 53, 69, 0.05) !important; color: #dc3545 !important; }
+    .dropdown-divider { height: 1px !important; background-color: rgba(0, 0, 0, 0.05) !important; margin: 8px 0 !important; }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/static/image.png" alt="Grande" class="brand-logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Public/market.html">Shop</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#categories">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#sale">Sale</a></li>
+          </ul>
+          <div class="position-relative notification-container">
+            <button class="action-btn notification-btn" id="notificationBtn">
+              <i class="fas fa-bell"></i><span class="cart-count" id="notificationCount">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header"><h5 class="notification-title">Notifications</h5><button class="mark-all-read" id="markAllRead">Mark all read</button></div>
+              <div class="notification-list" id="notificationList"><div class="notification-empty"><i class="fas fa-bell"></i><p>No notifications</p></div></div>
+            </div>
+          </div>
+          <div class="position-relative message-container">
+            <button class="action-btn message-btn" id="messageBtn" title="Messages">
+              <i class="fas fa-comments"></i><span class="cart-count" id="messageCount">0</span>
+            </button>
+            <div class="message-dropdown" id="messageDropdown">
+              <div class="message-header"><h6 class="message-title">Messages</h6><button class="mark-all-read" id="markAllMessagesRead">Mark all read</button></div>
+              <div class="message-list" id="messageList"></div>
+            </div>
+          </div>
+          <div class="position-relative cart-container">
+            <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+              <i class="fas fa-shopping-bag"></i><span class="cart-count" id="cartCount">0</span>
+            </a>
+            <div class="cart-dropdown" id="cartDropdown">
+              <div class="cart-dropdown-header"><h5 class="cart-dropdown-title">Shopping Cart</h5></div>
+              <div class="cart-dropdown-items" id="cartDropdownItems"><div class="cart-empty-message"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p></div></div>
+              <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                <div class="cart-total"><span>Total:</span><span id="cartTotal">₱0.00</span></div>
+                <div class="cart-actions"><a href="/Public/cart.html" class="btn-view-cart">View Cart</a><a href="/Public/checkout.html" class="btn-checkout">Checkout</a></div>
+              </div>
+            </div>
+          </div>
+          <div class="user-section">
+            <div id="authLinks" class="auth-buttons">
+              <a href="../Authenticator/login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i><span class="btn-text">Login</span></a>
+              <a href="../Authenticator/register.html" class="register-btn"><i class="fas fa-user-plus"></i><span class="btn-text">Register</span></a>
+            </div>
+            <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+              <button class="user-profile-btn" id="userProfileBtn" type="button">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info"><span class="user-name" id="userName">User Name</span><span class="user-role" id="userRole">Role</span></div>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <div class="dropdown-header">
+                  <div class="user-avatar-large">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <h6 class="dropdown-user-name" id="dropdownUserName">User Name</h6>
+                    <p class="dropdown-user-email" id="dropdownUserEmail">user@email.com</p>
+                    <span class="dropdown-user-role" id="dropdownUserRole">Role</span>
+                  </div>
+                </div>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-section">
+                  <a href="/templates/UserProfile/profile.html" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                  </a>
+                  <a href="/templates/UserProfile/my_orders.html" class="dropdown-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>My Orders</span>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                  </a>
+                </div>
+                
+                <div id="roleDivider" class="dropdown-divider" style="display: none;"></div>
+                
+                <div id="roleDashboardSection" class="dropdown-section"></div>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-section">
+                  <a href="#" class="dropdown-item text-danger" onclick="AuthManager.logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="account-page spacious full">
+    <div class="container-fluid py-5">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <div class="account-card">
+            <div class="row g-4">
+              <aside class="col-12 col-md-4 col-lg-3 account-sidebar">
+                <div class="sidebar-header">
+                  <h5 class="mb-1">My Account</h5>
+                  <small class="text-muted">Manage your profile</small>
+                </div>
+                <nav class="account-nav">
+                  <div class="nav-section">My Profile</div>
+                  <a class="nav-link" href="/templates/UserProfile/profile.html"><i class="fas fa-id-badge"></i> Profile</a>
+                  <a class="nav-link active" href="/templates/UserProfile/edit_profile.html"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                  <div class="nav-section">Account</div>
+                  <a class="nav-link" href="/templates/UserProfile/addresses.html"><i class="fas fa-location-dot"></i> Addresses</a>
+                  <a class="nav-link" href="/templates/UserProfile/change_password.html"><i class="fas fa-key"></i> Change Password</a>
+                  <div class="nav-section">Orders & Alerts</div>
+                  <a class="nav-link" href="/templates/UserProfile/my_orders.html"><i class="fas fa-box"></i> My Orders</a>
+                  <a class="nav-link" href="/templates/UserProfile/notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+                </nav>
+              </aside>
+              <section class="col-12 col-md-8 col-lg-9 account-content">
+                <div class="section active">
+                  <div class="section-header">
+                    <h4>Profile</h4>
+                    <p class="text-muted mb-0">Your personal information</p>
+                  </div>
+
+                  <!-- Profile Photo card -->
+                  <div class="profile-photo-section" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 8px 24px rgba(27,14,36,0.08); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; margin-bottom: 24px;">
+                    <div style="content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);"></div>
+                    <div class="d-flex align-items-start gap-4 flex-wrap">
+                      <div class="position-relative">
+                        <div style="width: 120px; height: 120px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 12px 40px rgba(255,43,172,0.15), 0 4px 12px rgba(0,0,0,0.08); background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; overflow: hidden;">
+                          <i class="fas fa-user"></i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h5 style="margin:0 0 8px 0; font-weight:700; color:#1a202c;">Profile Photo</h5>
+                        <p class="text-muted" style="margin:0 0 16px 0;">Add a profile photo to help others recognize you. Your photo will be visible to other users on the platform.</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                          <button type="button" class="btn" style="background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%); color:#fff; border:none; border-radius:10px; font-weight:600; padding:10px 16px; display:inline-flex; align-items:center; gap:8px;"><i class="fas fa-upload"></i> Upload Photo</button>
+                          <button type="button" class="btn" style="background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%); color:#fff; border:none; border-radius:10px; font-weight:600; padding:10px 16px; display:inline-flex; align-items:center; gap:8px;"><i class="fas fa-trash"></i> Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <form id="editProfileForm" class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Name</label>
+                      <input type="text" class="form-control" id="editName" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" id="editEmail" required readonly>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Phone</label>
+                      <input type="text" class="form-control" id="editPhone" placeholder="-">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                      <a href="/templates/UserProfile/profile.html" class="btn btn-outline-custom">Cancel</a>
+                      <button class="btn btn-primary-custom" type="submit">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.AuthManager && AuthManager.isLoggedIn()) {
+          const user = AuthManager.getAuthUser();
+          const updateElement = (selectors, value) => {
+            selectors.forEach(sel => { const el = document.querySelector(sel); if (el) el.textContent = value; });
+          };
+          const name = user.name || (user.email ? user.email.split('@')[0] : 'User');
+          updateElement(['#userName', '#dropdownUserName', '.user-name', '.dropdown-user-name'], name);
+          updateElement(['#dropdownUserEmail', '.dropdown-user-email'], user.email || 'user@email.com');
+          const role = user.role || 'Customer';
+          updateElement(['#userRole', '#dropdownUserRole', '.user-role', '.dropdown-user-role'], role);
+          const authLinks = document.getElementById('authLinks');
+          const userDropdown = document.getElementById('userDropdownContainer');
+          if (authLinks) authLinks.style.display = 'none';
+          if (userDropdown) userDropdown.style.display = 'block';
+        }
+      }, 300);
+    });
+  </script>
+  <script src="/static/js/account.js" defer></script>
+</body>
+</html>

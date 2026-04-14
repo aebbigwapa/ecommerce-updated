@@ -1,0 +1,10 @@
+Flask
+mysql-connector-python
+flask-cors
+pyjwt
+werkzeug
+requests
+python-dotenv
+Flask-Login
+Authlib
+gunicorn

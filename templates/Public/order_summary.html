@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Order Summary - Women's Apparel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/order-summary.css">
+  <style>
+    /* User Dropdown Styling - Copied from index.html */
+    .user-dropdown-container { position: relative !important; display: inline-block !important; }
+    .user-profile-btn { background: none !important; border: none !important; color: white !important; display: flex !important; align-items: center !important; gap: 8px !important; padding: 6px 12px !important; border-radius: 8px !important; cursor: pointer !important; transition: all 0.3s ease !important; }
+    .user-profile-btn:hover { background: rgba(255, 255, 255, 0.1) !important; color: white !important; }
+    .user-avatar { width: 32px !important; height: 32px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 0.9rem !important; }
+    .user-info { display: flex !important; flex-direction: column !important; align-items: flex-start !important; }
+    .user-name { font-size: 0.9rem !important; font-weight: 600 !important; line-height: 1.2 !important; }
+    .user-role { font-size: 0.75rem !important; opacity: 0.8 !important; line-height: 1 !important; }
+    .user-dropdown-menu { position: absolute !important; top: calc(100% + 12px) !important; right: 0 !important; min-width: 280px !important; background: white !important; border-radius: 16px !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important; opacity: 0 !important; visibility: hidden !important; transform: translateY(-10px) !important; transition: all 0.3s ease !important; z-index: 1000 !important; }
+    .user-dropdown-menu.show { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; }
+    .dropdown-header { display: flex !important; align-items: center !important; gap: 15px !important; padding: 20px !important; background: linear-gradient(135deg, #fffee3 0%, #ffc6bf 100%) !important; border-radius: 16px 16px 0 0 !important; }
+    .user-avatar-large { width: 48px !important; height: 48px !important; border-radius: 12px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 1.2rem !important; }
+    .dropdown-user-name { font-size: 1.1rem !important; font-weight: 600 !important; margin: 0 0 4px 0 !important; }
+    .dropdown-user-email { font-size: 0.85rem !important; color: #666 !important; margin: 0 0 6px 0 !important; }
+    .dropdown-user-role { font-size: 0.75rem !important; font-weight: 600 !important; text-transform: uppercase !important; color: white !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; padding: 2px 8px !important; border-radius: 12px !important; }
+    .dropdown-section { padding: 8px 0 !important; }
+    .dropdown-item { display: flex !important; align-items: center !important; gap: 12px !important; padding: 12px 20px !important; color: #333 !important; text-decoration: none !important; transition: all 0.2s ease !important; font-size: 0.9rem !important; }
+    .dropdown-item:hover { background-color: #f8f9fa !important; color: #FF2BAC !important; transform: translateX(4px) !important; }
+    .dropdown-item.text-danger { color: #dc3545 !important; }
+    .dropdown-item.text-danger:hover { background-color: rgba(220, 53, 69, 0.05) !important; color: #dc3545 !important; }
+    .dropdown-divider { height: 1px !important; background-color: rgba(0, 0, 0, 0.05) !important; margin: 8px 0 !important; }
+    
+    /* Review Styles */
+    .review-product-item {
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fff;
+    }
+    .review-product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .review-product-name {
+      font-weight: 600;
+      color: #333;
+    }
+    .star-rating {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .star-rating .star {
+      font-size: 1.75rem;
+      color: #ddd;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .star-rating .star:hover,
+    .star-rating .star.active {
+      color: #ffc107;
+      transform: scale(1.1);
+    }
+    .review-textarea {
+      width: 100%;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .review-textarea:focus {
+      outline: none;
+      border-color: #FF2BAC;
+      box-shadow: 0 0 0 3px rgba(255, 43, 172, 0.1);
+    }
+    .review-submit-btn {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .review-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 43, 172, 0.3);
+    }
+    .review-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .review-submitted-badge {
+      background: #28a745;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="order-summary-body">
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="/static/image.png" alt="Grande" class="brand-logo">
+                </a>
+                
+                <div class="header-divider d-none d-lg-block">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Public/market.html">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Public/flash-sales.html">Sale</a>
+                        </li>
+                    </ul>
+
+                    <!-- Notification Dropdown -->
+                    <div class="position-relative notification-container">
+                        <button class="action-btn notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="cart-count" id="notificationCount">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h5 class="notification-title">Notifications</h5>
+                                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-empty">
+                                    <i class="fas fa-bell"></i>
+                                    <p>No notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Dropdown -->
+                    <div class="position-relative message-container">
+                        <button class="action-btn message-btn" id="messageBtn" title="Messages">
+                            <i class="fas fa-comments"></i>
+                            <span class="cart-count" id="messageCount">0</span>
+                        </button>
+                        <div class="message-dropdown" id="messageDropdown">
+                            <div class="message-header">
+                                <h6 class="message-title">Messages</h6>
+                                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+                            </div>
+                            <div class="message-list" id="messageList">
+                                <!-- Messages will be loaded here -->
+                            </div>
+                            <div class="message-see-all" style="display: none; padding: 15px 20px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
+                                <a href="#" onclick="HeaderUI.openGlobalChatCenter(); return false;" style="color: #FF2BAC; text-decoration: none; font-weight: 500;">See All Messages</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Dropdown -->
+                    <div class="position-relative cart-container">
+                        <a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                        <div class="cart-dropdown" id="cartDropdown">
+                            <div class="cart-dropdown-header">
+                                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+                            </div>
+                            <div class="cart-dropdown-items" id="cartDropdownItems">
+                                <div class="cart-empty-message">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <p>Your cart is empty</p>
+                                    <a href="/Public/market.html" class="btn btn-start-shopping" style="margin-top:8px;">Start Shopping</a>
+                                </div>
+                            </div>
+                            <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span id="cartTotal">₱0.00</span>
+                                </div>
+                                <div class="cart-actions">
+                                    <a href="/Public/cart.html" class="btn-view-cart">View Cart</a>
+                                    <a href="/Public/checkout.html" class="btn-checkout">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-section" id="userSection">
+                        <div id="authLinks" class="auth-buttons">
+                            <a href="../Authenticator/login.html" class="action-btn login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span class="btn-text">Login</span>
+                            </a>
+                        </div>
+                        
+                        <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+                            <button class="user-profile-btn" id="userProfileBtn" type="button">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info">
+                                    <span class="user-name" id="userName">User Name</span>
+                                    <span class="user-role" id="userRole">Role</span>
+                                </div>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            
+                            <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-avatar-large">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="dropdown-user-name" id="dropdownUserName">User Name</h6>
+                                        <p class="dropdown-user-email" id="dropdownUserEmail">user@email.com</p>
+                                        <span class="dropdown-user-role" id="dropdownUserRole">Role</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="/templates/UserProfile/profile.html" class="dropdown-item">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                    <a href="/templates/UserProfile/my_orders.html" class="dropdown-item">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Wishlist</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                                
+                                <div id="roleDivider" class="dropdown-divider" style="display: none;"></div>
+                                
+                                <div id="roleDashboardSection" class="dropdown-section"></div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="#" class="dropdown-item text-danger" onclick="AuthManager.logout(); return false;">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+ 
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="order-summary-main">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            
+            <div id="loadingState" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-3 text-muted">Loading order details...</p>
+            </div>
+
+            <div id="errorState" class="order-card" style="display: none;">
+              <div class="text-center">
+                <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                <h3>Error Loading Order</h3>
+                <p class="text-muted" id="errorMessage">Unable to load order details.</p>
+                <a href="/templates/UserProfile/my_orders.html" class="btn btn-primary">Back to My Orders</a>
+              </div>
+            </div>
+
+            <div id="orderContent" style="display: none;">
+              <div class="order-card">
+                <div class="order-header">
+                  <div>
+                    <h1 class="order-number" id="orderNumber">Order #12345</h1>
+                    <small class="text-muted" id="orderDate">Placed on Jan 1, 2025</small>
+                  </div>
+                  <span class="status-badge" id="orderStatusBadge">Pending</span>
+                </div>
+
+                <div id="cancelAlert" class="alert alert-warning" style="display: none;">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  <strong>Order Cancelled:</strong> <span id="cancelReason">-</span>
+                </div>
+
+                <div id="eligibilityInfo" class="alert alert-info" style="display: none;">
+                  <i class="fas fa-info-circle me-2"></i>
+                  You can cancel this order until it has been shipped.
+                </div>
+              </div>
+
+              <div class="order-card">
+                <h3 class="section-title"><i class="fas fa-box"></i> Order Items</h3>
+                <div id="orderItems"></div>
+                <div class="total-section">
+                  <div class="total-row"><span>Subtotal:</span><span id="subtotalAmount">₱0.00</span></div>
+                  <div class="total-row"><span>Shipping:</span><span id="shippingAmount">₱0.00</span></div>
+                  <div class="total-row grand-total"><span>Total:</span><span id="totalAmount">₱0.00</span></div>
+                </div>
+              </div>
+
+              <!-- Review Section (only for delivered orders) -->
+              <div id="reviewSection" class="order-card" style="display: none;">
+                <h3 class="section-title"><i class="fas fa-star"></i> Review Products</h3>
+                <div class="alert alert-info mb-3">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Your order has been delivered! Please share your experience with the products.
+                </div>
+                <div id="reviewProducts"></div>
+              </div>
+
+              <div class="order-card">
+                <h3 class="section-title"><i class="fas fa-info-circle"></i> Order Information</h3>
+                <div class="info-row"><span class="info-label">Order Number:</span><span class="info-value" id="infoOrderNumber">-</span></div>
+                <div class="info-row"><span class="info-label">Order Date:</span><span class="info-value" id="infoOrderDate">-</span></div>
+                <div class="info-row"><span class="info-label">Payment Method:</span><span class="info-value" id="infoPaymentMethod">-</span></div>
+                <div class="info-row"><span class="info-label">Payment Status:</span><span class="info-value" id="infoPaymentStatus">-</span></div>
+                <div class="info-row" id="trackingRow" style="display: none;"><span class="info-label">Tracking Number:</span><span class="info-value" id="infoTrackingNumber">-</span></div>
+              </div>
+
+              <div class="order-card">
+                <h3 class="section-title"><i class="fas fa-truck"></i> Shipping Information</h3>
+                <div class="info-row"><span class="info-label">Customer Name:</span><span class="info-value" id="infoCustomerName">-</span></div>
+                <div class="info-row"><span class="info-label">Shipping Address:</span><span class="info-value" id="infoShippingAddress">-</span></div>
+                <div class="info-row" id="specialNotesRow" style="display: none;"><span class="info-label">Special Notes:</span><span class="info-value" id="infoSpecialNotes">-</span></div>
+              </div>
+
+              <div class="order-card text-center">
+                <button id="cancelOrderBtn" class="btn btn-danger" style="display: none;"><i class="fas fa-times-circle me-2"></i>Cancel Order</button>
+                <a href="/templates/UserProfile/my_orders.html" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to My Orders</a>
+                <a href="/Public/market.html" class="btn btn-primary"><i class="fas fa-shopping-bag me-2"></i>Continue Shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Cancel Order</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to cancel this order?</p>
+            <div class="mb-3">
+              <label for="cancelReasonSelect" class="form-label">Select a reason or type your own (required):</label>
+              <select class="form-select" id="cancelReasonSelect">
+                <option value="">Select a reason (optional)</option>
+                <option value="Ordered by mistake">Ordered by mistake</option>
+                <option value="Found a better price">Found a better price</option>
+                <option value="Changed my mind">Changed my mind</option>
+                <option value="Delivery is taking too long">Delivery is taking too long</option>
+                <option value="Wrong address / need to reorder">Wrong address / need to reorder</option>
+                <option value="Duplicate order">Duplicate order</option>
+                <option value="Item no longer needed">Item no longer needed</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3" id="cancelReasonOtherWrap" style="display:block;">
+              <label for="cancelReasonOther" class="form-label">Or type your own reason</label>
+              <textarea class="form-control" id="cancelReasonOther" rows="3" placeholder="Enter your reason (if not selecting above)"></textarea>
+            </div>
+            <div class="alert alert-warning mb-0">
+              <i class="fas fa-info-circle me-2"></i>
+              <small>Once cancelled, this action cannot be undone.</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Keep Order</button>
+            <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script>
+    // Force initialize authentication UI and header components
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        // Initialize user dropdown
+        if (window.AuthManager && AuthManager.isLoggedIn()) {
+          const user = AuthManager.getAuthUser();
+          const updateElement = (selectors, value) => {
+            selectors.forEach(sel => { const el = document.querySelector(sel); if (el) el.textContent = value; });
+          };
+          const name = user.name || (user.email ? user.email.split('@')[0] : 'User');
+          updateElement(['#userName', '#dropdownUserName', '.user-name', '.dropdown-user-name'], name);
+          updateElement(['#dropdownUserEmail', '.dropdown-user-email'], user.email || 'user@email.com');
+          const role = user.role || 'Customer';
+          updateElement(['#userRole', '#dropdownUserRole', '.user-role', '.dropdown-user-role'], role);
+          const authLinks = document.getElementById('authLinks');
+          const userDropdown = document.getElementById('userDropdownContainer');
+          if (authLinks) authLinks.style.display = 'none';
+          if (userDropdown) userDropdown.style.display = 'block';
+        }
+
+        // Initialize header components (notifications, messages, cart)
+        if (window.HeaderUI && window.HeaderUI.initHeader) {
+          HeaderUI.initHeader();
+        }
+
+        // Initialize notification dropdown
+        if (window.HeaderUI && window.HeaderUI.initNotificationDropdown) {
+          HeaderUI.initNotificationDropdown();
+        }
+
+        // Initialize message dropdown
+        if (window.MessageManager && window.MessageManager.init) {
+          MessageManager.init();
+        }
+
+        // Initialize cart
+        if (window.HeaderUI && window.HeaderUI.loadCart) {
+          HeaderUI.loadCart();
+        }
+      }, 300);
+    });
+  </script>
+  <script src="/static/js/order-summary.js"></script>
+</body>
+</html>

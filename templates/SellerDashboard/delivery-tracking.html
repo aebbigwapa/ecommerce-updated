@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery Tracking - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED SIDEBAR STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 20px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .logout-btn {
+      color: #ff6b6b;
+    }
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* ======================================== */
+    /* Fix stats cards alignment for delivery tracking page - Complete solution from inventory.html */
+    .row.g-3.mb-4 {
+      gap: 1rem !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+    }
+    
+    .row.g-3 > div[class*="col-"] {
+      display: flex !important;
+      align-items: stretch !important;
+      flex: 1 !important;
+    }
+    
+    .row.g-3 .stat-card {
+      height: 100% !important;
+      min-height: 90px !important;
+      display: flex !important;
+      align-items: center !important;
+      flex: 1 !important;
+      width: 100% !important;
+      padding: 1rem !important;
+    }
+    
+    .stat-card .stat-details {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    
+    .stat-card .stat-icon {
+      flex-shrink: 0 !important;
+      margin-right: 0.75rem !important;
+    }
+    
+    /* Force equal width columns */
+    .row.g-3.mb-4 > .col-xxl-3,
+    .row.g-3.mb-4 > .col-lg-3,
+    .row.g-3.mb-4 > .col-md-3 {
+      flex: 1 !important;
+      max-width: none !important;
+    }
+    
+    /* Mobile responsive adjustment */
+    @media (max-width: 576px) {
+      .row.g-3.mb-4 {
+        gap: 0.5rem !important;
+      }
+      
+      .row.g-3.mb-4 > .col-sm-6,
+      .row.g-3.mb-4 > .col-6 {
+        flex: 0 0 calc(50% - 0.25rem) !important;
+        max-width: calc(50% - 0.25rem) !important;
+      }
+    }
+    
+    /* ===================================
+       DELIVERY TRACKING SPECIFIC STYLES
+       Fix visibility and layout issues
+       =================================== */
+    
+    /* Modern Data Card Styling */
+    .data-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      margin-bottom: 2rem !important;
+      overflow: hidden !important;
+      backdrop-filter: blur(10px) !important;
+    }
+    
+    /* Modern Card Header Styling - Brand Colors */
+    .data-card .card-header {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+      border-bottom: none !important;
+      padding: 1.25rem 1.75rem !important;
+      margin: 0 !important;
+      color: white !important;
+    }
+    
+    .data-card .card-title {
+      font-size: 1.2rem !important;
+      font-weight: 600 !important;
+      color: #ffffff !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .data-card .card-title i {
+      margin-right: 0.75rem !important;
+      font-size: 1.1rem !important;
+    }
+    
+    /* Modern Status Tabs Container */
+    .data-card .p-3 {
+      padding: 2rem 1.75rem !important;
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    }
+    
+    /* Modern Navigation Pills Styling */
+    #statusTabs {
+      background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+      border-radius: 12px !important;
+      padding: 0.75rem !important;
+      margin: 0 !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 0.5rem !important;
+      border: 1px solid #e2e8f0 !important;
+      align-items: center !important; /* ensure pill vertical alignment */
+    }
+    
+    #statusTabs .nav-item {
+      margin: 0 !important;
+    }
+    
+    #statusTabs .nav-link {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+      border: 1px solid #e2e8f0 !important;
+      color: #64748b !important;
+      font-weight: 500 !important;
+      font-size: 0.875rem !important;
+      padding: 0.75rem 1.25rem !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: inline-flex !important; /* inline-flex avoids baseline drift */
+      align-items: center !important;
+      white-space: nowrap !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      line-height: 1 !important; /* tighter vertical rhythm */
+      gap: 6px !important; /* consistent gap between text and badge */
+    }
+    
+    #statusTabs .nav-link:hover {
+      background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%) !important;
+      color: #475569 !important;
+      border-color: #cbd5e1 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    #statusTabs .nav-link.active {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+      color: #ffffff !important;
+      border-color: #FF2BAC !important;
+      box-shadow: 0 4px 16px rgba(255, 43, 172, 0.4) !important;
+      transform: translateY(-2px) !important;
+    }
+    
+    #statusTabs .nav-link.active:hover {
+      background: linear-gradient(135deg, #E0259A 0%, #E55FB5 60%, #E58DC4 100%) !important;
+      box-shadow: 0 6px 20px rgba(255, 43, 172, 0.5) !important;
+    }
+
+    /* Tighter badge sizing and alignment */
+    #statusTabs .badge {
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 10px !important;
+      vertical-align: middle !important;
+      line-height: 1 !important;
+    }
+
+    /* Desktop: slightly smaller pills and fixed height for consistent alignment */
+    @media (min-width: 992px) {
+      #statusTabs .nav-link {
+        font-size: 0.82rem !important;
+        padding: 0.5rem 0.9rem !important;
+        height: 36px !important;
+      }
+      #statusTabs .badge {
+        font-size: 0.65rem !important;
+        padding: 0.2rem 0.45rem !important;
+      }
+    }
+    
+    /* Badge styling within nav links */
+    #statusTabs .badge {
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 10px !important;
+    }
+    
+    #statusTabs .nav-link.active .badge {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: #ffffff !important;
+    }
+    
+    /* Table Card Styling */
+    .data-card:last-child {
+      margin-bottom: 2rem !important;
+    }
+    
+    .data-card .card-header {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+    
+    .data-card .card-header .d-flex {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+    
+    /* Table Responsive Container */
+    .data-card .table-responsive {
+      border-radius: 0 0 12px 12px !important;
+      margin: 0 !important;
+    }
+    
+    /* Modern Table Styling - Brand Colors */
+    .modern-table {
+      margin: 0 !important;
+      font-size: 0.875rem !important;
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    }
+    
+    .modern-table thead th {
+      background: linear-gradient(135deg, #1B0E24 0%, #2A1537 100%) !important;
+      border-bottom: none !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      padding: 1rem 1.25rem !important;
+      border-top: none !important;
+      text-transform: uppercase !important;
+      font-size: 0.75rem !important;
+      letter-spacing: 0.5px !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .modern-table tbody td {
+      padding: 1.25rem 1.25rem !important;
+      vertical-align: middle !important;
+      border-top: 1px solid #e2e8f0 !important;
+      background: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .modern-table tbody tr:hover {
+      background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.2s ease !important;
+    }
+    
+    .modern-table tbody tr:nth-child(even) {
+      background: rgba(248, 250, 252, 0.5) !important;
+    }
+    
+    .modern-table tbody tr:nth-child(even):hover {
+      background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    }
+    
+    /* Modern Search Container Styling */
+    .search-container {
+      display: flex !important;
+      align-items: center !important;
+    }
+    
+    .search-container .input-group {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-radius: 12px !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      overflow: hidden !important;
+      backdrop-filter: blur(10px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .search-container .input-group-text {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border: none !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .search-container .form-control {
+      border: none !important;
+      box-shadow: none !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #ffffff !important;
+    }
+    
+    .search-container .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .search-container .form-control:focus {
+      border: none !important;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+      background: rgba(255, 255, 255, 1) !important;
+      color: #1e293b !important;
+    }
+    
+    .search-container .form-control:focus::placeholder {
+      color: #94a3b8 !important;
+    }
+    
+    .search-container .btn {
+      border: none !important;
+      background: rgba(255, 255, 255, 0.8) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .search-container .btn:hover {
+      background: rgba(255, 255, 255, 1) !important;
+      color: #1e293b !important;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #statusTabs {
+        justify-content: center !important;
+      }
+      
+      #statusTabs .nav-link {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+      }
+      
+      .data-card .card-header {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        text-align: center !important;
+      }
+      
+      .data-card .p-3 {
+        padding: 1rem !important;
+      }
+      
+      .search-container .input-group {
+        width: 100% !important;
+        max-width: 300px !important;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      #statusTabs {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+      
+      #statusTabs .nav-link {
+        justify-content: center !important;
+        text-align: center !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Seller Admin Layout -->
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    
+      <div class="sidebar-nav">
+        <div class="nav-section first-section">
+        <div class="nav-section-title">
+          <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span>Main</span>
+        </div>
+        <div>
+          <a href="sellerdashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Products</div>
+        <div>
+          <a href="add_product.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span class="nav-text">Add Product</span>
+          </a>
+        </div>
+        <div>
+          <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i>
+            <span class="nav-text">Manage Inventory</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Orders</div>
+        <div>
+          <a href="orders_clean_new.html" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span class="nav-text">View Orders</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div> 
+
+      <div class="nav-section">
+        <div class="nav-section-title">Deliveries</div>
+        <div>
+          <a href="delivery-tracking.html" class="nav-item active">
+            <i class="fas fa-truck"></i>
+            <span class="nav-text">Delivery Tracking</span>
+            <span class="nav-badge" id="deliveryBadge">0</span>
+          </a>
+        </div>
+        <div>
+          <a href="awaiting-pickup.html" class="nav-item">
+            <i class="fas fa-clock"></i>
+            <span class="nav-text">Awaiting Pickup</span>
+            <span class="nav-badge" id="awaitingBadge">0</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Reports</div>
+        <div>
+          <a href="analytics.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">Analytics</span>
+          </a>
+        </div>
+      </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+        <div class="page-header">
+          <h1 class="page-title">Delivery Tracking</h1>
+          <p class="page-subtitle">Track your orders and see which riders are handling deliveries.</p>
+        </div>
+      
+      <!-- Delivery Tracking Content -->
+      <div class="content-section active">
+        <!-- Status Summary -->
+        <div class="row g-3 mb-4">
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Awaiting Assignment</p>
+                <h3 class="stat-value" id="statAwaiting">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #6610f2);">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Assigned to Rider</p>
+                <h3 class="stat-value" id="statAssigned">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <i class="fas fa-truck"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Out for Delivery</p>
+                <h3 class="stat-value" id="statInTransit">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-details">
+                <p class="stat-label">Delivered Today</p>
+                <h3 class="stat-value" id="statDelivered">0</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="data-card mb-4">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-filter me-2"></i>Delivery Status
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+              <div class="search-container">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                  <span class="input-group-text">
+                    <i class="fas fa-search text-muted"></i>
+                  </span>
+                  <input type="text" class="form-control" id="searchInput" placeholder="Search orders, customers, riders...">
+                  <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('searchInput').value = ''; filterOrders();">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-3">
+            <ul class="nav nav-pills" id="statusTabs">
+              <li class="nav-item">
+                <button class="nav-link active" id="all-tab" data-status="all">
+                  All Orders <span class="badge bg-secondary ms-2" id="allCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="pending-tab" data-status="pending">
+                  Awaiting Rider <span class="badge bg-warning ms-2" id="pendingCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="assigned-tab" data-status="assigned">
+                  Assigned <span class="badge bg-info ms-2" id="assignedCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="picked_up-tab" data-status="picked_up">
+                  Picked Up <span class="badge bg-primary ms-2" id="pickedUpCount">0</span>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="in_transit-tab" data-status="in_transit">
+                  In Transit <span class="badge bg-success ms-2" id="inTransitCount">0</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Delivery Orders Table -->
+        <div class="data-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-list me-2"></i>Order Deliveries
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-secondary" id="totalCount">0 orders</span>
+              <button class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover modern-table" id="deliveryTable">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Rider</th>
+                  <th>Status</th>
+                  <th>Address</th>
+                  <th>Order Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table rows will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delivery Details Modal -->
+  <div class="modal fade" id="deliveryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deliveryModalTitle">Delivery Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="deliveryModalBody">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="contactRiderBtn" style="display: none;">
+            <i class="fas fa-phone me-2"></i>Contact Rider
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+
+      // Chat Center Button
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+            ChatCenter.open();
+          }
+        });
+      }
+
+      // Monitor chat window for label preservation
+      const chatLabelObserver = new MutationObserver(() => {
+        const chatNameEl = document.querySelector('.chat-details .chat-name');
+        if (chatNameEl && chatNameEl.textContent && !chatNameEl.querySelector('.badge')) {
+          // Check if this is a rider chat by looking for motorcycle icon or checking context
+          const statusEl = document.querySelector('.chat-details .chat-status');
+          if (statusEl) {
+            const isRiderChat = statusEl.innerHTML.includes('fa-motorcycle') || 
+                              statusEl.textContent.includes('Rider') ||
+                              window.currentChatType === 'rider';
+            
+            if (isRiderChat) {
+              const riderBadge = '<span class="badge bg-success me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">RIDER</span>';
+              chatNameEl.innerHTML = riderBadge + chatNameEl.textContent;
+            }
+          }
+        }
+      });
+
+      // Start observing when chat modal is opened
+      setTimeout(() => {
+        const chatWindow = document.querySelector('.chat-window-header');
+        if (chatWindow) {
+          chatLabelObserver.observe(chatWindow, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+      }, 1000);
+    });
+  </script>
+
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-page-init.js"></script>
+  <script src="/static/js/chat-center.js"></script>
+  <script>
+    // Delivery Tracking Page JavaScript
+    let deliveryOrders = [];
+    let filteredOrders = [];
+    let currentStatus = 'all';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚛 Delivery Tracking Page Loading...');
+      
+      // Wait for authentication to be ready
+      setTimeout(() => {
+        loadDeliveryOrders();
+      }, 500);
+      
+      // Status tab handlers
+      document.querySelectorAll('#statusTabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('#statusTabs .nav-link').forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          currentStatus = this.dataset.status;
+          filterOrders();
+        });
+      });
+      
+      // Search functionality - Add if search input exists
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          filterOrders(searchTerm);
+        });
+      }
+      
+      // Refresh button
+      document.getElementById('refreshBtn').addEventListener('click', loadDeliveryOrders);
+      
+      // Auto-refresh every 30 seconds
+      setInterval(loadDeliveryOrders, 30000);
+    });
+
+    async function loadDeliveryOrders() {
+      try {
+        // Get authentication token
+        let token = null;
+        if (typeof AuthManager !== 'undefined') {
+          token = AuthManager.getAuthToken();
+        } else {
+          const tokenKeys = ['auth_token', 'jwt_token', 'token'];
+          for (const key of tokenKeys) {
+            token = localStorage.getItem(key);
+            if (token) break;
+          }
+        }
+        
+        if (!token) {
+          console.error('❌ No authentication token found');
+          window.location.href = '../Authenticator/login.html';
+          return;
+        }
+
+        console.log('📡 Fetching seller delivery orders...');
+        const response = await fetch('/api/seller/deliveries', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('📋 Response status:', response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Delivery orders loaded:', data);
+          
+          deliveryOrders = (data.deliveries || []).map(order => ({
+            id: order.id,
+            order_number: order.order_number,
+            customer_name: order.customer_name || 'Unknown Customer',
+            customer_phone: order.customer_phone || 'N/A',
+            rider_name: order.rider_name || null,
+            rider_phone: order.rider_phone || null,
+            status: order.delivery_status || order.status,
+            delivery_address: order.delivery_address || 'Unknown Address',
+            order_date: order.created_at || new Date().toISOString(),
+            delivery_fee: order.delivery_fee || 0,
+            total_amount: order.total_amount || 0,
+            special_notes: order.special_notes || ''
+          }));
+          
+          console.log('🎯 Processed orders:', deliveryOrders.length);
+          updateStatusCounts();
+          filterOrders();
+        } else {
+          console.error('❌ Failed to load delivery orders:', response.status);
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch (e) {
+            errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+          }
+          
+          deliveryOrders = [];
+          updateStatusCounts();
+          filterOrders();
+          
+          showToast(`Failed to load delivery orders: ${errorData.error || 'Server error'}`, 'error');
+        }
+      } catch (error) {
+        console.error('❌ Error loading delivery orders:', error);
+        deliveryOrders = [];
+        updateStatusCounts();
+        filterOrders();
+        
+        showToast('Network error. Please check your connection.', 'error');
+      }
+    }
+
+    function updateStatusCounts() {
+      const counts = {
+        all: deliveryOrders.length,
+        pending: deliveryOrders.filter(o => o.status === 'pending').length,
+        assigned: deliveryOrders.filter(o => o.status === 'assigned').length,
+        picked_up: deliveryOrders.filter(o => o.status === 'picked_up').length,
+        in_transit: deliveryOrders.filter(o => o.status === 'in_transit').length,
+        delivered: deliveryOrders.filter(o => o.status === 'delivered').length
+      };
+
+      // Update tab badges
+      document.getElementById('allCount').textContent = counts.all;
+      document.getElementById('pendingCount').textContent = counts.pending;
+      document.getElementById('assignedCount').textContent = counts.assigned;
+      document.getElementById('pickedUpCount').textContent = counts.picked_up;
+      document.getElementById('inTransitCount').textContent = counts.in_transit;
+
+      // Update stat cards
+      document.getElementById('statAwaiting').textContent = counts.pending;
+      document.getElementById('statAssigned').textContent = counts.assigned;
+      document.getElementById('statInTransit').textContent = counts.picked_up + counts.in_transit;
+      document.getElementById('statDelivered').textContent = counts.delivered;
+    }
+
+    function filterOrders(searchTerm = '') {
+      let filtered = currentStatus === 'all' 
+        ? deliveryOrders 
+        : deliveryOrders.filter(o => o.status === currentStatus);
+      
+      if (searchTerm) {
+        filtered = filtered.filter(o => 
+          o.order_number.toLowerCase().includes(searchTerm) ||
+          o.customer_name.toLowerCase().includes(searchTerm) ||
+          (o.rider_name && o.rider_name.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      filteredOrders = filtered;
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#deliveryTable tbody');
+      document.getElementById('totalCount').textContent = `${filteredOrders.length} orders`;
+      
+      if (filteredOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-4">
+              <i class="fas fa-truck fa-2x text-muted mb-2"></i>
+              <p class="text-muted mb-0">No delivery orders found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filteredOrders.map(order => {
+        const statusClass = getStatusClass(order.status);
+        const statusIcon = getStatusIcon(order.status);
+        
+        // Fix null/undefined values with proper defaults
+        const orderNumber = order.order_number || `ORD-${order.id || 'UNKNOWN'}`;
+        const totalAmount = order.total_amount ? parseFloat(order.total_amount).toFixed(2) : '0.00';
+        const customerName = order.customer_name || 'Unknown Customer';
+        const customerPhone = order.customer_phone && order.customer_phone !== 'N/A' ? order.customer_phone : 'No phone provided';
+        const riderName = order.rider_name && order.rider_name !== 'null' && order.rider_name !== 'N/A' ? order.rider_name : null;
+        const riderPhone = order.rider_phone && order.rider_phone !== 'null' && order.rider_phone !== 'N/A' ? order.rider_phone : null;
+        const deliveryAddress = order.delivery_address && order.delivery_address !== 'Unknown Address' ? 
+          (order.delivery_address.length > 40 ? order.delivery_address.substring(0, 40) + '...' : order.delivery_address) : 
+          'Address not specified';
+        // Safe participant name for JS string
+        const participantName = (customerName || 'Customer').replace(/["'`]/g, '');
+        
+        return `
+          <tr>
+            <td>
+              <div class="order-info">
+                <strong style="color: #FF2BAC; font-weight: 600;">#${orderNumber}</strong>
+                <div class="small" style="color: #10b981; font-weight: 600;">₱${totalAmount}</div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-info">
+                <div style="font-weight: 500; color: #1e293b;">${customerName}</div>
+                <small style="color: #64748b;">
+                  <i class="fas fa-phone me-1" style="color: #10b981;"></i>${customerPhone}
+                </small>
+              </div>
+            </td>
+            <td>
+              <div class="rider-info">
+                ${riderName ? 
+                  `<div style="font-weight: 500; color: #1e293b;">
+                     <i class="fas fa-motorcycle me-1" style="color: #FF2BAC;"></i>${riderName}
+                   </div>
+                   <small style="color: #64748b;">
+                     <i class="fas fa-phone me-1" style="color: #10b981;"></i>${riderPhone || 'No phone'}
+                   </small>` :
+                  `<div class="text-center" style="color: #94a3b8; font-style: italic;">
+                     <i class="fas fa-user-slash me-1"></i>Awaiting assignment
+                   </div>`
+                }
+              </div>
+            </td>
+            <td>
+              <span class="badge" style="background: linear-gradient(135deg, ${getStatusGradient(order.status)}); color: white; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">
+                <i class="fas fa-${statusIcon} me-1"></i>${formatStatus(order.status)}
+              </span>
+            </td>
+            <td>
+              <div style="color: #475569; line-height: 1.4;">
+                <i class="fas fa-map-marker-alt me-1" style="color: #ef4444;"></i>${deliveryAddress}
+              </div>
+            </td>
+            <td>
+              <div class="date-info">
+                <div style="font-weight: 500; color: #1e293b;">${formatDate(order.order_date)}</div>
+                <small style="color: #64748b;">${formatTime(order.order_date)}</small>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons" style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-sm" onclick="viewDeliveryDetails(${order.id})" 
+                        style="background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;" 
+                        title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                ${riderName ? 
+                  `<button class=\"btn btn-sm\" onclick=\"contactRider('${riderPhone}', '${riderName}')\"
+                           style=\"background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;\"
+                           title=\"Contact Rider\">
+                     <i class=\"fas fa-phone\"></i>
+                   </button>
+                   <button class=\"btn btn-sm\" onclick=\"openRiderChat('${orderNumber}', '${riderName.replace(/'/g, "\\'")}', '${customerName.replace(/'/g, "\\'")}', '')\"
+                           style=\"background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;\"
+                           title=\"Chat with Rider\">
+                     <i class=\"fas fa-comments\"></i>
+                   </button>` : 
+                  `<button class=\"btn btn-sm\" onclick=\"requestRiderAssignment(${order.id})\"
+                           style=\"background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;\"
+                           title=\"Request Rider\">
+                     <i class=\"fas fa-plus\"></i>
+                   </button>`
+                }
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function getStatusClass(status) {
+      const classes = {
+        'pending': 'warning',
+        'assigned': 'info',
+        'picked_up': 'primary',
+        'in_transit': 'success',
+        'delivered': 'success'
+      };
+      return classes[status] || 'secondary';
+    }
+
+    function getStatusIcon(status) {
+      const icons = {
+        'pending': 'clock',
+        'assigned': 'user-check',
+        'picked_up': 'box',
+        'in_transit': 'truck',
+        'delivered': 'check-circle'
+      };
+      return icons[status] || 'info-circle';
+    }
+
+    function getStatusGradient(status) {
+      const gradients = {
+        'pending': '#f59e0b, #d97706',
+        'assigned': '#FF2BAC, #FF6BCE',
+        'picked_up': '#8b5cf6, #7c3aed',
+        'in_transit': '#10b981, #059669',
+        'delivered': '#06d6a0, #118d64'
+      };
+      return gradients[status] || '#6b7280, #4b5563';
+    }
+    
+    function formatStatus(status) {
+      const statusNames = {
+        'pending': 'Awaiting Rider',
+        'assigned': 'Assigned to Rider',
+        'picked_up': 'Picked Up',
+        'in_transit': 'Out for Delivery',
+        'delivered': 'Delivered'
+      };
+      return statusNames[status] || status;
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function formatTime(dateString) {
+      return new Date(dateString).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function viewDeliveryDetails(orderId) {
+      const order = deliveryOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const modal = new bootstrap.Modal(document.getElementById('deliveryModal'));
+      document.getElementById('deliveryModalTitle').textContent = `Delivery Details - #${order.order_number}`;
+      
+      document.getElementById('deliveryModalBody').innerHTML = `
+        <div class="row g-3">
+          <div class="col-md-6">
+            <strong>Order Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Order #:</strong> ${order.order_number}</div>
+              <div><strong>Total:</strong> ₱${order.total_amount.toFixed(2)}</div>
+              <div><strong>Delivery Fee:</strong> ₱${order.delivery_fee.toFixed(2)}</div>
+              <div><strong>Date:</strong> ${formatDate(order.order_date)}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <strong>Customer Information:</strong><br>
+            <div class="mt-2">
+              <div><strong>Name:</strong> ${order.customer_name}</div>
+              <div><strong>Phone:</strong> ${order.customer_phone}</div>
+              <div><strong>Address:</strong> ${order.delivery_address}</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <strong>Delivery Status:</strong><br>
+            <div class="mt-2">
+              <span class="badge bg-${getStatusClass(order.status)} fs-6">
+                <i class="fas fa-${getStatusIcon(order.status)} me-1"></i>${formatStatus(order.status)}
+              </span>
+            </div>
+          </div>
+          ${order.rider_name ? `
+          <div class="col-12">
+            <strong>Assigned Rider:</strong><br>
+            <div class="mt-2">
+              <div><strong>Name:</strong> ${order.rider_name}</div>
+              <div><strong>Phone:</strong> ${order.rider_phone}</div>
+            </div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+      // Append buyer notes if available
+      if (order.special_notes) {
+        const bodyEl = document.getElementById('deliveryModalBody');
+        bodyEl.insertAdjacentHTML('beforeend', `
+          <div class="mt-3">
+            <strong>Buyer Notes:</strong>
+            <div class="mt-2 p-2 border rounded bg-light">${order.special_notes.replace(/</g,'&lt;')}</div>
+          </div>
+        `);
+      }
+      
+      // Show contact button if rider is assigned
+      const contactBtn = document.getElementById('contactRiderBtn');
+      if (order.rider_name) {
+        contactBtn.style.display = 'inline-block';
+        contactBtn.onclick = () => contactRider(order.rider_phone, order.rider_name);
+      } else {
+        contactBtn.style.display = 'none';
+      }
+      
+      modal.show();
+    }
+
+    function contactRider(riderPhone, riderName) {
+      if (!riderPhone || riderPhone === 'N/A' || riderPhone === 'No phone') {
+        showToast('Rider phone number not available', 'error');
+        return;
+      }
+      
+      // Check if SweetAlert2 is available, otherwise use simple approach
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: `Contact ${riderName}`,
+          html: `
+            <div style="text-align: center; padding: 1rem;">
+              <div style="background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; color: white;">
+                <i class="fas fa-motorcycle fa-3x mb-3"></i>
+                <h5 style="margin: 0; color: white; margin-bottom: 0.5rem;">${riderName}</h5>
+                <div style="color: rgba(255,255,255,0.9); font-size: 1.1rem;">
+                  <i class="fas fa-phone me-2"></i>${riderPhone}
+                </div>
+              </div>
+              <div style="display: grid; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-success btn-lg" onclick="window.open('tel:${riderPhone}'); Swal.close();" style="border-radius: 10px; padding: 1rem; font-weight: 600;">
+                  <i class="fas fa-phone me-2"></i>Call Now
+                </button>
+                <button class="btn btn-info btn-lg" onclick="window.open('sms:${riderPhone}'); Swal.close();" style="border-radius: 10px; padding: 1rem; font-weight: 600;">
+                  <i class="fas fa-sms me-2"></i>Send SMS
+                </button>
+              </div>
+            </div>
+          `,
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: 'Close',
+          customClass: {
+            popup: 'modern-contact-popup',
+            cancelButton: 'btn btn-outline-secondary'
+          },
+          width: '400px'
+        });
+      } else {
+        // Fallback for when SweetAlert2 is not available
+        window.open(`tel:${riderPhone}`, '_self');
+      }
+    }
+
+    async function openRiderChat(orderNumber, riderName, customerName, profilePicture = '') {
+      // Set flag to indicate this is a rider chat
+      window.currentChatType = 'rider';
+      
+      // Open the Chat Center modal
+      if (window.ChatCenter && typeof ChatCenter.open === 'function') {
+        ChatCenter.open();
+        
+        // Wait a bit for the modal to render
+        setTimeout(async () => {
+          try {
+            // Try to find or create a chat for this order
+            const token = AuthManager.getAuthToken();
+            if (!token) {
+              showToast('Please log in to access chat', 'error');
+              return;
+            }
+            const headers = { 'Authorization': `Bearer ${token}` };
+            
+            // Fetch chats to find the one for this order (only user's own chats)
+            const res = await fetch('/api/chats', { 
+              headers,
+              credentials: 'include' // Ensure authentication context
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const chats = data.chats || [];
+              
+              // Find chat with this order number
+              let chat = chats.find(c => c.order_number === orderNumber);
+              
+              if (chat) {
+                // Select the existing chat with profile picture
+                if (typeof ChatCenter.selectChat === 'function') {
+                  ChatCenter.selectChat(chat.id, riderName, orderNumber, '', profilePicture);
+                  
+                  // Add RIDER label after chat is loaded
+                  setTimeout(() => {
+                    const chatNameEl = document.querySelector('.chat-details .chat-name');
+                    if (chatNameEl && !chatNameEl.querySelector('.badge')) {
+                      const riderBadge = '<span class="badge bg-success me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">RIDER</span>';
+                      chatNameEl.innerHTML = riderBadge + chatNameEl.textContent;
+                    }
+                  }, 100);
+                }
+              } else {
+                // Display order context in the chat header even if no chat exists yet
+                const chatWindowHeader = document.getElementById('chatWindowHeader');
+                const initials = riderName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                
+                if (chatWindowHeader) {
+                  chatWindowHeader.innerHTML = `
+                    <div class="chat-participant-info">
+                      <div class="chat-avatar">
+                        ${profilePicture ? 
+                          `<img src="${profilePicture}" alt="${riderName}" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; border: 2px solid #e9ecef;" onerror="this.outerHTML='<div class=\\'rounded-circle text-white d-flex align-items-center justify-content-center\\'style=\\'width:45px;height:45px;font-size:16px;border:2px solid #e9ecef;background:#6c757d\\'>${initials}</div>'">` 
+                          : `<i class="fas fa-user-circle"></i>`
+                        }
+                      </div>
+                      <div class="chat-details">
+                        <div class="chat-name">
+                          <span class="badge bg-success me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">RIDER</span>
+                          ${riderName || 'Rider'}
+                        </div>
+                        <div class="chat-status">
+                          <i class="fas fa-motorcycle me-1"></i>Order: ${orderNumber}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="chat-actions">
+                      <button class="btn btn-outline-secondary btn-sm" onclick="window.ChatCenter && ChatCenter.loadChatListFallback && ChatCenter.loadChatListFallback()">
+                        <i class="fas fa-sync-alt"></i>
+                      </button>
+                    </div>
+                  `;
+                }
+                
+                // Show message in chat area
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                  chatMessages.innerHTML = `
+                    <div class="empty-chat-state">
+                      <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                      <p class="text-muted mb-3">No messages yet for this delivery.</p>
+                      <div class="text-start" style="max-width: 300px; margin: 0 auto;">
+                        <p class="text-muted small mb-2"><strong>Chat Type:</strong> <span class="badge bg-success">Rider</span></p>
+                        <p class="text-muted small mb-2"><strong>Order ID:</strong> ${orderNumber}</p>
+                        <p class="text-muted small mb-2"><strong>Rider Name:</strong> ${riderName}</p>
+                        <p class="text-muted small mb-2"><strong>Customer:</strong> ${customerName}</p>
+                      </div>
+                      <p class="text-muted small mt-4"><i class="fas fa-arrow-down me-2"></i>Start a conversation with the rider below</p>
+                    </div>
+                  `;
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error loading chat for delivery:', error);
+          }
+        }, 300);
+      }
+    }
+
+    function requestRiderAssignment(orderId) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Request Rider Assignment',
+          html: `
+            <div style="text-align: center; padding: 1rem;">
+              <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; color: white;">
+                <i class="fas fa-user-plus fa-3x mb-3"></i>
+                <h5 style="margin: 0; color: white; margin-bottom: 0.5rem;">Assign Rider</h5>
+                <div style="color: rgba(255,255,255,0.9);">
+                  Order #${orderId}
+                </div>
+              </div>
+              <p style="color: #64748b; margin: 1rem 0; font-size: 1rem;">Do you want to request a rider assignment for this order?</p>
+            </div>
+          `,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Request Rider',
+          cancelButtonText: 'Cancel',
+          customClass: {
+            confirmButton: 'btn btn-warning btn-lg',
+            cancelButton: 'btn btn-outline-secondary'
+          },
+          buttonsStyling: false
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Here you would make an API call to request rider assignment
+            showToast('Rider assignment request submitted successfully!', 'success');
+            // You could also refresh the table here
+            // loadDeliveryOrders();
+          }
+        });
+      } else {
+        // Fallback confirmation
+        if (confirm('Do you want to request a rider assignment for this order?')) {
+          showToast('Rider assignment request submitted successfully!', 'success');
+        }
+      }
+    }
+    
+    function showToast(message, type = 'info') {
+      // Simple toast notification (you can enhance this)
+      const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+      };
+      
+      const toast = document.createElement('div');
+      toast.style = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        z-index: 9999;
+        font-size: 14px;
+      `;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

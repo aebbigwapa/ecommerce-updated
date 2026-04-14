@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Inventory - Grande</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/seller-dashboard.css">
+  <link rel="stylesheet" href="/static/css/inventory.css">
+  <link rel="stylesheet" href="/static/css/compact-dashboard.css">
+  
+  <!-- Local styles to ensure variant image thumbnails display neatly under each product -->
+  <style>
+    /* ========================================
+       COMPLETE SELF-CONTAINED SIDEBAR STYLES
+       NO DEPENDENCY ON admin.css
+       ======================================== */
+
+    /* Base Container */
+    .admin-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Base */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1B0E24 0%, #140818 100%);
+      color: #eee4f4;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    }
+
+    .admin-sidebar.collapsed {
+      width: 75px;
+    }
+
+    /* Sidebar header - hide when expanded (button moves to MAIN section) */
+    .sidebar-header {
+      padding: 12px 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 6px;
+    }
+
+    /* Hide header when expanded (button goes to nav section) */
+    .admin-sidebar:not(.collapsed) .sidebar-header {
+      display: none;
+    }
+
+    /* Show header when collapsed */
+    .admin-sidebar.collapsed .sidebar-header {
+      display: flex;
+    }
+
+    /* Hide brand completely */
+    .sidebar-brand { display: none; }
+
+    /* Toggle button base styles */
+    .sidebar-toggle {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 107, 206, 0.12);
+      border: 1px solid rgba(255, 107, 206, 0.2);
+      color: #eee4f4;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(255, 107, 206, 0.15);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 107, 206, 0.25);
+      border-color: rgba(255, 107, 206, 0.4);
+      color: #fff;
+      transform: scale(1.08) translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 206, 0.3);
+    }
+    .sidebar-toggle:active {
+      transform: scale(0.98);
+    }
+    .sidebar-toggle i { font-size: 1.15rem; transition: transform 0.3s ease; }
+    .sidebar-toggle:hover i { transform: rotate(90deg); }
+
+    /* First nav section - contains toggle when expanded */
+    .nav-section.first-section {
+      position: relative;
+    }
+
+    /* Toggle button in nav section (when expanded) */
+    .sidebar-toggle-inline {
+      display: none;
+    }
+
+    .admin-sidebar:not(.collapsed) .sidebar-toggle-inline {
+      display: flex;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-inline {
+      display: none;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Nav Items */
+    .admin-sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      color: rgba(238, 228, 244, 0.9);
+      margin: 3px 12px;
+      border-radius: 11px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    .admin-sidebar .nav-item i {
+      font-size: 1.15rem;
+      min-width: 26px;
+      width: 26px;
+      text-align: center;
+      opacity: 0.95;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .admin-sidebar .nav-item .nav-text {
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* Hover states */
+    .admin-sidebar .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .admin-sidebar .nav-item:hover i {
+      filter: drop-shadow(0 0 8px rgba(255,107,206,0.5));
+      transform: translateX(2px) scale(1.08);
+    }
+
+    /* Active state */
+    .admin-sidebar .nav-item.active {
+      background: rgba(255, 107, 206, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 107, 206, 0.3);
+    }
+    .admin-sidebar .nav-item.active i {
+      filter: drop-shadow(0 0 6px rgba(255,107,206,0.4));
+    }
+
+    /* Left accent indicator */
+    .admin-sidebar .nav-item.active::before,
+    .admin-sidebar .nav-item:hover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #FF2BAC, #FF6BCE);
+      box-shadow: 0 0 8px rgba(255, 43, 172, 0.5);
+    }
+
+    /* Section wrapper */
+    .admin-sidebar .nav-section {
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    /* Section titles - default for non-first sections */
+    .admin-sidebar .nav-section-title {
+      color: rgba(238, 228, 244, 0.6);
+      padding: 8px 18px;
+      margin: 16px 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    /* Override for first section (contains toggle button) */
+    .admin-sidebar .nav-section.first-section .nav-section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 12px 18px 8px 70px !important;
+      margin: 0 !important;
+    }
+    
+    /* Collapsed state: center the toggle button only */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title {
+      justify-content: center !important;
+      padding: 12px 0 8px 0 !important;
+      gap: 0 !important;
+    }
+    
+    /* Hide the "MAIN" text when collapsed */
+    .admin-sidebar.collapsed .nav-section.first-section .nav-section-title span {
+      display: none !important;
+    }
+
+    /* Dividers */
+    .nav-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 16px 18px;
+    }
+
+    /* Nav badges */
+    .admin-sidebar .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       COLLAPSED STATE - PERFECT CENTERING
+       ======================================== */
+    .admin-sidebar.collapsed .nav-text,
+    .admin-sidebar.collapsed .nav-section-title {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0;
+    }
+    
+    /* Critical: Badge must not affect layout when collapsed */
+    .admin-sidebar.collapsed .nav-badge {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .admin-sidebar.collapsed .nav-section {
+      margin-bottom: 6px;
+    }
+    .admin-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 16px 0;
+      margin: 2px 0;
+      border-radius: 0;
+      gap: 0;
+      transform: none;
+      display: flex;
+    }
+    .admin-sidebar.collapsed .nav-item i {
+      margin: 0;
+      min-width: auto;
+      width: auto;
+      flex-shrink: 0;
+    }
+    .admin-sidebar.collapsed .nav-divider {
+      margin: 14px 18px;
+      opacity: 0.4;
+    }
+    .admin-sidebar.collapsed .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: none;
+    }
+    .admin-sidebar.collapsed .nav-item:hover i {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(255,107,206,0.6));
+    }
+    .admin-sidebar.collapsed .nav-item.active::before,
+    .admin-sidebar.collapsed .nav-item:hover::before {
+      width: 3px;
+      left: 0;
+    }
+
+    /* Main Layout */
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+      background: var(--container-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .topbar-right {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main content */
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: var(--background-light);
+    }
+
+    /* Page header */
+    .page-header { margin-bottom: 2rem; }
+    .page-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 20px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .logout-btn {
+      color: #ff6b6b;
+    }
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Better scrollbar for sidebar */
+    .sidebar-nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 107, 206, 0.3) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 6px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 206, 0.3);
+      border-radius: 3px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 206, 0.5);
+    }
+
+    /* Topbar action buttons styling - modern ghost buttons */
+    .topbar-action,
+    .topbar-action.home-btn,
+    .topbar-action.logout-btn,
+    button.topbar-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .topbar-action.home-btn i, .topbar-action.logout-btn i, .topbar-action#chatCenterBtn i { font-size: 1rem; }
+    .topbar-action#chatCenterBtn { position: relative; }
+    .topbar-action#chatCenterBtn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.home-btn:hover { color: var(--primary-color); border-color: rgba(255,107,206,0.4); box-shadow: 0 4px 14px rgba(255,107,206,0.15); }
+    .topbar-action.logout-btn:hover { color: #dc3545; border-color: rgba(220,53,69,0.35); box-shadow: 0 4px 14px rgba(220,53,69,0.15); }
+    
+    /* Notification dot for chat button */
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      border: 2px solid var(--container-bg);
+    }
+
+    /* Hide text on smaller screens */
+    @media (max-width: 768px) {
+      .topbar-action.home-btn span,
+      .topbar-action.logout-btn span,
+      .topbar-action#chatCenterBtn span { display: none; }
+    }
+
+    /* ======================================== */
+    .variant-thumbs {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .variant-thumbs img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    /* Grouped variant sections */
+    .variant-groups {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .variant-group {
+      padding-top: 6px;
+      border-top: 1px dashed #e9ecef;
+    }
+    .variant-group:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .variant-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+      color: #343a40;
+    }
+    .variant-group-name {
+      font-weight: 600;
+    }
+    .variant-group-count {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+    .variant-group .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+
+    /* Compact thumbs in table view for better fit */
+    .inventory-table-view .variant-thumbs img {
+      width: 28px;
+      height: 28px;
+    }
+
+    /* List view variant styles */
+    .product-list-item.variant-item {
+      margin-left: 20px;
+      padding-left: 15px;
+      border-left: 3px solid #e9ecef;
+      background-color: #f8f9fa;
+    }
+
+    .product-list-item.main-product {
+      margin-bottom: 5px;
+      background-color: white;
+    }
+
+    .variant-indicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(0,123,255,0.8);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .variant-info {
+      margin-top: 5px;
+    }
+
+    /* Enhanced product details modal styles */
+    #variantModal .modal-xl {
+      max-width: 1200px;
+    }
+
+    #variantModal .stat-card {
+      transition: transform 0.2s ease;
+    }
+
+    #variantModal .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    #variantModal .color-dot {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #variantModal .table th {
+      font-weight: 600;
+      color: #495057;
+      border-top: none;
+    }
+
+    #variantModal .alert {
+      border: none;
+      border-left: 4px solid;
+    }
+
+    #variantModal .alert-info {
+      border-left-color: #17a2b8;
+      background-color: #d1ecf1;
+    }
+
+    #variantModal .alert-warning {
+      border-left-color: #ffc107;
+      background-color: #fff3cd;
+    }
+
+    #variantModal .alert-danger {
+      border-left-color: #dc3545;
+      background-color: #f8d7da;
+    }
+
+    /* Filter & Search section alignment fixes */
+    .card-body .row.g-3.align-items-end {
+      display: flex !important;
+      align-items: flex-end !important;
+      gap: 1rem !important;
+      margin-bottom: 0 !important;
+    }
+    
+    .card-body .row.g-3.align-items-end > div[class*="col-"] {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-end !important;
+      min-height: 75px !important;
+    }
+    
+    .card-body .form-label {
+      margin-bottom: 0.5rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #495057 !important;
+    }
+    
+    .card-body .form-control,
+    .card-body .form-select {
+      height: 38px !important;
+      border-radius: 0.375rem !important;
+      border: 1px solid #ced4da !important;
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.875rem !important;
+    }
+    
+    .card-body .input-group {
+      height: 38px !important;
+    }
+    
+    .card-body .input-group .form-control {
+      border-radius: 0.375rem 0 0 0.375rem !important;
+    }
+    
+    .card-body .input-group .btn {
+      height: 38px !important;
+      border-radius: 0 0.375rem 0.375rem 0 !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    
+    .modern-view-toggle {
+      display: flex !important;
+      gap: 0.25rem !important;
+      align-items: center !important;
+    }
+    
+    .modern-view-toggle .view-btn {
+      width: 38px !important;
+      height: 38px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: 1px solid #ced4da !important;
+      background: white !important;
+      border-radius: 0.375rem !important;
+      transition: all 0.2s ease !important;
+    }
+    
+    .modern-view-toggle .view-btn.active {
+      background: #0d6efd !important;
+      color: white !important;
+      border-color: #0d6efd !important;
+    }
+    
+    .modern-view-toggle .view-btn:hover {
+      background: #e9ecef !important;
+      border-color: #adb5bd !important;
+    }
+    
+    .modern-view-toggle .view-btn.active:hover {
+      background: #0b5ed7 !important;
+      border-color: #0b5ed7 !important;
+    }
+    
+    @media (max-width: 991.98px) {
+      .card-body .row.g-3.align-items-end > div[class*="col-"] {
+        min-height: 65px !important;
+      }
+    }
+    
+    @media (max-width: 575.98px) {
+      .card-body .row.g-3.align-items-end {
+        gap: 0.75rem !important;
+      }
+      
+      .card-body .row.g-3.align-items-end > div[class*="col-"] {
+        min-height: 55px !important;
+      }
+    }
+    
+    /* Fix stats cards alignment for inventory page - Override problematic compact-dashboard.css */
+    .row.g-3.mb-4 .inventory-stat-card {
+      height: 100% !important;
+      min-height: 85px !important;
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+    }
+    
+    .inventory-stat-card .stat-info {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    
+    .inventory-stat-card .stat-icon {
+      flex-shrink: 0 !important;
+    }
+    
+    /* Enhanced Image Gallery Styles */
+    .enhanced-image-gallery {
+      border: 1px solid #e9ecef;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+    }
+    
+    .gallery-header {
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 0.75rem;
+    }
+    
+    .gallery-controls button {
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+    
+    .color-image-group {
+      background: white;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .color-group-header {
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 0.5rem;
+    }
+    
+    .color-indicator {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .image-thumbnail {
+      transition: all 0.2s ease;
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+    
+    .image-thumbnail:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .gallery-image {
+      transition: all 0.2s ease;
+    }
+    
+    .gallery-image:hover {
+      transform: scale(1.02);
+    }
+    
+    .image-overlay {
+      border-radius: 0.375rem;
+    }
+    
+    /* Gallery List View */
+    .gallery-content[data-gallery-view="list"] .color-image-group {
+      margin-bottom: 1rem;
+    }
+    
+    .gallery-content[data-gallery-view="list"] .images-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .gallery-content[data-gallery-view="list"] .images-grid > div {
+      width: 60px !important;
+      flex: none;
+    }
+    
+    /* Lightbox Styles */
+    #imageLightbox {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .lightbox-content {
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .lightbox-image-container img {
+      max-width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .enhanced-image-gallery {
+        padding: 1rem;
+      }
+      
+      .gallery-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .gallery-controls {
+        align-self: stretch;
+        display: flex;
+        gap: 0.25rem;
+      }
+      
+      .gallery-controls button {
+        flex: 1;
+      }
+      
+      .images-grid .col-6 {
+        flex: 0 0 50%;
+      }
+      
+      .lightbox-content {
+        margin: 1rem;
+      }
+    }
+
+    /* Fix for stats cards alignment - override compact CSS */
+    .row.g-3.mb-4 {
+      gap: 1rem !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+    }
+    
+    .row.g-3 > div[class*="col-"] {
+      display: flex !important;
+      align-items: stretch !important;
+      flex: 1 !important;
+    }
+    
+    .row.g-3 .inventory-stat-card {
+      height: 100% !important;
+      min-height: 90px !important;
+      display: flex !important;
+      align-items: center !important;
+      flex: 1 !important;
+      width: 100% !important;
+      padding: 1rem !important;
+    }
+    
+    .inventory-stat-card .stat-info {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    
+    .inventory-stat-card .stat-icon {
+      flex-shrink: 0 !important;
+      margin-right: 0.75rem !important;
+    }
+    
+    /* Force equal width columns */
+    .row.g-3.mb-4 > .col-xxl-3,
+    .row.g-3.mb-4 > .col-lg-3,
+    .row.g-3.mb-4 > .col-md-3 {
+      flex: 1 !important;
+      max-width: none !important;
+    }
+    
+    /* Mobile responsive adjustment */
+    @media (max-width: 576px) {
+      .row.g-3.mb-4 {
+        gap: 0.5rem !important;
+      }
+      
+      .row.g-3.mb-4 > .col-sm-6,
+      .row.g-3.mb-4 > .col-6 {
+        flex: 0 0 calc(50% - 0.25rem) !important;
+        max-width: calc(50% - 0.25rem) !important;
+      }
+    }
+    
+    /* Fix Filter & Search layout - simple clean version */
+    .card.modern-card .card-body .row.g-3.align-items-end {
+      gap: 1rem !important;
+    }
+    
+    .card.modern-card .card-body .form-control,
+    .card.modern-card .card-body .form-select {
+      height: 2.5rem !important;
+      font-size: 0.95rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    
+    .card.modern-card .card-body .form-label {
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+      margin-bottom: 0.5rem !important;
+      color: #374151 !important;
+    }
+    
+    .card.modern-card .card-body .input-group-text {
+      height: 2.5rem !important;
+      font-size: 0.9rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    
+    .card.modern-card .card-body .btn {
+      height: 2.5rem !important;
+      font-size: 0.9rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    
+    /* Fix view mode toggle - simple */
+    .modern-view-toggle {
+      display: flex !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 0.375rem !important;
+      overflow: hidden !important;
+      height: 2.5rem !important;
+    }
+    
+    .modern-view-toggle .view-btn {
+      background: white !important;
+      border: none !important;
+      padding: 0.5rem 0.75rem !important;
+      color: #6b7280 !important;
+      cursor: pointer !important;
+      font-size: 0.9rem !important;
+      height: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex: 1 !important;
+    }
+    
+    .modern-view-toggle .view-btn:not(:last-child) {
+      border-right: 1px solid #e5e7eb !important;
+    }
+    
+    .modern-view-toggle .view-btn:hover {
+      background: #f9fafb !important;
+    }
+    
+    .modern-view-toggle .view-btn.active {
+      background: #FF2BAC !important;
+      color: white !important;
+    }
+
+    /* Edit Product Modal styles */
+    #editProductModal .modal-dialog { max-width: 1100px; }
+    #editProductModal .modal-header { border-bottom: 0; padding-bottom: 0; }
+    #editProductModal .nav-tabs { border-bottom: 2px solid #f1f3f5; }
+    #editProductModal .nav-tabs .nav-link { color: #6b7280; font-weight: 600; }
+    #editProductModal .nav-tabs .nav-link.active { color: #fff; background: #FF2BAC; border-color: #FF2BAC; }
+    #editProductModal .tab-content { padding-top: 1rem; }
+    #editProductModal .form-label { font-weight: 600; color: #374151; }
+    #editProductModal .img-thumb {
+      aspect-ratio: 1;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+    }
+    #editProductModal .image-card { padding: .5rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; }
+    #editProductModal .info-muted { color: #6c757d; font-size: .875rem; }
+    #editProductModal .thumb { position: relative; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #fff; }
+    #editProductModal .thumb img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 1; }
+    #editProductModal .thumb .handle { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,.6); color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 12px; cursor: grab; }
+    #editProductModal .thumb .remove { position: absolute; top: 6px; right: 6px; background: #dc3545; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-size: 12px; }
+    #editProductModal .thumb .primary { position: absolute; bottom: 6px; left: 6px; background: #ffc107; color: #111; padding: 2px 6px; border-radius: 6px; font-size: 12px; }
+    #editProductModal .table thead th { white-space: nowrap; }
+    #editProductModal .table td, #editProductModal .table th { vertical-align: middle; }
+    #editProductModal .color-dot { box-shadow: 0 0 0 1px rgba(0,0,0,.08) inset; }
+    #editProductModal .upload-help { font-size: .85rem; color: #6c757d; }
+    #editProductModal .section-title { font-size: .95rem; font-weight: 700; color: #374151; }
+    #editProductModal .subtle-card { border: 1px dashed #e5e7eb; border-radius: 8px; padding: 1rem; background: #f8f9fa; }
+    #editProductModal #editVariantsList .variant-edit-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; background: #fff; margin-bottom: .75rem; }
+    #editProductModal #editVariantsList .variant-title { font-weight: 600; color: #374151; }
+
+    /* Make the Edit Product modal body scrollable within the viewport */
+    #editProductModal .modal-dialog { 
+      margin: 1rem auto; 
+      max-height: 90vh; 
+      display: flex;
+      flex-direction: column;
+    }
+    #editProductModal .modal-content { 
+      max-height: 90vh; 
+      display: flex; 
+      flex-direction: column; 
+      position: relative; 
+      overflow: hidden;
+    }
+    #editProductModal .modal-dialog.modal-dialog-scrollable .modal-content { 
+      max-height: 90vh; 
+    }
+    #editProductModal .modal-header, 
+    #editProductModal .modal-footer { 
+      flex-shrink: 0; 
+      background: #fff; 
+    }
+    #editProductModal .modal-footer { 
+      position: sticky; 
+      bottom: 0; 
+      z-index: 3; 
+      box-shadow: 0 -1px 0 rgba(0,0,0,0.06); 
+    }
+    /* Make body a column container so the tab content can be the scroller */
+    #editProductModal .modal-body { 
+      flex: 1 1 auto; 
+      display: flex; 
+      flex-direction: column; 
+      min-height: 0; 
+      overflow: hidden; 
+      padding: 1rem;
+    }
+    /* Scroll within tab-content (the p-3 area) */
+    #editProductModal .tab-content { 
+      flex: 1 1 auto; 
+      min-height: 0; 
+      overflow-y: auto !important; 
+      -webkit-overflow-scrolling: touch; 
+      padding-bottom: 120px; 
+      max-height: calc(90vh - 200px); /* Account for header, tabs, and footer */
+    }
+
+    /* Floating scroll controls inside the Edit Product modal */
+    #editProductModal .edit-scroll-controls {
+      position: fixed; /* keep visible while scrolling */
+      right: 24px;
+      bottom: 96px; /* above sticky footer */
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1056; /* above modal content */
+      pointer-events: none; /* allow clicks only on buttons */
+    }
+    #editProductModal .edit-scroll-controls .btn-scroll {
+      pointer-events: auto;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      color: #374151;
+    }
+    #editProductModal .edit-scroll-controls .btn-scroll.primary {
+      background: #FF2BAC;
+      color: #fff;
+      border-color: #FF2BAC;
+    }
+
+    /* Compact table for variants */
+    #editProductModal .compact-variants .table td, 
+    #editProductModal .compact-variants .table th { padding: .35rem .5rem; }
+    #editProductModal .compact-variants .table thead th { position: sticky; top: 0; z-index: 2; }
+    #editProductModal .compact-variants input.form-control-sm { min-width: 80px; }
+    #editProductModal .compact-variants .color-suite { display:flex; align-items:center; gap:.35rem; }
+    #editProductModal .compact-variants .color-suite input[type='color']{ width:38px; height:32px; padding:0; }
+    #editProductModal .compact-variants .color-suite .hex { width:100px; }
+    #editProductModal .compact-variants .color-suite .name { width:140px; }
+
+    /* Variants table should flow; let the modal body handle scrolling */
+    #editProductModal #editVariantsContainer { max-height: none; overflow: visible; }
+    #editProductModal #editVariantsContainer .table { margin-bottom: 0; }
+    #editProductModal .compact-variants .table thead th { background: #f8f9fa; }
+    #editProductModal #editVariantsTableBody tr:last-child { scroll-margin-bottom: 140px; }
+
+    /* Fix: prevent global .row.g-3 overrides from breaking modal form layout */
+    #editProductModal .row.g-3 > [class*='col-'] {
+      flex: 0 0 auto !important;
+      display: block !important;
+    }
+    #editProductModal .form-control,
+    #editProductModal .form-select,
+    #editProductModal textarea {
+      height: auto;
+      min-height: 38px;
+    }
+
+    /* Fix: prevent global .row.g-3 overrides from breaking modal form layout */
+    #editProductModal .row.g-3 > [class*='col-'] {
+      flex: 0 0 auto !important;
+      display: block !important;
+    }
+    #editProductModal .form-control,
+    #editProductModal .form-select,
+    #editProductModal textarea {
+      height: auto;
+      min-height: 38px;
+    }
+
+    /* Add Variant modal tidy layout */
+    #addVariantModal .modal-dialog { max-width: 640px; }
+    #addVariantModal .row.g-3 > [class*='col-'] { flex: 0 0 auto !important; display: block !important; }
+    #addVariantModal .form-label { font-weight: 600; color: #374151; margin-bottom: .35rem; }
+    #addVariantModal .form-text { color: #6b7280; }
+    #addVariantModal .image-preview { border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px; background: #fff; }
+    #addVariantModal .image-preview img { width: 100%; height: auto; border-radius: 6px; object-fit: cover; }
+
+    @media (max-width: 768px) {
+      #editProductModal .modal-dialog { max-width: 100%; margin: .5rem; }
+      #editProductModal .table { font-size: .9rem; }
+      #addVariantModal .modal-dialog { max-width: 100%; margin: .5rem; }
+    }
+
+    /* Fix quick filters - simple */
+    .quick-filters {
+      margin-top: 1.5rem !important;
+    }
+    
+    .quick-filters .quick-filter-btn {
+      padding: 0.5rem 1rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 1.5rem !important;
+      background: white !important;
+      color: #6b7280 !important;
+      font-size: 0.85rem !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      text-decoration: none !important;
+    }
+    
+    .quick-filters .quick-filter-btn:hover {
+      border-color: #FF2BAC !important;
+      color: #374151 !important;
+    }
+    
+    .quick-filters .quick-filter-btn.active {
+      background: #FF2BAC !important;
+      border-color: #FF2BAC !important;
+      color: white !important;
+    }
+    
+    /* Simple responsive adjustments */
+    @media (max-width: 768px) {
+      .card.modern-card .card-body .form-control,
+      .card.modern-card .card-body .form-select {
+        height: 2.75rem !important;
+        font-size: 1rem !important;
+      }
+      
+      .modern-view-toggle {
+        height: 2.75rem !important;
+      }
+      
+      .modern-view-toggle .view-btn {
+        font-size: 1rem !important;
+      }
+    }
+
+    /* Single-line truncation utility */
+    .truncate-1, .text-truncate-1 {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    /* Table view: second column is Product Name */
+    #inventoryTableBody td:nth-child(2) a,
+    #inventoryTableBody td:nth-child(2) span,
+    #inventoryTableBody td:nth-child(2) div {
+      display: inline-block;
+      max-width: 360px;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Grid/List cards common selectors */
+    .inventory-grid-view .product-name,
+    .inventory-grid-view .product-title,
+    .inventory-list-view .product-name,
+    .inventory-list-view .product-title { 
+      display: block;
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
+    @media (max-width: 768px) {
+      #inventoryTableBody td:nth-child(2) a,
+      #inventoryTableBody td:nth-child(2) span,
+      #inventoryTableBody td:nth-child(2) div { max-width: 220px; }
+    }
+  </style>
+
+</head>
+<body>
+  <!-- Seller Admin Layout -->
+  <div class="admin-container">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  
+  <div class="sidebar-nav">
+    <div class="nav-section first-section">
+      <div class="nav-section-title">
+        <button class="sidebar-toggle sidebar-toggle-inline" id="sidebarToggleInline" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span>Main</span>
+      </div>
+      <div>
+        <a href="sellerdashboard.html" class="nav-item">
+          <i class="fas fa-tachometer-alt"></i>
+          <span class="nav-text">Dashboard</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Products</div>
+      <div>
+        <a href="add_product.html" class="nav-item">
+          <i class="fas fa-plus-circle"></i>
+          <span class="nav-text">Add Product</span>
+        </a>
+      </div>
+      <div>
+        <a href="inventory.html" class="nav-item active">
+          <i class="fas fa-box-open"></i>
+          <span class="nav-text">Manage Inventory</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Orders</div>
+      <div>
+        <a href="orders_clean_new.html" class="nav-item">
+          <i class="fas fa-receipt"></i>
+          <span class="nav-text">View Orders</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div> 
+
+    <div class="nav-section">
+      <div class="nav-section-title">Deliveries</div>
+      <div>
+        <a href="delivery-tracking.html" class="nav-item">
+          <i class="fas fa-truck"></i>
+          <span class="nav-text">Delivery Tracking</span>
+          <span class="nav-badge" id="deliveryBadge">0</span>
+        </a>
+      </div>
+      <div>
+        <a href="awaiting-pickup.html" class="nav-item">
+          <i class="fas fa-clock"></i>
+          <span class="nav-text">Awaiting Pickup</span>
+          <span class="nav-badge" id="awaitingBadge">0</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Reports</div>
+      <div>
+        <a href="analytics.html" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span class="nav-text">Analytics</span>
+        </a>
+      </div>
+    </div>
+    </div>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Admin-style Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-action" id="chatCenterBtn" title="Messages">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="notification-dot" id="chatNotificationDot" style="display: none;"></span>
+          </button>
+          <a href="../Authenticator/login.html" class="topbar-action logout-btn" onclick="AuthManager.logout(); return false;" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content" id="adminContent">
+
+    <main class="container-fluid">
+      <!-- Inventory Section -->
+      <div class="content-section active" id="inventorySection">
+        
+        <!-- Inventory Stats -->
+        <div class="row g-3 mb-4">
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="inventory-stat-card total-products">
+              <div class="stat-icon">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Total Products</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="inventory-stat-card total-variants">
+              <div class="stat-icon">
+                <i class="fas fa-tags"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number" id="totalVariants">0</div>
+                <div class="stat-label">Total Variants</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="inventory-stat-card low-stock">
+              <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number" id="lowStockCount">0</div>
+                <div class="stat-label">Low Stock Items</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <div class="inventory-stat-card out-of-stock">
+              <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number" id="outOfStockCount">0</div>
+                <div class="stat-label">Out of Stock</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Enhanced Controls -->
+        <div class="card modern-card mb-4">
+          <div class="card-header border-0 pb-0">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-filter text-primary me-2"></i>Filter & Search
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-lg-5 col-md-6 col-sm-12">
+                <label class="form-label fw-semibold">Search Products</label>
+                <div class="search-input-group">
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search by name, SKU, or description..." id="searchInput">
+                    <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-3 col-sm-6">
+                <label class="form-label fw-semibold">Approval Status</label>
+                <select class="form-select" id="approvalStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              
+              <div class="col-lg-2 col-md-3 col-sm-6">
+                <label class="form-label fw-semibold">Sort By</label>
+                <select class="form-select" id="sortBy">
+                  <option value="name">Name A-Z</option>
+                  <option value="name_desc">Name Z-A</option>
+                  <option value="created">Newest First</option>
+                  <option value="created_desc">Oldest First</option>
+                  <option value="stock">Stock: High to Low</option>
+                  <option value="stock_desc">Stock: Low to High</option>
+                </select>
+              </div>
+              
+              <div class="col-lg-2 col-md-12 col-sm-6">
+                <label class="form-label fw-semibold">View Mode</label>
+                <div class="modern-view-toggle">
+                  <button type="button" class="view-btn active" data-view="grid" id="gridViewBtn" title="Grid View">
+                    <i class="fas fa-th"></i>
+                  </button>
+                  <button type="button" class="view-btn" data-view="list" id="listViewBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                  </button>
+                  <button type="button" class="view-btn" data-view="table" id="tableViewBtn" title="Table View">
+                    <i class="fas fa-table"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Quick Filters -->
+            <div class="quick-filters mt-3">
+              <span class="text-muted me-2">Quick filters:</span>
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="quick-filter-btn active" data-filter="all">All Products</button>
+                <button class="quick-filter-btn" data-filter="low-stock">Low Stock</button>
+                <button class="quick-filter-btn" data-filter="out-of-stock">Out of Stock</button>
+                <button class="quick-filter-btn" data-filter="flash-sale">Flash Sale</button>
+                <button class="quick-filter-btn" data-filter="recent">Recently Added</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Content -->
+        <div class="inventory-content">
+          <!-- Grid View -->
+          <div class="inventory-grid-view" id="gridView">
+            <div class="row g-4" id="inventoryGridContainer">
+              <!-- Products will be loaded dynamically -->
+            </div>
+          </div>
+          
+          <!-- List View -->
+          <div class="inventory-list-view" id="listView" style="display: none;">
+            <div id="inventoryListContainer">
+              <!-- Products will be loaded dynamically -->
+            </div>
+          </div>
+          
+          <!-- Table View -->
+          <div class="inventory-table-view" id="tableView" style="display: none;">
+            <div class="card modern-card">
+              <div class="card-header border-0 pb-0">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="card-title mb-0">
+                    <i class="fas fa-table text-primary me-2"></i>Inventory Table
+                  </h5>
+                  <div class="table-controls">
+                    <span class="badge bg-primary" id="totalCount">0 products</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover modern-table" id="inventoryTable">
+                    <thead>
+                      <tr>
+                        <th class="table-header-sortable" data-sort="image">
+                          <i class="fas fa-image me-1"></i>Image
+                        </th>
+                        <th class="table-header-sortable" data-sort="name">
+                          <i class="fas fa-sort me-1"></i>Product Name
+                        </th>
+                        <th class="table-header-sortable" data-sort="category">
+                          <i class="fas fa-sort me-1"></i>Category
+                        </th>
+                        <th class="table-header-sortable" data-sort="variants">
+                          <i class="fas fa-sort me-1"></i>Variants
+                        </th>
+                        <th class="table-header-sortable" data-sort="stock">
+                          <i class="fas fa-sort me-1"></i>Stock
+                        </th>
+                        <th class="table-header-sortable" data-sort="price">
+                          <i class="fas fa-sort me-1"></i>Price Range
+                        </th>
+                        <th class="table-header-sortable" data-sort="status">
+                          <i class="fas fa-sort me-1"></i>Status
+                        </th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                      <!-- Products will be loaded dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Empty State -->
+          <div class="modern-empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-content">
+              <div class="empty-state-icon">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <h4 class="empty-state-title">No products found</h4>
+              <p class="empty-state-text" id="emptyMessage">You haven't added any products yet.</p>
+              <a href="/templates/SellerDashboard/add_product.html" class="btn btn-primary btn-lg mt-3" style="background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%); border: none; border-radius: 12px; padding: 1rem 2rem; font-weight: 600; box-shadow: 0 4px 20px rgba(255, 43, 172, 0.3);">
+                <i class="fas fa-plus me-2"></i>Add Your First Product
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <div class="results-info">
+            <span class="text-muted" id="paginationInfo">No products to display</span>
+          </div>
+          <nav aria-label="Inventory pagination">
+            <ul class="pagination pagination-rounded mb-0">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                  <i class="fas fa-chevron-left"></i>
+                </a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">
+                  <i class="fas fa-chevron-right"></i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Product Modal (Full Editor) -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="editProductForm">
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+              <small class="text-muted">Edit details, variants, and images in one place</small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editProductId" name="product_id">
+
+            <ul class="nav nav-tabs" id="editProductTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#tab-details" type="button" role="tab">Details</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#tab-variants" type="button" role="tab">Variants</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#tab-images" type="button" role="tab">Images</button>
+              </li>
+            </ul>
+
+            <div class="tab-content pt-3">
+              <!-- Details Tab -->
+              <div class="tab-pane fade show active" id="tab-details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="editName" name="name" placeholder="e.g., Floral Summer Dress" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="editCategory" name="category">
+                      <option value="">Select Category</option>
+                      <option value="Dresses & Skirts">Dresses & Skirts</option>
+                      <option value="Tops & Blouses">Tops & Blouses</option>
+                      <option value="Activewear & Yoga Pants">Activewear & Yoga Pants</option>
+                      <option value="Lingerie & Sleepwear">Lingerie & Sleepwear</option>
+                      <option value="Jackets & Coats">Jackets & Coats</option>
+                      <option value="Shoes & Accessories">Shoes & Accessories</option>
+                      <option value="Pants & Jeans">Pants & Jeans</option>
+                      <option value="Swimwear">Swimwear</option>
+                      <option value="Jewelry">Jewelry</option>
+                      <option value="Bags & Purses">Bags & Purses</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="editDescription" name="description" rows="3" placeholder="Brief product description..."></textarea>
+                    <div class="info-muted mt-1">Keep it short and clear. You can add more details in the public-facing product page.</div>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" value="1" id="editFlashSale" name="is_flash_sale">
+                      <label class="form-check-label" for="editFlashSale">Flash Sale</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Computed Total Stock</label>
+                    <div class="form-control-plaintext bg-light p-2 rounded">
+                      <strong id="displayTotalStock" class="text-primary">0</strong> units total
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Variants Tab -->
+              <div class="tab-pane fade" id="tab-variants" role="tabpanel" aria-labelledby="variants-tab">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <div class="section-title mb-1">Edit Variants</div>
+                    <div class="info-muted">Update stock, price, discount, and color for each variant.</div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-primary" id="addVariantBtn">
+                    <i class="fas fa-plus me-1"></i>Add Variant
+                  </button>
+                </div>
+                <div id="editVariantsContainer">
+                  <div class="table-responsive compact-variants">
+                    <table class="table table-sm table-hover align-middle" id="editVariantsTable">
+                      <thead class="table-light">
+                        <tr>
+                          <th style="min-width:64px;">Size</th>
+                          <th style="min-width:280px;">Color</th>
+                          <th style="min-width:110px;">Stock</th>
+                          <th style="min-width:140px;">Price (₱)</th>
+                          <th style="min-width:150px;">Discount (%)</th>
+                        </tr>
+                      </thead>
+                      <tbody id="editVariantsTableBody"></tbody>
+                    </table>
+                  </div>
+                  <div id="editVariantsEmpty" class="d-none">
+                    <div class="alert alert-info d-flex align-items-center">
+                      <i class="fas fa-info-circle me-2"></i>
+                      <div>This product has no configured variants yet.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Images Tab -->
+              <div class="tab-pane fade" id="tab-images" role="tabpanel" aria-labelledby="images-tab">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <div class="section-title mb-2">Default Gallery</div>
+                    <div id="editDefaultDrop" class="subtle-card text-center" style="cursor:pointer;">
+                      <i class="fas fa-cloud-upload-alt me-2"></i>Drag & drop or click to upload default images
+                      <input type="file" id="editDefaultInput" class="d-none" accept="image/*" multiple>
+                    </div>
+                    <div id="editDefaultGrid" class="row g-2 mt-2"></div>
+                  </div>
+
+                  <div class="col-12 mt-3">
+                    <div class="section-title mb-2">Per-Color Galleries</div>
+                    <div id="editColorGalleries" class="row g-3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="edit-scroll-controls" id="editScrollControls">
+              <button type="button" class="btn btn-scroll" id="editScrollUp" title="Scroll up"><i class="fas fa-arrow-up"></i></button>
+              <button type="button" class="btn btn-scroll primary" id="editScrollDown" title="Scroll down"><i class="fas fa-arrow-down"></i></button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveEditProductBtn">
+              <i class="fas fa-save me-1"></i>Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Are you sure you want to delete <strong id="deleteProductName">this product</strong>? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteProductBtn">
+            <i class="fas fa-trash me-1"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Product Details Modal -->
+  <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h4 class="modal-title" id="variantModalLabel">Product Details</h4>
+            <p class="text-muted mb-0" id="productModalCategory">Loading...</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Loading State -->
+          <div id="modalLoading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading product details...</p>
+          </div>
+          
+          <!-- Product Details Content -->
+          <div id="variantDetails" style="display: none;">
+            <!-- Product Overview -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="product-overview">
+                  <h5 class="mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Product Overview</h5>
+                  <div id="productOverview">
+                    <!-- Product overview will be loaded here -->
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="product-stats">
+                  <h5 class="mb-3"><i class="fas fa-chart-bar me-2 text-success"></i>Inventory Stats</h5>
+                  <div id="productStats">
+                    <!-- Product stats will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Images -->
+            <div class="mb-4" id="productImagesSection">
+              <h5 class="mb-3"><i class="fas fa-images me-2 text-info"></i>Product Images</h5>
+              <div id="productImages">
+                <!-- Product images will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Variants Table -->
+            <div class="mb-4" id="variantsSection">
+              <h5 class="mb-3"><i class="fas fa-tags me-2 text-warning"></i>Product Variants</h5>
+              <div id="variantsTable">
+                <!-- Variants table will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Close
+          </button>
+          <button type="button" class="btn btn-primary" id="editProductBtn">
+            <i class="fas fa-edit me-2"></i>Edit Product
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Variant Modal -->
+  <div class="modal fade" id="editVariantModal" tabindex="-1" aria-labelledby="editVariantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editVariantModalLabel">Edit Variant</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editVariantForm">
+            <input type="hidden" id="editVariantId" name="variant_id">
+            <div class="mb-3">
+              <label for="editStock" class="form-label">Stock Quantity</label>
+              <input type="number" class="form-control" id="editStock" name="stock" min="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="editPrice" class="form-label">Price ($)</label>
+              <input type="number" class="form-control" id="editPrice" name="price" step="0.01" min="0" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveVariantChanges()" style="background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 100%); border: none; border-radius: 8px; padding: 0.5rem 1.5rem; box-shadow: 0 4px 15px rgba(255, 43, 172, 0.3);">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Variant Modal -->
+  <div class="modal fade" id="addVariantModal" tabindex="-1" aria-labelledby="addVariantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addVariantForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addVariantModalLabel">Add Variant</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Size</label>
+                <select class="form-select" id="addVariantSize" required></select>
+                <div class="form-text">Choose one of the configured sizes.</div>
+                <div id="customSizeInputContainer" style="display: none; margin-top: 0.5rem;">
+                  <label class="form-label" style="font-size: 0.875rem;">Or enter custom size:</label>
+                  <div class="input-group">
+                    <input type="number" 
+                           class="form-control" 
+                           id="customSizeInput" 
+                           placeholder="e.g., 36.5, 47" 
+                           step="0.5" 
+                           min="20" 
+                           max="60">
+                    <button type="button" 
+                            class="btn btn-outline-primary" 
+                            id="useCustomSizeBtn">
+                      Use
+                    </button>
+                  </div>
+                  <small class="text-muted">For Shoes & Accessories: Enter any numerical size</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Color</label>
+                <div class="d-flex align-items-center gap-2">
+                  <input type="color" class="form-control form-control-color p-0" id="addVariantColorPicker" value="#000000" title="Pick color" style="width:42px;height:38px;">
+                  <input type="text" class="form-control" id="addVariantColorHex" placeholder="#000000" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                </div>
+                <div class="form-text">Pick a color - the hex code will update automatically.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Color Name</label>
+                <input type="text" class="form-control" id="addVariantColorName" placeholder="Auto-generated" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Image</label>
+                <input type="file" class="form-control" id="addVariantImage" accept="image/*" required>
+                <div id="addVariantPreview" class="image-preview mt-2 d-none"></div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" id="addVariantStock" min="0" placeholder="0" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Price (₱)</label>
+                <input type="number" class="form-control" id="addVariantPrice" min="0" step="0.01" placeholder="0.00" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Discount (%)</label>
+                <input type="number" class="form-control" id="addVariantDiscountPercent" min="0" max="100" step="0.01" placeholder="0-100">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="addVariantSaveBtn">
+              <i class="fas fa-save me-1"></i>Save Variant
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Sidebar Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleInline = document.getElementById('sidebarToggleInline');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Check localStorage for saved state, default to collapsed if not set
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      const isCollapsed = savedState === null ? true : savedState === 'true';
+      
+      // Apply initial state
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+      }
+      
+      // Toggle function
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+      }
+      
+      // Desktop toggle (top button when collapsed)
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+      }
+      
+      // Inline toggle (beside MAIN when expanded)
+      if (sidebarToggleInline) {
+        sidebarToggleInline.addEventListener('click', toggleSidebar);
+      }
+      
+      // Mobile toggle
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+
+      // Edit Product modal scroll controls
+      const editModal = document.getElementById('editProductModal');
+      const tabContent = editModal ? editModal.querySelector('.tab-content') : null; // target the tab content p-3 area
+      const scrollUpBtn = document.getElementById('editScrollUp');
+      const scrollDownBtn = document.getElementById('editScrollDown');
+
+      function updateScrollButtons() {
+        if (!tabContent || !scrollUpBtn || !scrollDownBtn) return;
+        const atTop = tabContent.scrollTop <= 8;
+        const atBottom = (tabContent.scrollTop + tabContent.clientHeight) >= (tabContent.scrollHeight - 2);
+        scrollUpBtn.disabled = atTop; scrollUpBtn.style.opacity = atTop ? '0.5' : '1';
+        scrollDownBtn.disabled = atBottom; scrollDownBtn.style.opacity = atBottom ? '0.5' : '1';
+      }
+
+      if (tabContent && scrollUpBtn && scrollDownBtn) {
+        scrollUpBtn.addEventListener('click', () => tabContent.scrollTo({ top: 0, behavior: 'smooth' }));
+        scrollDownBtn.addEventListener('click', () => {
+          const lastRow = document.querySelector('#editVariantsTableBody tr:last-child');
+          if (lastRow) lastRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          tabContent.scrollTo({ top: tabContent.scrollHeight, behavior: 'smooth' });
+        });
+        tabContent.addEventListener('scroll', updateScrollButtons, { passive: true });
+        updateScrollButtons();
+        if (editModal) {
+          editModal.addEventListener('shown.bs.modal', updateScrollButtons);
+          window.addEventListener('resize', updateScrollButtons);
+        }
+      }
+    });
+  </script>
+    <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/dashboard-utils.js"></script>
+  <script src="/static/js/seller-dashboard.js"></script>
+  <script src="/static/js/inventory-management.js"></script>
+  <script src="/static/js/chat-center.js" defer></script>
+  <script>
+    // Chat Center Button Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBtn = document.getElementById('chatCenterBtn');
+      if (chatBtn) {
+        chatBtn.addEventListener('click', function() {
+          if (window.ChatCenter && typeof window.ChatCenter.open === 'function') {
+            window.ChatCenter.open();
+          } else {
+            console.warn('ChatCenter not available');
+          }
+        });
+      }
+    });
+  </script>
+  
+  <!-- Chat Center Modal - Dynamic Injection Placeholder -->
+  <div id="chatCenterPlaceholder"></div>
+</body>
+</html>

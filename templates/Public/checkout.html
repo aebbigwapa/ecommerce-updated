@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout - Women's Apparel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    :root {
+      --primary-color: #FF2BAC;
+      --accent-color: #FF6BCE;
+      --secondary-color: #1B0E24;
+      --background-light: #F7F6FB;
+      --text-color: #2A2A2A;
+      --container-bg: #FFFFFF;
+      --border-color: #E6E2EE;
+      --brand-grad: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      --brand-shadow: 0 0 16px rgba(255, 43, 172, 0.35), 0 8px 24px rgba(27, 14, 36, 0.25);
+      --hover-shadow: 0 8px 24px rgba(27, 14, 36, 0.12);
+      --focus-ring: 0 0 0 3px rgba(255, 43, 172, 0.25);
+      
+      /* Legacy compatibility */
+      --primary-dark: #1B0E24;
+      --accent-coral: #FF2BAC;
+      --accent-pink: #FF6BCE;
+      --white: #FFFFFF;
+      --gray-200: #E6E2EE;
+      --gray-600: #6C6C6C;
+      --gray-700: #2A2A2A;
+      --gray-800: #2A2A2A;
+      
+      /* Spacing */
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--background-light);
+      min-height: 100vh;
+      color: var(--text-color);
+      margin: 0;
+      line-height: 1.5;
+      font-size: 11px;
+      letter-spacing: 0.2px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+    }
+
+    /* Header Styles */
+    .main-header {
+      background: linear-gradient(180deg, #1B0E24, #22122D 80%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .navbar {
+      padding: 0.75rem 0;
+    }
+
+    .navbar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    .nav-link {
+      color: #EEE4F4 !important;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.25rem !important;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, var(--accent-coral), var(--accent-pink));
+      transition: var(--transition-normal);
+      transform: translateX(-50%);
+    }
+
+    .nav-link:hover::before {
+      width: 80%;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--gray-700);
+      text-decoration: none;
+      transition: var(--transition-normal);
+      border: 2px solid var(--gray-200);
+      position: relative;
+      font-size: 1rem;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-dark);
+      color: var(--white);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--accent-coral);
+      color: var(--white);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* Main Content - Ultra-compact Layout like Shopee */
+    .market-content {
+      padding: 0.75rem 0 0.5rem;
+      min-height: calc(100vh - 70px);
+    }
+
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 1rem;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    .checkout-title {
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.1px;
+      line-height: 1.3;
+    }
+
+    .checkout-subtitle {
+      color: var(--gray-600);
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      line-height: 1.4;
+      letter-spacing: 0.1px;
+    }
+
+    /* Buy Now Badge */
+    .buy-now-badge {
+      background: linear-gradient(45deg, var(--accent-coral), var(--accent-pink));
+      color: var(--white);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Progress Steps - Compact */
+    .checkout-progress {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .progress-steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gray-300);
+      z-index: 1;
+    }
+
+    .progress-step {
+      background: var(--white);
+      border: 3px solid var(--gray-300);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--gray-500);
+      position: relative;
+      z-index: 2;
+      transition: var(--transition-normal);
+      font-size: 0.9rem;
+    }
+
+    .progress-step.active {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: var(--white);
+    }
+
+    .progress-step.completed {
+      background: var(--accent-coral);
+      border-color: var(--accent-coral);
+      color: var(--white);
+    }
+
+    .step-label {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      white-space: nowrap;
+    }
+
+    /* Form Styles - Compact */
+    .checkout-card {
+      background: var(--container-bg);
+      border-radius: 12px;
+      box-shadow: var(--hover-shadow);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      animation: slideInLeft 0.6s ease;
+      height: fit-content;
+    }
+
+    .checkout-card-header {
+      background: linear-gradient(45deg, var(--primary-dark), #b72552);
+      color: #fff;
+      padding: 1.5rem;
+      border: none;
+    }
+
+    .checkout-card-header h5 {
+      margin: 0;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkout-card-body {
+      padding: 1.5rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.95rem;
+      transition: var(--transition-normal);
+      background: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-coral);
+      box-shadow: 0 0 0 3px rgba(254, 137, 130, 0.1);
+      outline: none;
+    }
+
+    /* Order Summary - Compact */
+    .order-summary-card {
+      background: var(--container-bg);
+      border-radius: 12px;
+      box-shadow: var(--hover-shadow);
+      border: 1px solid var(--border-color);
+      position: sticky;
+      top: 20px;
+      animation: slideInRight 0.6s ease;
+      height: fit-content;
+    }
+
+    .summary-header {
+      background: linear-gradient(45deg, var(--primary-dark), #b72552);
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .summary-header h6 {
+      margin: 0;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .summary-body {
+      padding: 1.5rem;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--gray-200);
+      transition: var(--transition-fast);
+    }
+
+    .order-item:hover {
+      background: var(--gray-100);
+      margin: 0 -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      border-radius: 8px;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-right: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: var(--gray-800);
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .item-meta {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: var(--primary-dark);
+      font-size: 0.95rem;
+    }
+
+    .summary-totals {
+      border-top: 2px solid var(--gray-200);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .total-row.final {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      border-top: 1px solid var(--gray-200);
+      padding-top: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    /* Buttons */
+    .btn {
+      border-radius: 25px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+      transition: var(--transition-normal);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: var(--transition-normal);
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-success {
+      background: #b72552 !important;
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: .875rem 1.5rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .btn-success:hover {
+      background: #9e1f46 !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(183, 37, 82, 0.3);
+      color: var(--white);
+    }
+
+    .btn-outline-secondary {
+      color: var(--gray-700);
+      border-color: var(--gray-400);
+    }
+
+    .btn-outline-secondary:hover {
+      background: var(--gray-700);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: var(--brand-grad);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: .875rem 1.5rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--brand-shadow);
+      color: var(--white);
+    }
+
+    /* Security Badge - Compact */
+    .security-badge {
+      background: linear-gradient(135deg, var(--accent-cream) 0%, var(--white) 100%);
+      border: 2px solid var(--accent-coral);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .security-badge i {
+      color: var(--accent-coral);
+      font-size: 1.3rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .security-text {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    /* Footer - Compact */
+    .main-footer {
+      background: var(--secondary-dark);
+      color: var(--white);
+      padding: 1.5rem 0;
+      margin-top: 2rem;
+    }
+
+    .muted-small {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* Toast notification styles */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .toast-notification.success { 
+      background: linear-gradient(45deg, #22c55e, #16a34a); 
+    }
+    
+    .toast-notification.error { 
+      background: linear-gradient(45deg, #ef4444, #dc2626); 
+    }
+    
+    .toast-notification.warning { 
+      background: linear-gradient(45deg, #f59e0b, #d97706); 
+    }
+    
+    .toast-notification.info { 
+      background: linear-gradient(45deg, #3b82f6, #2563eb); 
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .order-summary-card {
+        position: relative;
+        top: 0;
+        margin-top: 1.5rem;
+      }
+      
+      .checkout-title {
+        font-size: 1.75rem;
+      }
+      
+      .progress-steps {
+        max-width: 400px;
+      }
+      
+      .progress-step {
+        width: 45px;
+        height: 45px;
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .checkout-title {
+        font-size: 1.5rem;
+      }
+      
+      .progress-step {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+      }
+      
+      .step-label {
+        font-size: 0.7rem;
+      }
+      
+      .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.85rem;
+      }
+
+      .market-content {
+        padding: 1.5rem 0 1rem;
+      }
+      
+      /* Payment option styling */
+      .payment-option {
+        border: 2px solid var(--border-color) !important;
+        border-radius: 12px !important;
+        padding: 1rem !important;
+        min-height: 100px;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: white;
+      }
+      
+      .payment-option:hover {
+        border-color: var(--primary-color) !important;
+        background-color: rgba(255, 43, 172, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 43, 172, 0.15);
+      }
+      
+      .payment-option .payment-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--gray-600);
+        transition: all 0.3s ease;
+      }
+      
+      .payment-option .payment-info {
+        text-align: center;
+      }
+      
+      .payment-option .payment-info strong {
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-color);
+      }
+      
+      .payment-option .payment-info small {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+      }
+      
+      .btn-check:checked + .payment-option {
+        border-color: var(--primary-color) !important;
+        background: linear-gradient(135deg, rgba(255, 43, 172, 0.1) 0%, rgba(255, 107, 206, 0.1) 100%);
+        color: var(--primary-color);
+      }
+      
+      .btn-check:checked + .payment-option .payment-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+      
+      .btn-check:checked + .payment-option .payment-info strong {
+        color: var(--primary-color);
+      }
+    }
+    
+    /* Footer styling */
+    .main-footer {
+      background: var(--secondary-color);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Ultra-compact Shopee-style overrides with optimized text spacing */
+    .checkout-container {
+      padding: 0.8rem !important;
+      border-radius: 6px !important;
+    }
+    
+    .checkout-form .card {
+      padding: 0.8rem !important;
+      border-radius: 6px !important;
+      box-shadow: 0 1px 6px rgba(27, 14, 36, 0.04) !important;
+      margin-bottom: 1rem !important;
+    }
+    
+    .checkout-form h5 {
+      font-size: 0.9rem !important;
+      margin-bottom: 0.6rem !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .form-label {
+      font-size: 0.7rem !important;
+      margin-bottom: 0.3rem !important;
+      letter-spacing: 0.1px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .form-control, .form-select {
+      padding: 0.4rem 0.6rem !important;
+      font-size: 0.75rem !important;
+      border-radius: 5px !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .order-item {
+      padding: 0.5rem 0 !important;
+    }
+    
+    .item-image {
+      width: 40px !important;
+      height: 40px !important;
+      border-radius: 6px !important;
+      margin-right: 0.6rem !important;
+    }
+    
+    .item-name {
+      font-size: 0.75rem !important;
+      margin-bottom: 0.15rem !important;
+      letter-spacing: 0.1px !important;
+      line-height: 1.3 !important;
+    }
+    
+    .item-meta {
+      font-size: 0.65rem !important;
+      line-height: 1.3 !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .item-price {
+      font-size: 0.75rem !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .total-row {
+      margin-bottom: 0.3rem !important;
+      font-size: 0.75rem !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .total-row.final {
+      font-size: 0.85rem !important;
+      padding-top: 0.4rem !important;
+      margin-top: 0.5rem !important;
+    }
+    
+    .btn {
+      padding: 0.5rem 1.2rem !important;
+      font-size: 0.7rem !important;
+      border-radius: 15px !important;
+      letter-spacing: 0.2px !important;
+    }
+    
+    .progress-steps {
+      gap: 0.4rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+    
+    .step {
+      padding: 0.4rem 0.8rem !important;
+      font-size: 0.65rem !important;
+      border-radius: 15px !important;
+      letter-spacing: 0.2px !important;
+    }
+    
+    .security-badge {
+      padding: 0.6rem !important;
+      border-radius: 6px !important;
+      margin-bottom: 0.8rem !important;
+    }
+    
+    .security-badge i {
+      font-size: 1rem !important;
+      margin-bottom: 0.3rem !important;
+    }
+    
+    .security-text {
+      font-size: 0.65rem !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.1px !important;
+    }
+    
+    .buy-now-badge {
+      padding: 0.3rem 0.6rem !important;
+      font-size: 0.65rem !important;
+      border-radius: 12px !important;
+      margin-bottom: 0.8rem !important;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .checkout-container {
+        padding: 0.6rem !important;
+      }
+      
+      .checkout-form .card {
+        padding: 0.6rem !important;
+      }
+      
+      .form-control, .form-select {
+        padding: 0.35rem 0.5rem !important;
+        font-size: 0.7rem !important;
+      }
+      
+      .item-image {
+        width: 35px !important;
+        height: 35px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                   <a href="index.html" class="brand">
+                    <img src="/static/image.png" alt="Grande" class="brand-logo">
+                    </a>
+                </a>
+                
+                <div class="header-divider d-none d-lg-block">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="market.html">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#categories">Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Public/flash-sales.html">Sale</a>
+                        </li>
+                    </ul>
+
+                    <div class="position-relative notification-container">
+                        <button class="action-btn notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+<span class="cart-count" id="notificationCount">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h5 class="notification-title">Notifications</h5>
+                                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="loading-notifications">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="notification-see-all">
+                                <a href="notifications.html">
+                                    
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative message-container">
+                        <button class="action-btn message-btn" id="messageBtn" title="Messages">
+                            <i class="fas fa-comments"></i>
+<span class="cart-count" id="messageCount">0</span>
+                        </button>
+                        
+                        <div class="message-dropdown" id="messageDropdown">
+                            <div class="message-header">
+                                <h6 class="message-title">Messages</h6>
+                                <button class="mark-all-read" id="markAllMessagesRead">Mark all read</button>
+                            </div>
+                            <div class="message-list" id="messageList">
+                                 Messages will be loaded here 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="position-relative cart-container">
+                        <a href="cart.html" class="action-btn cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </a>
+                        <div class="cart-dropdown" id="cartDropdown">
+                            <div class="cart-dropdown-header">
+                                <h5 class="cart-dropdown-title">Shopping Cart</h5>
+                            </div>
+                            <div class="cart-dropdown-items" id="cartDropdownItems">
+                                <div class="loading-cart" id="cartLoading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span id="cartTotal">₱0.00</span>
+                                </div>
+                                <div class="cart-actions">
+                                    <a href="cart.html" class="btn-view-cart">View Cart</a>
+                                    <a href="checkout.html" class="btn-checkout">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-section" id="userSection">
+                        <!-- Not logged in state -->
+                        <div id="authLinks" class="auth-buttons">
+                            <a href="../Authenticator/login.html" class="action-btn login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span class="btn-text">Login</span>
+                            </a>
+                            <a href="../Authenticator/register.html" class="action-btn register-btn">
+                                <i class="fas fa-user-plus"></i>
+                                <span class="btn-text">Register</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Logged in state -->
+                        <div id="userDropdownContainer" class="user-dropdown-container" style="display: none;">
+                            <button class="user-profile-btn" id="userProfileBtn" type="button">
+                                <div class="user-avatar" id="userAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info" id="userInfo">
+                                    <span class="user-name" id="userName">User Name</span>
+                                    <span class="user-role" id="userRole">Role</span>
+                                </div>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            
+                                <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-avatar-large">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="dropdown-user-name" id="dropdownUserName">User Name</h6>
+                                        <p class="dropdown-user-email" id="dropdownUserEmail">user@email.com</p>
+                                        <span class="dropdown-user-role" id="dropdownUserRole">Role</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="#" class="dropdown-item" id="profileLink">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                    <a href="../UserProfile/my_orders.html" class="dropdown-item" id="ordersLink">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item" id="wishlistLink">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Wishlist</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item" id="settingsLink">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <!-- Role-specific dashboard links will be inserted here by JavaScript -->
+                                <div class="dropdown-section" id="roleDashboardSection">
+                                    <!-- Dynamic content based on user role -->
+                                </div>
+                                
+                                <div class="dropdown-divider" id="roleDivider" style="display: none;"></div>
+                                
+                                <div class="dropdown-section">
+                                    <a href="#" class="dropdown-item text-danger" id="logoutBtn" onclick="return false;">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 
+                </div>
+            </div>
+        </nav>
+    </header>
+
+  <main class="container market-content">
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="checkout-card">
+          <div class="checkout-card-header">
+            <h5><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h5>
+          </div>
+          <div class="checkout-card-body">
+            <!-- Address Picker -->
+            <div id="addressPicker" class="mb-3">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
+                <div class="d-flex gap-2">
+                  <a class="btn btn-link btn-sm" href="/templates/UserProfile/addresses.html">Manage addresses</a>
+                  <button class="btn btn-outline-secondary btn-sm" id="btnAddAddressCheckout"><i class="fas fa-plus me-1"></i>Add New</button>
+                </div>
+              </div>
+              <div id="savedAddresses" class="row g-2"></div>
+              <div id="noAddressState" class="alert alert-info align-items-center" style="display:none !important;">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>No saved addresses. Click "Add New" to add one.</div>
+              </div>
+              <div id="selectAddressPrompt" class="alert alert-warning align-items-center mt-2" style="display:none !important;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div>Please select a delivery address to continue.</div>
+              </div>
+            </div>
+            <form id="checkoutForm" novalidate>
+              <div class="row g-3">
+                <div class="col-md-12">
+                  <label class="form-label">Email</label>
+                  <input id="email" type="email" class="form-control" required placeholder="your.email@example.com">
+                </div>
+                <!-- Location inputs removed from UI, kept as hidden for backend compatibility -->
+                <input id="address" type="hidden" required>
+                <input id="city" type="hidden" required>
+                <input id="postal" type="hidden" required>
+                <input id="country" type="hidden" value="Philippines" required>
+              </div>
+              
+              <!-- Payment Method Selection -->
+              <div class="payment-methods mt-4">
+                <h6 class="mb-3"><i class="fas fa-credit-card me-2"></i>Payment Method</h6>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <input type="radio" class="btn-check" name="paymentMethod" id="gcash" value="GCASH">
+                    <label class="btn btn-outline-primary w-100 payment-option" for="gcash">
+                      <div class="payment-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                      </div>
+                      <div class="payment-info">
+                        <strong>GCash</strong>
+                        <small>E-wallet payment</small>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="radio" class="btn-check" name="paymentMethod" id="cod" value="COD">
+                    <label class="btn btn-outline-primary w-100 payment-option" for="cod">
+                      <div class="payment-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                      </div>
+                      <div class="payment-info">
+                        <strong>Cash on Delivery</strong>
+                        <small>Pay when delivered</small>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Payment Method Info -->
+                <div class="payment-info-section mt-3">
+                  <!-- GCash Payment Info -->
+                  <div id="gcashInfo" class="payment-details" style="display: none;">
+                    <div class="alert d-flex align-items-start" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); border: none; color: white;">
+                      <i class="fas fa-mobile-alt me-3 mt-1" style="font-size: 1.5rem;"></i>
+                      <div>
+                        <strong class="d-block mb-1">GCash E-Wallet Payment</strong>
+                        <small>You'll be redirected to Xendit's secure payment page where you can complete your GCash payment. Make sure you have sufficient balance in your GCash wallet.</small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- COD Payment Info -->
+                  <div id="codInfo" class="payment-details" style="display: none;">
+                    <div class="alert alert-warning d-flex align-items-start">
+                      <i class="fas fa-money-bill-wave me-3 mt-1" style="font-size: 1.5rem;"></i>
+                      <div>
+                        <strong class="d-block mb-1">Cash on Delivery</strong>
+                        <small>Pay in cash when your order is delivered to your doorstep. Please prepare the exact amount. Additional COD fees may apply.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order Notes (optional) -->
+              <div class="mt-3">
+                <label class="form-label" for="orderNotes"><i class="fas fa-sticky-note me-2"></i>Order Notes (optional)</label>
+                <textarea class="form-control" id="orderNotes" rows="3" placeholder="e.g., Leave with guard, deliver after 6PM, fragile, etc."></textarea>
+              </div>
+
+              <!-- Hidden inputs for backend compatibility -->
+              <input type="hidden" name="payMethod" value="GCASH" id="hiddenPayMethod">
+            </form>
+
+            <!-- Security Badge -->
+            <div class="security-badge">
+              <i class="fas fa-shield-alt"></i>
+              <div class="security-text">
+                <strong>Secure Payment</strong><br>
+                Your payment information is encrypted and processed securely via Xendit
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="order-summary-card">
+          <div class="summary-header">
+            <h6><i class="fas fa-receipt me-2"></i>Order Summary</h6>
+          </div>
+          <div class="summary-body">
+            <div id="orderItems"></div>
+
+            <div class="summary-totals">
+              <div class="total-row">
+                <span>Subtotal</span>
+                <span id="subtotal">₱0.00</span>
+              </div>
+              <div class="total-row">
+                <span>Delivery Fee</span>
+                <span id="shipping">₱0.00</span>
+              </div>
+              <div class="total-row final">
+                <span>Total</span>
+                <span id="total">₱0.00</span>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button id="placeOrderBtn" class="btn btn-success" type="button">
+                <i class="fas fa-lock me-2"></i>Place Secure Order
+              </button>
+              <a href="#" id="backBtn" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Cart
+              </a>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="container py-4">
+      <div class="text-center">
+        <p class="text-white-50 mb-2">© 2025 Women's Apparel - Secure Checkout Powered by Xendit</p>
+        <div class="d-flex justify-content-center align-items-center gap-3">
+          <i class="fas fa-shield-alt text-success"></i>
+          <span class="text-white-50 small">SSL Secured</span>
+          <span class="text-white-50">|</span>
+          <i class="fas fa-lock text-success"></i>
+          <span class="text-white-50 small">256-bit Encryption</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Address Modals -->
+  <div class="modal fade" id="checkoutAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="checkoutAddressForm" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Label</label>
+              <input type="text" class="form-control" id="coAddrLabel" placeholder="Home">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Contact Name</label>
+              <input type="text" class="form-control" id="coAddrContactName" placeholder="Full Name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Contact Phone</label>
+              <input type="text" class="form-control" id="coAddrContactPhone" placeholder="09XXXXXXXXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Region</label>
+              <select class="form-select" id="coAddrRegion" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Province</label>
+              <select class="form-select" id="coAddrProvince" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">City/Municipality</label>
+              <select class="form-select" id="coAddrCity" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Barangay</label>
+              <select class="form-select" id="coAddrBarangay" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Postal Code</label>
+              <input type="text" class="form-control" id="coAddrPostal" placeholder="e.g., 1000">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Street / Building / Notes</label>
+              <textarea class="form-control" id="coAddrStreet" rows="2" placeholder="House No., Street, Building, Landmarks"></textarea>
+            </div>
+            <div class="col-12 d-flex align-items-center justify-content-between">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="coAddrDefault">
+                <label class="form-check-label" for="coAddrDefault">Set as default</label>
+              </div>
+              <div>
+                <button type="button" class="btn btn-outline-secondary" id="coBtnPinOnMap"><i class="fas fa-map-location-dot me-1"></i>Pin on Map</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </div>
+            <input type="hidden" id="coAddrLat">
+            <input type="hidden" id="coAddrLng">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Modal -->
+  <div class="modal fade" id="checkoutMapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Pin Location</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="checkoutMap" style="height: 500px;" class="address-map"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/checkout-address.js"></script>
+  
+  <!-- External payment scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+// Xendit Payment Integration - No SDK needed, just API calls
+// Xendit uses a simple redirect-based payment flow
+
+// Main checkout functionality
+(function() {
+    'use strict';
+    
+    let checkoutItems = [];
+    const isDirectCheckout = new URLSearchParams(window.location.search).get('source') === 'direct';
+    
+   async function initializePayments() {
+    try {
+        console.log('Xendit payment system initialized - no SDK required');
+        showToast('Payment system ready', 'success');
+        
+    } catch (error) {
+        console.error('Failed to initialize payment handler:', error);
+        showToast('Payment system initialization failed. Please refresh the page.', 'error');
+        
+        // Disable payment buttons if initialization fails
+        const payButton = document.getElementById('placeOrderBtn');
+        if (payButton) {
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Payment System Offline';
+        }
+    }
+}
+
+    async function loadCheckoutItems() {
+    try {
+        const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData') || '{}');
+        const source = new URLSearchParams(window.location.search).get('source');
+
+        if (source === 'direct') {
+            // Direct checkout from product page
+            if (!checkoutData.items || !checkoutData.items.length) {
+                showToast('No item found for checkout', 'error');
+                window.location.href = '/Public/market.html';
+                return;
+            }
+            checkoutItems = checkoutData.items;
+            const buyBadge = document.getElementById('buyNowBadge');
+            if (buyBadge) buyBadge.style.display = 'inline-flex';
+            const backBtnEl = document.getElementById('backBtn');
+            if (backBtnEl) backBtnEl.href = '/Public/market.html';
+        } else {
+            // Normal checkout from cart
+            if (!checkoutData.items || !checkoutData.items.length) {
+                showToast('Your cart is empty', 'error');
+                window.location.href = '/Public/cart.html';
+                return;
+            }
+            checkoutItems = checkoutData.items;
+            const backBtnEl = document.getElementById('backBtn');
+            if (backBtnEl) backBtnEl.href = '/Public/cart.html';
+        }
+
+        renderOrderSummary();
+        
+        // Clear checkout data after loading
+        sessionStorage.removeItem('checkoutData');
+        
+    } catch (error) {
+        console.error('Error loading checkout items:', error);
+        showToast('Failed to load checkout items', 'error');
+        window.location.href = '/Public/cart.html';
+    }
+}
+
+    function renderOrderSummary() {
+        const container = document.getElementById('orderItems');
+        let subtotal = 0;
+
+        container.innerHTML = checkoutItems.map(item => {
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
+
+            return `
+                <div class="order-item">
+                    <img src="${item.image_url || 'https://via.placeholder.com/60x60'}" alt="${item.name}" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-meta">
+                            Size: ${item.size || 'N/A'} - ${item.color || 'N/A'}
+                            <br>Quantity: ${item.quantity} × ₱${item.price.toFixed(2)}
+                        </div>
+                    </div>
+                    <div class="item-price">₱${itemTotal.toFixed(2)}</div>
+                </div>
+            `;
+        }).join('');
+
+        const shipping = 50;
+        const total = subtotal + shipping;
+
+        document.getElementById('subtotal').textContent = `₱${subtotal.toFixed(2)}`;
+        document.getElementById('shipping').textContent = `₱${shipping.toFixed(2)}`;
+        document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
+
+        window.checkoutTotal = total;
+        window.checkoutShippingFee = shipping;
+    }
+
+    async function processPayment(formData) {
+    try {
+        // Get selected payment method
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        // Show loading state
+        const button = document.getElementById('placeOrderBtn');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+        // First create the order
+        const orderResponse = await fetch('/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${AuthManager.getAuthToken()}`
+            },
+            body: JSON.stringify({
+                shipping_info: formData,
+                special_notes: formData.special_notes || '',
+                items: checkoutItems,
+                total_amount: window.checkoutTotal,
+                shipping_fee: window.checkoutShippingFee ?? 0,
+                payment_method: selectedPaymentMethod
+            })
+        });
+
+        const orderResult = await orderResponse.json();
+        if (!orderResponse.ok) {
+            throw new Error(orderResult.error || 'Failed to create order');
+        }
+
+        // Store order data in session storage
+        const shippingFee = (typeof window.checkoutShippingFee === 'number') ? window.checkoutShippingFee : 0;
+        sessionStorage.setItem('orderData', JSON.stringify({
+            order_number: orderResult.order_number,
+            items: checkoutItems,
+            shipping_info: formData,
+            total_amount: orderResult.total_amount ?? window.checkoutTotal,
+            shipping_fee: shippingFee,
+            product_subtotal: orderResult.product_subtotal ?? null,
+            admin_commission: orderResult.admin_commission ?? null,
+            seller_earnings: orderResult.seller_earnings ?? null,
+            payment_method: selectedPaymentMethod
+        }));
+
+        // Handle payment processing based on method
+        if (selectedPaymentMethod === 'COD') {
+            // For COD, complete the order without payment processing
+            const codResponse = await fetch(`/api/orders/${orderResult.order_number}/cod-complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AuthManager.getAuthToken()}`
+                }
+            });
+            
+            const codResult = await codResponse.json();
+            if (!codResponse.ok) {
+                throw new Error(codResult.error || 'Failed to complete COD order');
+            }
+            
+            // Redirect to success page
+            window.location.href = `/payment/success?order_number=${orderResult.order_number}`;
+            
+        } else {
+            // For all online payments (CARD, GCASH, etc) - Xendit uses unified redirect flow
+            const paymentResponse = await fetch('/api/create-payment-source', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AuthManager.getAuthToken()}`
+                },
+                body: JSON.stringify({
+                    amount: orderResult.total_amount ?? window.checkoutTotal,
+                    order_number: orderResult.order_number,
+                    payment_type: selectedPaymentMethod.toLowerCase()
+                })
+            });
+
+            const paymentResult = await paymentResponse.json();
+            console.log('Xendit Payment Response:', paymentResult);
+            
+            if (!paymentResponse.ok) {
+                console.error('Xendit payment creation failed:', paymentResult);
+                throw new Error(paymentResult.error || 'Payment failed');
+            }
+
+            if (paymentResult.redirect_url) {
+                console.log('Redirecting to Xendit payment page:', paymentResult.redirect_url);
+                showToast('Redirecting to secure payment page...', 'info');
+                
+                // Small delay to show the toast
+                setTimeout(() => {
+                    window.location.href = paymentResult.redirect_url;
+                }, 500);
+            } else {
+                console.error('No redirect URL in response:', paymentResult);
+                throw new Error('No redirect URL received from payment provider');
+            }
+        }
+
+    } catch (error) {
+        console.error('Payment error:', error);
+        const button = document.getElementById('placeOrderBtn');
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-lock me-2"></i>Place Secure Order';
+        showToast(error.message || 'Payment failed', 'error');
+    }
+}
+
+    function clearCheckoutData() {
+        if (isDirectCheckout) {
+            sessionStorage.removeItem('directCheckout');
+        } else {
+            // Clear cart if not direct checkout
+            const token = AuthManager.getAuthToken();
+            if (token) {
+                fetch('/api/clear-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(console.error);
+            }
+        }
+    }
+
+    function showLoadingState(isLoading) {
+        const button = document.getElementById('placeOrderBtn');
+        if (isLoading) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        } else {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-lock me-2"></i>Place Secure Order';
+        }
+    }
+
+    function setupFormValidation() {
+        const form = document.getElementById('checkoutForm');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+        placeOrderBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Debug log
+
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            const selAddr = window.selectedAddressData || null;
+            const user = AuthManager.getAuthUser ? AuthManager.getAuthUser() : null;
+            const formData = {
+                fullName: selAddr?.contact_name || user?.name || '',
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                postal: document.getElementById('postal').value,
+                country: document.getElementById('country').value,
+                address_id: window.selectedAddressId || null,
+                phone: selAddr?.contact_phone || (user?.phone || ''),
+                special_notes: (document.getElementById('orderNotes')?.value || '').trim()
+            };
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                showToast('Please enter a valid email address', 'error');
+                document.getElementById('email').classList.add('is-invalid');
+                return;
+            }
+
+            // Debug log
+            await processPayment(formData);
+        });
+
+        // Also handle form submit as backup (but prevent default)
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // Debug log
+        });
+
+        // Remove invalid class when user starts typing
+        form.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('is-invalid');
+            });
+        });
+    }
+
+    function setupPaymentMethodSelection() {
+        const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+        const gcashInfo = document.getElementById('gcashInfo');
+        const codInfo = document.getElementById('codInfo');
+        const hiddenPayMethod = document.getElementById('hiddenPayMethod');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        
+        paymentMethodRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                // Update hidden input for backend compatibility
+                hiddenPayMethod.value = radio.value;
+                
+                // Hide all payment method info sections first
+                if (gcashInfo) gcashInfo.style.display = 'none';
+                if (codInfo) codInfo.style.display = 'none';
+                
+                // Show appropriate section based on selection
+                if (radio.value === 'COD') {
+                    if (codInfo) codInfo.style.display = 'block';
+                    placeOrderBtn.innerHTML = '<i class="fas fa-check me-2"></i>Place COD Order';
+                } else if (radio.value === 'GCASH') {
+                    if (gcashInfo) gcashInfo.style.display = 'block';
+                    placeOrderBtn.innerHTML = '<i class="fas fa-mobile-alt me-2"></i>Pay with GCash';
+                }
+            });
+        });
+        
+        // Set default to COD
+        const defaultRadio = document.querySelector('input[name="paymentMethod"][value="COD"]');
+        if (defaultRadio && !document.querySelector('input[name="paymentMethod"]:checked')) {
+            defaultRadio.checked = true;
+            defaultRadio.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // Event Listeners
+    // Prefill user email and address from registration
+    async function prefillUserInfo() {
+        try {
+            // Try to get user from AuthManager first (faster)
+            let userEmail = null;
+            let userAddress = null;
+            
+            if (window.AuthManager && AuthManager.getAuthUser) {
+                const user = AuthManager.getAuthUser();
+                if (user) {
+                    userEmail = user.email;
+                    userAddress = user.address;
+                }
+            }
+            
+            // If not available from AuthManager, fetch from API
+            const token = (window.AuthManager && AuthManager.getAuthToken) ? AuthManager.getAuthToken() : null;
+            if (token) {
+                try {
+                    const response = await fetch('/api/account/profile', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.user) {
+                            userEmail = data.user.email || userEmail;
+                            userAddress = data.user.address || userAddress;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch user profile:', error);
+                }
+            }
+            
+            // Prefill email field
+            const emailInput = document.getElementById('email');
+            if (emailInput && userEmail && !emailInput.value) {
+                emailInput.value = userEmail;
+            }
+            
+            // Check if user has saved addresses - if not, use the address from users table
+            // Wait a bit for checkout-address.js to load addresses first
+            setTimeout(async () => {
+                // If no saved addresses were loaded, use the address from users table
+                if (!window.selectedAddressData && userAddress) {
+                    const addressInput = document.getElementById('address');
+                    const cityInput = document.getElementById('city');
+                    const postalInput = document.getElementById('postal');
+                    const countryInput = document.getElementById('country');
+                    
+                    // Only prefill if fields are still empty
+                    if (addressInput && !addressInput.value) {
+                        addressInput.value = userAddress;
+                    }
+                    
+                    // Try to parse address components if address is in format "street, barangay, city, province, region, postal"
+                    if (userAddress) {
+                        const addressParts = userAddress.split(',').map(part => part.trim()).filter(part => part);
+                        
+                        // Common format: "street, barangay, city, province, region, postal"
+                        // Try to extract city (usually 3rd element) and postal code (usually last element if it's numeric)
+                        if (addressParts.length >= 3) {
+                            // City is typically the 3rd element
+                            if (cityInput && !cityInput.value) {
+                                cityInput.value = addressParts[2] || '';
+                            }
+                            
+                            // Postal code is usually the last element if it's numeric
+                            const lastPart = addressParts[addressParts.length - 1];
+                            if (postalInput && !postalInput.value && lastPart && /^\d+$/.test(lastPart)) {
+                                postalInput.value = lastPart;
+                            }
+                        }
+                    }
+                    
+                    // Set country to Philippines by default
+                    if (countryInput && !countryInput.value) {
+                        countryInput.value = 'Philippines';
+                    }
+                }
+            }, 500); // Wait 500ms for checkout-address.js to finish loading
+        } catch (error) {
+            console.warn('Error prefilling user info:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await initializePayments();
+        await loadCheckoutItems();
+        setupFormValidation();
+        setupPaymentMethodSelection();
+        
+        // Prefill user email and address
+        await prefillUserInfo();
+        
+        // Set back button URL
+        document.getElementById('backBtn').href = isDirectCheckout ? 
+            '/Public/market.html' : 
+            '/Public/cart.html';
+    });
+
+    // Utility function for notifications
+    function showToast(message, type = 'info') {
+        Toastify({
+            text: message,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: type === 'success' ? "#4CAF50" : 
+                            type === 'error' ? "#f44336" : 
+                            type === 'warning' ? "#ff9800" : "#2196F3",
+            stopOnFocus: true
+        }).showToast();
+    }
+
+    // Update cart count in header
+    function updateCartCount() {
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            const totalItems = checkoutItems.reduce((total, item) => total + item.quantity, 0);
+            cartCountElement.textContent = totalItems;
+            cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+    }
+
+    // Authentication links setup
+    function setupAuthLinks() {
+        const authLinksContainer = document.getElementById('authLinks');
+        const token = AuthManager.getAuthToken();
+        
+        if (token) {
+            authLinksContainer.innerHTML = `
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>Account
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="../UserProfile/account.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-receipt me-2"></i>Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            authLinksContainer.innerHTML = `
+                <a class="nav-link" href="../Authenticator/login.html"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                <a class="nav-link" href="../Authenticator/register.html"><i class="fas fa-user-plus me-1"></i>Register</a>
+            `;
+        }
+    }
+
+    // Logout function
+    window.logout = function() {
+        AuthManager.logout();
+        window.location.href = '/';
+    };
+
+    // Expose for debugging
+    window.checkoutItems = checkoutItems;
+})();
+</script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+</body>
+</html>

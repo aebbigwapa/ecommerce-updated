@@ -1,0 +1,554 @@
+:root {
+      /* Main theme colors aligned with seller dashboard */
+      --primary-color: #FF2BAC;          /* Neon magenta (logo glow) */
+      --accent-color: #FF6BCE;           /* Pink accent (lighter glow) */
+      --secondary-color: #1B0E24;        /* Deep purple (headers/footer) */
+      --background-light: #F7F6FB;       /* Soft neutral background */
+      --light-pink: #2A1537;             /* Dark header bg variant */
+      --text-color: #2A2A2A;             /* Neutral text */
+      --container-bg: #FFFFFF;           /* White cards/forms */
+      --border-color: #E6E2EE;           /* Light border */
+
+      /* Legacy variables for compatibility */
+      --primary-dark: #1B0E24;           /* Updated to match secondary */
+      --primary-light: #F7F6FB;          /* Updated to match background */
+      --secondary-dark: #2A1537;         /* Dark variant */
+      --accent-coral: #FF2BAC;           /* Primary magenta */
+      --accent-cream: #FAF9FD;           /* Lighter background */
+      --accent-pink: #FF6BCE;            /* Accent pink */
+      --white: #ffffff;
+      --gray-100: #F7F6FB;              /* Aligned with background */
+      --gray-200: #E6E2EE;              /* Aligned with border */
+      --gray-600: #6c757d;
+      --shadow-sm: 0 2px 4px rgba(27,14,36,.1);
+      --shadow-md: 0 4px 12px rgba(27,14,36,.15);
+      --transition-normal: 0.3s ease;
+      --transition-fast: 0.2s ease;
+      --spacing-lg: 2rem;
+      --spacing-sm: 1rem;
+      --spacing-xs: 0.5rem;
+      --sidebar-width: 280px;
+      
+      /* Enhanced gradients and shadows */
+      --brand-grad: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      --brand-shadow: 0 0 16px rgba(255, 43, 172, 0.35), 0 8px 24px rgba(27, 14, 36, 0.25);
+      --hover-shadow: 0 8px 24px rgba(27, 14, 36, 0.12);
+      --focus-ring: 0 0 0 3px rgba(255, 43, 172, 0.25);
+    }
+    
+    body { 
+      background: var(--background-light); 
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      color: var(--text-color);
+    }
+
+    /* Rider-specific sidebar colors */
+    .admin-sidebar {
+      background: linear-gradient(180deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    }
+
+    .sidebar-brand i {
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-text {
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Rider navigation items */
+    .nav-item:hover {
+      background: rgba(255, 43, 172, 0.1);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: var(--brand-grad);
+      color: white;
+      box-shadow: var(--brand-shadow);
+    }
+
+    /* Rider-specific stat cards */
+    .rider-active-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 43, 172, 0.15);
+    }
+
+    .rider-completed-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 107, 206, 0.15);
+    }
+
+    .rider-earnings-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 193, 7, 0.15);
+    }
+
+    .rider-rating-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 158, 214, 0.15);
+    }
+
+    /* Rider info text */
+    .rider-info-text {
+      margin-top: 4px;
+    }
+
+
+    /* User Avatar Styles */
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--brand-grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(255, 43, 172, 0.3);
+      flex-shrink: 0;
+    }
+
+    .user-avatar #userInitials {
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+    }
+
+
+    /* Goal progress items */
+    .goal-item {
+      transition: all 0.3s ease;
+    }
+
+    .goal-item:hover {
+      background: var(--background-light);
+      padding: 0.5rem;
+      border-radius: 8px;
+      margin: -0.5rem;
+    }
+
+    .goal-label {
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 0.9rem;
+    }
+
+    .goal-progress {
+      font-weight: 700;
+      color: var(--primary-color);
+      font-size: 0.9rem;
+    }
+
+    /* Weather widget styling */
+    .weather-icon {
+      animation: weather-float 3s ease-in-out infinite;
+    }
+
+    @keyframes weather-float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* Activity timeline rider-specific */
+    .activity-timeline .activity-icon {
+      background: var(--brand-grad);
+    }
+
+    /* Quick action buttons with rider colors */
+    .quick-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: white;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-color);
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+      min-height: 80px;
+    }
+
+    .quick-action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 43, 172, 0.05), transparent);
+      transition: all 0.6s;
+      z-index: 0;
+    }
+
+    .quick-action-btn:hover::before {
+      left: 100%;
+    }
+
+    .quick-action-btn:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 43, 172, 0.15);
+      color: var(--text-color);
+      text-decoration: none;
+    }
+
+    .action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .action-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .action-subtitle {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .action-arrow {
+      color: var(--primary-color);
+      font-size: 16px;
+      transition: all var(--transition-fast);
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .quick-action-btn:hover .action-arrow {
+      transform: translateX(4px);
+      color: var(--accent-color);
+    }
+
+    /* Ensure equal height for quick action cards */
+    .row.g-3 > [class*="col-"] {
+      display: flex;
+      align-items: stretch;
+    }
+    
+    .row.g-3 .quick-action-btn {
+      width: 100%;
+    }
+
+    /* Message dropdown styles for rider */
+    .message-item { 
+      padding: 12px; 
+      border-bottom: 1px solid #eee; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+      display: flex; 
+      align-items: flex-start; 
+    }
+    .message-item:hover { background-color: #f8f9fa; }
+    .message-item.unread { background-color: #fff3cd; border-left: 3px solid #ffc107; }
+    .message-avatar { 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      background: var(--primary-color); 
+      color: white; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: bold; 
+      font-size: 14px; 
+      margin-right: 12px; 
+      flex-shrink: 0; 
+    }
+    .message-content { flex: 1; }
+    .message-header-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 4px; 
+    }
+    .message-sender { 
+      font-weight: bold; 
+      color: var(--primary-dark); 
+      font-size: 14px; 
+    }
+    .chat-type-indicator { 
+      display: flex; 
+      align-items: center; 
+      gap: 4px; 
+      font-size: 11px; 
+      color: #6c757d; 
+    }
+    .chat-type-label { 
+      font-weight: 500; 
+    }
+    .message-preview { 
+      color: #666; 
+      font-size: 13px; 
+      margin-bottom: 4px; 
+      line-height: 1.3; 
+    }
+    .message-time { 
+      font-size: 11px; 
+      color: #999; 
+    }
+    .unread-badge { 
+      background: var(--rider-warning); 
+      color: white; 
+      border-radius: 10px; 
+      padding: 2px 6px; 
+      font-size: 10px; 
+      margin-left: 8px; 
+    }
+    .message-empty { 
+      text-align: center; 
+      padding: 40px 20px; 
+      color: #666; 
+    }
+    .message-empty i { 
+      font-size: 48px; 
+      color: #ddd; 
+      margin-bottom: 16px; 
+    }
+    .loading-messages { 
+      text-align: center; 
+      padding: 40px 20px; 
+    }
+    .spinner { 
+      border: 3px solid #f3f3f3; 
+      border-top: 3px solid var(--primary-color); 
+      border-radius: 50%; 
+      width: 24px; 
+      height: 24px; 
+      animation: spin 1s linear infinite; 
+      margin: 0 auto; 
+    }
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+
+    /* Delivery status colors */
+    .status-available { 
+      background: #d4edda; 
+      color: #155724; 
+      border-color: #c3e6cb;
+    }
+    .status-assigned { 
+      background: #cce5ff; 
+      color: #004085; 
+      border-color: #b3d7ff;
+    }
+    .status-picked_up { 
+      background: #fff3cd; 
+      color: #856404; 
+      border-color: #ffeaa7;
+    }
+    .status-delivered { 
+      background: #d1e7dd; 
+      color: #0f5132; 
+      border-color: #badbcc;
+    }
+    .status-cancelled { 
+      background: #f8d7da; 
+      color: #721c24; 
+      border-color: #f1aeb5;
+    }
+
+    /* Rider-specific delivery cards */
+    .delivery-card { 
+      border-left: 4px solid var(--rider-primary); 
+      transition: all 0.3s ease;
+    }
+    .delivery-card.available { 
+      border-left-color: #28a745; 
+    }
+    .delivery-card.assigned { 
+      border-left-color: #17a2b8; 
+    }
+    .delivery-card.picked-up { 
+      border-left-color: #ffc107; 
+    }
+    .delivery-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    /* Rider notification dot */
+    .notification-dot {
+      background: var(--rider-primary);
+    }
+
+    /* Rider badge colors */
+    .nav-badge {
+      background: var(--rider-primary);
+    }
+
+    /* Data card enhancements for rider theme */
+    .data-card {
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .data-card:hover {
+      box-shadow: var(--hover-shadow);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--accent-cream) 0%, var(--background-light) 100%);
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .card-title {
+      color: var(--primary-dark);
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .card-subtitle {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* Page header rider styling */
+    .page-title {
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Enhanced button styling for rider theme */
+    .btn-primary {
+      background: var(--brand-grad);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-grad);
+      transform: translateY(-1px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    /* Responsive adjustments for rider dashboard */
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+      
+      .quick-action-btn {
+        padding: 1rem 0.75rem;
+      }
+      
+      .action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        margin-right: 0.75rem;
+      }
+      
+      .goal-item {
+        margin-bottom: 1rem !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .stat-value {
+        font-size: 1.6rem;
+      }
+      
+      .data-card {
+        margin-bottom: 1rem;
+      }
+      
+      .quick-action-btn {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem 1rem;
+      }
+      
+      .action-icon {
+        margin-right: 0;
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    /* Loading states */
+    .loading-skeleton {
+      background: linear-gradient(90deg, #f0f8f0 25%, #e0f0e0 50%, #f0f8f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    /* Toast notifications rider theme */
+    .toast-success .toast-content {
+      border-left-color: var(--rider-primary);
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+
+    /* Modern scrollbar rider theme */
+    ::-webkit-scrollbar-thumb {
+      background: var(--brand-grad);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--rider-success), var(--rider-primary));
+    }

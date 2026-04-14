@@ -1,0 +1,227 @@
+/* ================================
+   USER DROPDOWN CONSISTENT STYLING FOR ALL PUBLIC PAGES
+   ================================ */
+
+.user-dropdown-container {
+    position: relative !important;
+    display: inline-block !important;
+}
+
+.user-profile-btn {
+    background: none !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0.25rem 0.5rem !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-size: 0.8rem !important;
+    text-decoration: none !important;
+}
+
+.user-profile-btn:hover,
+.user-profile-btn.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: white !important;
+}
+
+.user-avatar {
+    width: 26px !important;
+    height: 26px !important;
+    background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: #1B0E24 !important;
+    box-shadow: 0 1px 4px rgba(255, 43, 172, 0.2) !important;
+}
+
+.user-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+.user-name {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 1px !important;
+    color: white !important;
+}
+
+.user-role {
+    font-size: 0.65rem !important;
+    opacity: 0.7 !important;
+    line-height: 1 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem !important;
+    transition: transform 0.2s ease !important;
+    margin-left: 0.25rem !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.user-profile-btn.active .dropdown-arrow {
+    transform: rotate(180deg) !important;
+}
+
+/* User Dropdown Menu */
+.user-dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    background: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(27, 14, 36, 0.15) !important;
+    border: none !important;
+    min-width: 200px !important;
+    max-width: 220px !important;
+    z-index: 1050 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-10px) !important;
+    transition: all 0.2s ease !important;
+}
+
+.user-dropdown-menu.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.dropdown-header {
+    background: linear-gradient(135deg, #F7F6FB 0%, #EEE4F4 100%) !important;
+    padding: 0.75rem !important;
+    border-bottom: 1px solid #E6E2EE !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+}
+
+.user-avatar-large {
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #1B0E24 !important;
+    box-shadow: 0 2px 8px rgba(255, 43, 172, 0.2) !important;
+}
+
+.user-details {
+    flex: 1 !important;
+}
+
+.dropdown-user-name {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #1B0E24 !important;
+    margin: 0 0 2px 0 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.dropdown-user-email {
+    font-size: 0.7rem !important;
+    color: #6C6C6C !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.dropdown-user-role {
+    background: #FF2BAC !important;
+    color: white !important;
+    padding: 0.15rem 0.5rem !important;
+    border-radius: 10px !important;
+    font-size: 0.6rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 1px 4px rgba(255, 43, 172, 0.2) !important;
+}
+
+.dropdown-divider {
+    height: 1px !important;
+    background: #E6E2EE !important;
+    margin: 0 !important;
+}
+
+.dropdown-section {
+    padding: 0.25rem 0 !important;
+}
+
+.dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding: 0.4rem 0.75rem !important;
+    color: #2A2A2A !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, #F7F6FB 0%, #EEE4F4 100%) !important;
+    color: #1B0E24 !important;
+    transform: translateX(6px) !important;
+    text-decoration: none !important;
+}
+
+.dropdown-item i {
+    width: 14px !important;
+    text-align: center !important;
+    color: #6C6C6C !important;
+    font-size: 0.8rem !important;
+}
+
+.dropdown-item:hover i {
+    color: #FF2BAC !important;
+}
+
+.dropdown-item.text-danger {
+    color: #dc3545 !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+}
+
+.dropdown-item.text-danger:hover i {
+    color: #dc3545 !important;
+}
+
+/* Mobile adjustments for user dropdown */
+@media (max-width: 768px) {
+    .user-dropdown-menu {
+        min-width: 180px !important;
+        max-width: 200px !important;
+        right: -10px !important;
+    }
+    
+    .user-profile-btn {
+        padding: 0.2rem 0.4rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .user-avatar {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 0.7rem !important;
+    }
+}

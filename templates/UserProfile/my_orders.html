@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/account.css">
+  <link rel="stylesheet" href="/static/css/userprofile-compact.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <style>
+    /* User Dropdown Styling - Copied from index.html with !important to override compact styles */
+    .user-dropdown-container { position: relative !important; display: inline-block !important; }
+    .user-profile-btn { background: none !important; border: none !important; color: white !important; display: flex !important; align-items: center !important; gap: 8px !important; padding: 6px 12px !important; border-radius: 8px !important; cursor: pointer !important; transition: all 0.3s ease !important; }
+    .user-profile-btn:hover { background: rgba(255, 255, 255, 0.1) !important; color: white !important; }
+    .user-avatar { width: 32px !important; height: 32px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 0.9rem !important; }
+    .user-info { display: flex !important; flex-direction: column !important; align-items: flex-start !important; }
+    .user-name { font-size: 0.9rem !important; font-weight: 600 !important; line-height: 1.2 !important; }
+    .user-role { font-size: 0.75rem !important; opacity: 0.8 !important; line-height: 1 !important; }
+    .user-dropdown-menu { position: absolute !important; top: calc(100% + 12px) !important; right: 0 !important; min-width: 280px !important; background: white !important; border-radius: 16px !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important; opacity: 0 !important; visibility: hidden !important; transform: translateY(-10px) !important; transition: all 0.3s ease !important; z-index: 1000 !important; }
+    .user-dropdown-menu.show { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; }
+    .dropdown-header { display: flex !important; align-items: center !important; gap: 15px !important; padding: 20px !important; background: linear-gradient(135deg, #fffee3 0%, #ffc6bf 100%) !important; border-radius: 16px 16px 0 0 !important; }
+    .user-avatar-large { width: 48px !important; height: 48px !important; border-radius: 12px !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; font-size: 1.2rem !important; }
+    .dropdown-user-name { font-size: 1.1rem !important; font-weight: 600 !important; margin: 0 0 4px 0 !important; }
+    .dropdown-user-email { font-size: 0.85rem !important; color: #666 !important; margin: 0 0 6px 0 !important; }
+    .dropdown-user-role { font-size: 0.75rem !important; font-weight: 600 !important; text-transform: uppercase !important; color: white !important; background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%) !important; padding: 2px 8px !important; border-radius: 12px !important; }
+    .dropdown-section { padding: 8px 0 !important; }
+    .dropdown-item { display: flex !important; align-items: center !important; gap: 12px !important; padding: 12px 20px !important; color: #333 !important; text-decoration: none !important; transition: all 0.2s ease !important; font-size: 0.9rem !important; }
+    .dropdown-item:hover { background-color: #f8f9fa !important; color: #FF2BAC !important; transform: translateX(4px) !important; }
+    .dropdown-item.text-danger { color: #dc3545 !important; }
+    .dropdown-item.text-danger:hover { background-color: rgba(220, 53, 69, 0.05) !important; color: #dc3545 !important; }
+    .dropdown-divider { height: 1px !important; background-color: rgba(0, 0, 0, 0.05) !important; margin: 8px 0 !important; }
+    
+    /* Fix sidebar positioning */
+    .account-page.spacious .account-sidebar {
+      position: static !important;
+      top: auto !important;
+    }
+    
+    /* Enhanced Order Cards Layout */
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 43, 172, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(255, 43, 172, 0.15);
+      border-color: rgba(255, 43, 172, 0.15);
+    }
+    
+    .order-card-header {
+      background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .order-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.25rem;
+    }
+    
+    .order-date {
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .order-card-body {
+      padding: 2rem;
+    }
+    
+    /* Enhanced Product Items Layout */
+    .order-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .order-items {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+      border-color: rgba(255, 43, 172, 0.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Product Image Styling */
+    .item-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      object-position: center;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .item-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .item-image-fallback {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .item-image-fallback:hover {
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      color: #64748b;
+    }
+    
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      color: #1a202c;
+      font-size: 0.95rem;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .item-details {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    
+    /* Order Summary Styling */
+    .order-summary {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .order-total {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #FF2BAC;
+    }
+    
+    /* Action Buttons */
+    .order-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-chat {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .btn-chat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 43, 172, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .btn-details {
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .btn-details:hover {
+      background: #f9fafb;
+      border-color: #9ca3af;
+      color: #111827;
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    
+    .btn-secondary:hover {
+      background: #4b5563;
+      transform: translateY(-1px);
+      color: white;
+    }
+    
+    .btn-cancel {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      color: white !important;
+    }
+    
+    .btn-cancel:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+      color: white !important;
+    }
+    
+    /* Info Pills */
+    .info-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.75rem;
+    }
+    
+    /* Empty State */
+    .empty-orders-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #64748b;
+    }
+    
+    .empty-orders-state i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #cbd5e1;
+    }
+    
+    .empty-orders-state h5 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1rem;
+    }
+    
+    .empty-orders-state p {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Filter Tabs Alignment Fix */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: stretch;
+      justify-content: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .filter-tab {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      color: #374151;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      line-height: 1;
+      flex: 0 0 auto;
+      box-sizing: border-box;
+    }
+    
+    .filter-tab:hover {
+      border-color: #FF2BAC;
+      background: rgba(255, 43, 172, 0.05);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(255, 43, 172, 0.1);
+    }
+    
+    .filter-tab.active {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      border-color: #FF2BAC;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(255, 43, 172, 0.3);
+    }
+    
+    .filter-tab.active:hover {
+      background: linear-gradient(135deg, #e0259a 0%, #e555b8 60%, #e76cc0 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 43, 172, 0.4);
+    }
+    
+    /* Ensure all filter tabs have consistent baseline alignment */
+    .filter-tabs .filter-tab {
+      vertical-align: top;
+      margin: 0;
+      position: relative;
+      top: 0;
+    }
+    
+    /* Force single line layout for desktop */
+    @media (min-width: 768px) {
+      .filter-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      
+      .filter-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      
+      .filter-tab {
+        flex-shrink: 0;
+        min-width: fit-content;
+      }
+    }
+    
+    /* Mobile filter tabs */
+    @media (max-width: 576px) {
+      .filter-tabs {
+        gap: 0.3rem;
+      }
+      
+      .filter-tab {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        min-height: 30px;
+      }
+    }
+    
+    /* Pagination Styling */
+    .pagination-modern {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    
+    .pagination-modern .page-item {
+      list-style: none;
+    }
+    
+    .pagination-modern .page-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      padding: 0.5rem 0.75rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      color: #374151;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .pagination-modern .page-link:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .pagination-modern .page-item.active .page-link {
+      background: linear-gradient(135deg, #FF2BAC 0%, #FF6BCE 60%, #FF9ED6 100%);
+      border-color: #FF2BAC;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .pagination-modern .page-item.active .page-link:hover {
+      background: linear-gradient(135deg, #e0259a 0%, #e555b8 60%, #e76cc0 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 43, 172, 0.3);
+    }
+    
+    .pagination-modern .page-item.disabled .page-link {
+      background: #f9fafb;
+      border-color: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .pagination-modern .page-item.disabled .page-link:hover {
+      background: #f9fafb;
+      border-color: #e5e7eb;
+      color: #9ca3af;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .pagination-info {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .order-card-header {
+        padding: 1.25rem 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      
+      .order-card-body {
+        padding: 1.25rem 1rem;
+      }
+      
+      .order-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      
+      .btn-chat,
+      .btn-details,
+      .btn-secondary {
+        justify-content: center;
+        width: 100%;
+      }
+      
+      .order-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .pagination-modern {
+        gap: 0.25rem;
+      }
+      
+      .pagination-modern .page-link {
+        min-width: 35px;
+        height: 35px;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      
+      .pagination-info {
+        font-size: 0.8rem;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      
+      #ordersPagination .d-flex {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    
+    /* Chat Message Styling */
+    /* Legacy chat message styling - kept for backwards compatibility */
+    /* Note: New messages use chat.css styles with buyer-page class */
+  </style>
+</head>
+<body class="buyer-page">
+  <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/"><img src="/static/image.png" alt="Grande" class="brand-logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Public/market.html">Shop</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#categories">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#sale">Sale</a></li>
+          </ul>
+          <div class="position-relative notification-container"><button class="action-btn notification-btn" id="notificationBtn"><i class="fas fa-bell"></i><span class="cart-count" id="notificationCount">0</span></button><div class="notification-dropdown" id="notificationDropdown"><div class="notification-header"><h5 class="notification-title">Notifications</h5><button class="mark-all-read" id="markAllRead">Mark all read</button></div><div class="notification-list" id="notificationList"><div class="notification-empty"><i class="fas fa-bell"></i><p>No notifications</p></div></div></div></div>
+          <div class="position-relative message-container"><button class="action-btn message-btn" id="messageBtn" title="Messages"><i class="fas fa-comments"></i><span class="cart-count" id="messageCount">0</span></button><div class="message-dropdown" id="messageDropdown"><div class="message-header"><h6 class="message-title">Messages</h6><button class="mark-all-read" id="markAllMessagesRead">Mark all read</button></div><div class="message-list" id="messageList"></div></div></div>
+          <div class="position-relative cart-container"><a href="/Public/cart.html" class="action-btn cart-btn" id="cartBtn"><i class="fas fa-shopping-bag"></i><span class="cart-count" id="cartCount">0</span></a><div class="cart-dropdown" id="cartDropdown"><div class="cart-dropdown-header"><h5 class="cart-dropdown-title">Shopping Cart</h5></div><div class="cart-dropdown-items" id="cartDropdownItems"><div class="cart-empty-message"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p></div></div><div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: none;"><div class="cart-total"><span>Total:</span><span id="cartTotal">₱0.00</span></div><div class="cart-actions"><a href="/Public/cart.html" class="btn-view-cart">View Cart</a><a href="/Public/checkout.html" class="btn-checkout">Checkout</a></div></div></div></div>
+          <div class="user-section"><div id="authLinks" class="auth-buttons"><a href="../Authenticator/login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i><span class="btn-text">Login</span></a><a href="../Authenticator/register.html" class="register-btn"><i class="fas fa-user-plus"></i><span class="btn-text">Register</span></a></div><div id="userDropdownContainer" class="user-dropdown-container" style="display: none;"><button class="user-profile-btn" id="userProfileBtn" type="button"><div class="user-avatar"><i class="fas fa-user"></i></div><div class="user-info"><span class="user-name">User Name</span><span class="user-role">Role</span></div><i class="fas fa-chevron-down dropdown-arrow"></i></button><div class="user-dropdown-menu" id="userDropdownMenu"><div class="dropdown-header"><div class="user-avatar-large"><i class="fas fa-user"></i></div><div class="user-details"><h6 class="dropdown-user-name">User Name</h6><p class="dropdown-user-email">user@email.com</p><span class="dropdown-user-role">Role</span></div></div><div class="dropdown-divider"></div><div class="dropdown-section"><a href="/templates/UserProfile/profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> <span>My Profile</span></a><a href="/templates/UserProfile/my_orders.html" class="dropdown-item"><i class="fas fa-shopping-bag"></i> <span>My Orders</span></a><a href="#" class="dropdown-item"><i class="fas fa-heart"></i> <span>Wishlist</span></a><a href="#" class="dropdown-item"><i class="fas fa-cog"></i> <span>Settings</span></a></div><div id="roleDivider" class="dropdown-divider" style="display: none;"></div><div id="roleDashboardSection" class="dropdown-section"></div><div class="dropdown-divider"></div><div class="dropdown-section"><a href="#" class="dropdown-item text-danger" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></div></div></div></div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="account-page spacious full">
+    <div class="container-fluid py-5">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <div class="account-card">
+            <div class="row g-4">
+              <aside class="col-12 col-md-4 col-lg-3 account-sidebar">
+                <div class="sidebar-header">
+                  <h5 class="mb-1">My Account</h5>
+                  <small class="text-muted">Manage your profile</small>
+                </div>
+                <nav class="account-nav">
+                  <div class="nav-section">My Profile</div>
+                  <a class="nav-link" href="/templates/UserProfile/profile.html"><i class="fas fa-id-badge"></i> Profile</a>
+                  <a class="nav-link" href="/templates/UserProfile/edit_profile.html"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                  <div class="nav-section">Account</div>
+                  <a class="nav-link" href="/templates/UserProfile/addresses.html"><i class="fas fa-location-dot"></i> Addresses</a>
+                  <a class="nav-link" href="/templates/UserProfile/change_password.html"><i class="fas fa-key"></i> Change Password</a>
+                  <div class="nav-section">Orders & Alerts</div>
+                  <a class="nav-link active" href="/templates/UserProfile/my_orders.html"><i class="fas fa-box"></i> My Orders</a>
+                  <a class="nav-link" href="/templates/UserProfile/notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+                </nav>
+              </aside>
+              <section class="col-12 col-md-8 col-lg-9 account-content">
+                <div class="section active">
+                  <div class="section-header">
+                    <h4>My Orders</h4>
+                    <p class="text-muted mb-0">Track your purchases and chat with sellers</p>
+                  </div>
+                  <div class="order-filters mb-4">
+                    <div class="filter-tabs mb-3">
+                      <button class="filter-tab active" data-status="" onclick="filterAccountOrders(''); return false;">All Orders</button>
+                      <button class="filter-tab" data-status="pending" onclick="filterAccountOrders('pending'); return false;">Pending</button>
+                      <button class="filter-tab" data-status="confirmed" onclick="filterAccountOrders('confirmed'); return false;">Confirmed</button>
+                      <button class="filter-tab" data-status="prepared" onclick="filterAccountOrders('prepared'); return false;">Ready</button>
+                      <button class="filter-tab" data-status="shipped" onclick="filterAccountOrders('shipped'); return false;">Shipped</button>
+                      <button class="filter-tab" data-status="delivered" onclick="filterAccountOrders('delivered'); return false;">Delivered</button>
+                      <button class="filter-tab" data-status="cancelled" onclick="filterAccountOrders('cancelled'); return false;">Cancelled</button>
+                    </div>
+                    <div class="search-box mb-3">
+                      <div class="position-relative">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search by order number, product name..." id="accountSearchInput" oninput="searchAccountOrders()">
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <div></div>
+                      <button class="btn btn-primary-custom btn-sm" onclick="openAccountChatCenter()">
+                        <i class="fas fa-comments me-2"></i>Chat Center
+                        <span class="chat-badge" id="accountUnreadChatsCount" style="display: none;">0</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="loading-spinner" id="accountLoadingSpinner" style="display: none;">
+                    <div class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading orders...</span>
+                    </div>
+                  </div>
+                  <div id="accountOrdersList" class="orders-list"></div>
+                  
+                  <!-- Pagination -->
+                  <nav aria-label="Orders pagination" id="ordersPagination" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                      <div class="pagination-info">
+                        <span class="text-muted">Showing <span id="paginationStart">1</span> to <span id="paginationEnd">10</span> of <span id="paginationTotal">0</span> orders</span>
+                      </div>
+                      <ul class="pagination pagination-modern" id="paginationControls">
+                        <!-- Pagination buttons will be inserted here -->
+                      </ul>
+                    </div>
+                  </nav>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="chatCenterModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-2">
+          <h5 class="modal-title d-flex align-items-center">
+            <i class="fas fa-comments text-primary me-2"></i>
+            Chat Center
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="chat-container">
+            <div class="chat-sidebar">
+              <div class="chat-sidebar-header">
+                <h6 class="mb-0">Recent Conversations</h6>
+                <button class="btn btn-outline-primary btn-sm" id="chatWithAdminBtn" onclick="window.ChatCenter && ChatCenter.createAdminChat()" style="display: none;">
+                  <i class="fas fa-headset me-1"></i>Chat with Admin
+                </button>
+              </div>
+              <div class="chat-list" id="chatList">
+                <div class="text-center py-4 text-muted">Loading...</div>
+              </div>
+            </div>
+            <div class="chat-window">
+              <div class="chat-window-header" id="chatWindowHeader">
+                <div class="chat-participant-info">
+                  <div class="chat-avatar"><i class="fas fa-user-circle"></i></div>
+                  <div class="chat-details">
+                    <div class="chat-name">Select a conversation</div>
+                    <div class="chat-status">Click a chat to start messaging</div>
+                  </div>
+                </div>
+                <div class="chat-actions">
+                  <button class="btn btn-outline-primary btn-sm" id="chatAdminBtnBuyer" style="display: none;" onclick="createAdminChatFromCurrentOrder()" title="Chat with Admin about this order">
+                    <i class="fas fa-headset me-1"></i>Chat Admin
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" onclick="refreshChatMessages && refreshChatMessages()">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="chat-messages" id="chatMessages">
+                <div class="empty-chat-state">
+                  <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                  <h6 class="text-muted">Start a conversation</h6>
+                  <p class="text-muted mb-0">Select a chat to begin messaging.</p>
+                </div>
+              </div>
+              <div class="chat-input-area" id="chatInputArea" style="display:none;">
+                <div class="chat-input-container">
+                  <input type="text" class="form-control" id="chatMessageInput" placeholder="Type your message..." disabled>
+                  <button class="btn btn-primary" id="sendMessageBtn" onclick="window.ChatCenter && ChatCenter.sendMessage()" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/shared-auth.js"></script>
+  <script src="/static/js/shared-header.js"></script>
+  <script src="/static/js/user-dropdown.js"></script>
+  <script src="/static/js/message-manager.js"></script>
+  <script src="/static/js/chat-center.js"></script>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.AuthManager && AuthManager.isLoggedIn()) {
+          const user = AuthManager.getAuthUser();
+          const updateElement = (selectors, value) => {
+            selectors.forEach(sel => { const el = document.querySelector(sel); if (el) el.textContent = value; });
+          };
+          const name = user.name || (user.email ? user.email.split('@')[0] : 'User');
+          updateElement(['#userName', '#dropdownUserName', '.user-name', '.dropdown-user-name'], name);
+          updateElement(['#dropdownUserEmail', '.dropdown-user-email'], user.email || 'user@email.com');
+          const role = user.role || 'Customer';
+          updateElement(['#userRole', '#dropdownUserRole', '.user-role', '.dropdown-user-role'], role);
+          const authLinks = document.getElementById('authLinks');
+          const userDropdown = document.getElementById('userDropdownContainer');
+          if (authLinks) authLinks.style.display = 'none';
+          if (userDropdown) userDropdown.style.display = 'block';
+        }
+      }, 300);
+
+      // Monitor chat window for label preservation (Buyer side)
+      const chatLabelObserver = new MutationObserver(() => {
+        const chatNameEl = document.querySelector('.chat-details .chat-name');
+        if (chatNameEl && chatNameEl.textContent && !chatNameEl.querySelector('.badge')) {
+          // Check if this is a seller or rider chat by looking for icons or checking context
+          const statusEl = document.querySelector('.chat-details .chat-status');
+          if (statusEl) {
+            const isSellerChat = statusEl.innerHTML.includes('fa-shopping-bag') || 
+                              statusEl.textContent.includes('Order') ||
+                              window.currentChatType === 'seller';
+            const isRiderChat = statusEl.innerHTML.includes('fa-motorcycle') || 
+                              statusEl.textContent.includes('Rider') ||
+                              window.currentChatType === 'rider';
+            
+            if (isSellerChat) {
+              const sellerBadge = '<span class="badge bg-warning text-dark me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">SELLER</span>';
+              chatNameEl.innerHTML = sellerBadge + chatNameEl.textContent;
+            } else if (isRiderChat) {
+              const riderBadge = '<span class="badge bg-info me-2" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">RIDER</span>';
+              chatNameEl.innerHTML = riderBadge + chatNameEl.textContent;
+            }
+          }
+        }
+      });
+
+      // Start observing when chat modal is opened
+      setTimeout(() => {
+        const chatWindow = document.querySelector('.chat-window-header');
+        if (chatWindow) {
+          chatLabelObserver.observe(chatWindow, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+      }, 1000);
+    });
+  </script>
+  <script src="/static/js/account.js" defer></script>
+  <script>
+    // Create admin chat from current order (for buyer)
+    async function createAdminChatFromCurrentOrder() {
+      try {
+        if (!window.ChatCenter) {
+          alert('Chat system not available');
+          return;
+        }
+
+        // Use ChatCenter's method if available
+        if (window.ChatCenter.createAdminChatFromCurrentChat) {
+          await window.ChatCenter.createAdminChatFromCurrentChat();
+          return;
+        }
+
+        // Fallback: Get order from current chat context
+        const token = AuthManager.getAuthToken();
+        if (!token) {
+          alert('Please log in to chat with admin');
+          return;
+        }
+
+        const orderNumber = window.ChatCenter.currentOrderNumber;
+        if (!orderNumber) {
+          alert('No order context available. Please select a conversation with an order first.');
+          return;
+        }
+
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
+        const res = await fetch('/api/chats/create-with-admin', {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify({
+            order_id: window.ChatCenter.currentOrderId,
+            order_number: orderNumber
+          })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Failed to create admin chat');
+        }
+
+        const data = await res.json();
+        if (data.success && data.chat) {
+          // Reload chat list and select the admin chat
+          if (window.ChatCenter && window.ChatCenter.loadChatListFallback) {
+            await window.ChatCenter.loadChatListFallback();
+            setTimeout(() => {
+              const chatId = data.chat.id;
+              const chatList = document.getElementById('chatList');
+              if (chatList) {
+                const chatItems = chatList.querySelectorAll('.chat-list-item');
+                for (const item of chatItems) {
+                  const onclick = item.getAttribute('onclick');
+                  if (onclick && onclick.includes(`ChatCenter.selectChat(${chatId}`)) {
+                    item.click();
+                    break;
+                  }
+                }
+              }
+            }, 500);
+          }
+        }
+      } catch (e) {
+        console.error('Error creating admin chat:', e);
+        alert(e.message || 'Failed to create admin chat. Please try again.');
+      }
+    }
+
+    // Update Chat Admin button visibility when chat is selected
+    const originalSelectChat = window.ChatCenter && window.ChatCenter.selectChat;
+    if (originalSelectChat) {
+      window.ChatCenter.selectChat = async function(...args) {
+        await originalSelectChat.apply(this, args);
+        
+        // Show/hide Chat Admin button
+        const chatAdminBtn = document.getElementById('chatAdminBtnBuyer');
+        if (chatAdminBtn) {
+          const orderNumber = this.currentOrderNumber;
+          const participantRole = args[6] || ''; // participantRole is the 7th argument
+          if (orderNumber && participantRole !== 'admin') {
+            chatAdminBtn.style.display = 'inline-block';
+          } else {
+            chatAdminBtn.style.display = 'none';
+          }
+        }
+      };
+    }
+  </script>
+</body>
+</html>
